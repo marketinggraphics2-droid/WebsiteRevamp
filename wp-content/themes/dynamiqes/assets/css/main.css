@@ -618,9 +618,11 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   will-change:transform; animation:galleryMarq 46s linear infinite; }
 .gallery-marq:hover .gallery-track{ animation-play-state:paused; }
 @keyframes galleryMarq{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(calc(-50% - clamp(6px,.7vw,10px)),0,0); } }
-.gallery-item{ --gh:clamp(200px,26vw,340px); margin:0; flex:0 0 auto; height:var(--gh); width:calc(var(--gh) * 4 / 3); overflow:hidden;
-  border-radius:16px; border:1px solid var(--line); box-shadow:0 22px 44px -28px rgba(var(--rgb-ink),.35); }
-.gallery-item img{ display:block; width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.16,1,.3,1); }
+/* portrait campaign posters: a shared height, each tile takes its own natural width so
+   the baked-in headlines are never cropped */
+.gallery-item{ --gh:clamp(300px,34vw,480px); margin:0; flex:0 0 auto; height:var(--gh); width:auto; overflow:hidden;
+  border-radius:16px; border:1px solid var(--line); background:var(--color-night); box-shadow:0 22px 44px -28px rgba(var(--rgb-ink),.35); }
+.gallery-item img{ display:block; width:auto; height:100%; object-fit:contain; transition:transform .6s cubic-bezier(.16,1,.3,1); }
 .gallery-item:hover img{ transform:scale(1.04); }
 @media (prefers-reduced-motion:reduce){
   .gallery-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; }
@@ -2036,4 +2038,93 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 @media(prefers-reduced-motion:reduce){
   .dq-chat__panel,.dq-chat__launcher,.dq-chat__launcher svg,.dq-chat__hint,.dq-chat__chips button{transition:none}
   .dq-chat__msg.is-typing span{animation:none}
+}
+
+/* ═══ 6 · SMALL-VIEWPORT AUDIT FIXES (2026-09-04) ═══
+   From a sweep of 1366×768, 1280×720, 1024×768, 834×1112, 768×1024, 430×932,
+   375×667, 360×640 and landscape phones (812×375, 667×375). Additive overrides,
+   declared last so they win cascade ties; markup and headings untouched. */
+
+/* 6a · Hero chrome math. These heroes subtracted fixed numbers (70+64, 134, 44+64)
+   for the bars above them, but the nav is 88px and the top bar became three rows
+   (~113px) on phones when the search field landed — so every hero ran 70–160px past
+   the fold and pushed its CTA under it. main.js measures both bars into --hf-h and
+   --nav-h on every page; use those. */
+@media(max-width:620px){
+  .products-page .hero{min-height:calc(100dvh - var(--hf-h,113px) - var(--nav-h,88px))}
+  .product-detail-page.product-template-page .detail-hero{min-height:calc(100dvh - var(--hf-h,113px) - var(--nav-h,88px))}
+}
+@media(max-height:560px) and (min-width:621px){
+  .products-page .hero{min-height:calc(100dvh - var(--hf-h,44px) - var(--nav-h,88px))}
+}
+/* short phones (375×667, 360×640): the listing hero's padding was the last ~30px */
+@media(max-width:620px) and (max-height:700px){
+  .products-page .hero .wrap{padding-block:clamp(24px,4dvh,40px) clamp(20px,3.5dvh,34px)}
+  /* detail hero: the full-width 16:9 shot (~190px) is what keeps INQUIRE NOW under the
+     fold; size it by max-width AND max-height together so the box keeps the image's ratio */
+  .product-detail-page.product-template-page .hero-media img{width:auto;max-width:100%;height:auto;max-height:clamp(110px,17dvh,200px)}
+  .product-detail-page.product-template-page .breadcrumbs{padding-top:8px}
+  .product-detail-page.product-template-page .hero-grid{gap:12px}
+  .product-detail-page.product-template-page .hero-copy p{font-size:.95rem;line-height:1.45}
+}
+
+/* 6b · Product detail, 621–980px (tablet portrait). The stacked hero kept the desktop
+   10ch headline cap, so "Elevate Your SAP Business One Experience…" wrapped to seven
+   lines (~410px) at 768px wide. */
+@media(min-width:621px) and (max-width:980px){
+  .product-detail-page.product-template-page .hero-copy h1{max-width:none;font-size:clamp(2.1rem,1.2rem + 3vw,3rem)}
+  .product-detail-page.product-template-page .hero-copy p{max-width:62ch}
+}
+/* landscape phones (≤980 wide, ≤500 tall): stacked layout ran ~760px past a 375px-tall
+   screen. Two columns again — copy left, shot right — everything sized to the height. */
+@media(min-width:621px) and (max-width:980px) and (max-height:500px){
+  .product-detail-page.product-template-page .detail-hero{min-height:calc(100dvh - var(--hf-h,44px) - var(--nav-h,88px))}
+  .product-detail-page.product-template-page .breadcrumbs{padding-top:8px;font-size:.75rem}
+  .product-detail-page.product-template-page .hero-grid{grid-template-columns:1.1fr .9fr;gap:24px;min-height:0;height:auto;padding:6px 0 14px;align-items:center}
+  .product-detail-page.product-template-page .hero-logo{max-height:30px;margin-bottom:6px}
+  .product-detail-page.product-template-page .hero-copy{padding-bottom:0}
+  .product-detail-page.product-template-page .hero-copy h1{font-size:clamp(1.25rem,5.4vh,1.7rem);line-height:1.1;max-width:none}
+  .product-detail-page.product-template-page .hero-copy p{margin-top:8px;font-size:.9rem;line-height:1.4}
+  .product-detail-page.product-template-page .hero-actions{margin-top:10px;gap:8px}
+  .product-detail-page.product-template-page .hero-actions .btn{min-height:40px;padding:10px 16px}
+  .product-detail-page.product-template-page .hero-media{min-height:0}
+  .product-detail-page.product-template-page .hero-media img{width:auto;max-width:100%;height:auto;max-height:calc(100dvh - 150px)}
+}
+
+/* 6c · Home hero buttons under 400px: "EXPLORE THE IQ SUITE →" measured 160px inside a
+   148px pill at 375 and clipped both ends. Same two-up row, tighter label. */
+@media(max-width:400px){
+  .banner-actions .dynamiq-cta a, .banner-secondary{font-size:var(--fs-xs);letter-spacing:0;padding-inline:8px;gap:6px}
+}
+
+/* 6d · SEO landing hero (page-landing.php). The orange H1 at 3.9rem/16ch wrapped to five
+   lines on laptops and, with two intro paragraphs and two stacked buttons under a
+   234px photo, the CTA sat 200–540px below the fold at every size tested. Content and
+   order are unchanged; only the sizing tightens. */
+@media(min-width:901px){
+  .landing-hero h1{font-size:clamp(2.1rem,1.2rem + 2.2vw,3.4rem);max-width:18ch}
+  .landing-hero-grid{padding-block:clamp(40px,6dvh,110px)}
+  .landing-intro{margin-top:18px}
+}
+@media(max-width:900px){
+  .landing-hero-grid{padding-block:28px 32px;gap:22px}
+  .landing-hero-media{aspect-ratio:16/9;max-height:min(240px,30dvh);width:100%}
+  .landing-hero h1{font-size:clamp(1.75rem,1.2rem + 2.6vw,2.6rem)}
+  .landing-intro{margin-top:14px;gap:8px}
+  .landing-intro p{font-size:1rem;line-height:1.5}
+  .landing-hero .hero-actions{margin-top:20px;gap:10px;flex-wrap:nowrap}
+  .landing-hero .hero-actions .btn{flex:1 1 0;min-width:0;justify-content:center;padding-inline:14px;white-space:nowrap}
+}
+
+/* 6e · Touch layer keyed on POINTER, not width. The ≤600px floors (12/13px type, 40px+
+   targets) missed touch tablets and landscape phones: 11px news tags, a 19px-tall top-bar
+   link, a 24px search button, 19–22px "Read more" and card-title links, 38px social tiles. */
+@media(hover:none){
+  :root{--fs-2xs:.75rem;--fs-xs:.8125rem}
+  .header-form a,.topbar a,.tlink,.story-more{min-height:40px;display:inline-flex;align-items:center}
+  .topbar-search{height:42px}
+  .topbar-search__btn{width:36px;height:36px}
+  .socials a{width:42px;height:42px}
+  .post-card-body h2 a,.post-card-body h3 a{display:block;padding-block:6px;margin-block:-6px}
+  .entry-foot .tlink{min-height:44px}
 }

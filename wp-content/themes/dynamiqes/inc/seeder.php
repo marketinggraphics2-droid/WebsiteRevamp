@@ -17,6 +17,17 @@ defined( 'ABSPATH' ) || exit;
  */
 add_action( 'after_switch_theme', function () {
 	update_option( 'dq_needs_setup', 1 );
+	/* The landing-page fill must not depend on someone opening wp-admin afterwards (activation
+	   from the Customizer never does): queue it as a one-off cron job as well. WP-Cron runs on
+	   the next page view (or via the host's system cron), so the pages fill in within a minute. */
+	if ( ! wp_next_scheduled( 'dq_landing_auto_import' ) ) {
+		wp_schedule_single_event( time() + 10, 'dq_landing_auto_import' );
+	}
+} );
+add_action( 'dq_landing_auto_import', function () {
+	if ( function_exists( 'dq_auto_import_landing_pages' ) ) {
+		dq_auto_import_landing_pages();
+	}
 } );
 add_action( 'init', function () {
 	if ( ! is_admin() || ! get_option( 'dq_needs_setup' ) || ! current_user_can( 'manage_options' ) ) {
@@ -26,8 +37,55 @@ add_action( 'init', function () {
 	if ( ! get_option( 'dq_seeded' ) ) {
 		dq_seed_content();
 	}
+	if ( function_exists( 'dq_auto_import_landing_pages' ) ) {
+		dq_auto_import_landing_pages(); // fills empty "Blogs" landing pages copied from the old theme
+	}
 	flush_rewrite_rules();
 }, 20 );
+
+/**
+ * Re-point the "Blogs" sub-items of the saved Primary Menu at their landing pages when
+ * those pages exist (custom fallback links only). Safe to run on any site: it touches
+ * nothing but those menu items. Returns the number of items updated.
+ */
+function dq_repair_blog_menu_links() {
+	/* The menu that actually renders (assigned to the primary location) first, then the seeded name. */
+	$locations = get_theme_mod( 'nav_menu_locations', array() );
+	$menu      = empty( $locations['primary'] ) ? null : wp_get_nav_menu_object( (int) $locations['primary'] );
+	if ( ! $menu ) {
+		$menu = wp_get_nav_menu_object( 'Primary Menu' );
+	}
+	if ( ! $menu ) {
+		return 0;
+	}
+	$landing = array();
+	foreach ( dq_blog_landing_items() as $b ) {
+		if ( $b['object_id'] ) {
+			$landing[ $b['title'] ] = $b;
+		}
+	}
+	$n = 0;
+	foreach ( wp_get_nav_menu_items( $menu->term_id ) as $mi ) {
+		if ( ! $mi->menu_item_parent || 'custom' !== $mi->type || ! isset( $landing[ $mi->title ] ) ) {
+			continue;
+		}
+		$b = $landing[ $mi->title ];
+		if ( untrailingslashit( $mi->url ) === untrailingslashit( $b['url'] ) ) {
+			continue;
+		}
+		wp_update_nav_menu_item( $menu->term_id, $mi->ID, array(
+			'menu-item-title'     => $mi->title,
+			'menu-item-status'    => 'publish',
+			'menu-item-parent-id' => (int) $mi->menu_item_parent,
+			'menu-item-position'  => (int) $mi->menu_order,
+			'menu-item-type'      => 'post_type',
+			'menu-item-object'    => get_post_type( $b['object_id'] ),
+			'menu-item-object-id' => $b['object_id'],
+		) );
+		$n++;
+	}
+	return $n;
+}
 
 /** Find a post by meta key/value. */
 function dq_find_post_by_meta( $type, $key, $value ) {

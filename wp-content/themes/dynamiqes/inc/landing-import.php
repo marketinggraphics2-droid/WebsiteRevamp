@@ -242,23 +242,36 @@ function dq_import_landing_pages( $sideload = false ) {
 		$args     = array(
 			'post_type'    => 'page',
 			'post_status'  => 'publish',
-			'post_title'   => $data['title'],
 			'post_name'    => $slug,
 			'post_excerpt' => $data['description'],
 			'post_content' => $data['content'],
 		);
+		$prev_tpl = $existing ? get_post_meta( $existing->ID, '_wp_page_template', true ) : '';
 		if ( $existing ) {
+			/* An existing page keeps its own title (it feeds <title>, Yoast and the menus);
+			   the article headline goes to _dq_landing_h1 and the template shows that. */
 			$args['ID'] = $existing->ID;
 			$id         = wp_update_post( $args );
 		} else {
-			$id = wp_insert_post( $args );
+			$args['post_title'] = $data['title'];
+			$id                 = wp_insert_post( $args );
 		}
 		if ( ! $id || is_wp_error( $id ) ) {
 			$report[] = $slug . ': could not save';
 			continue;
 		}
-		update_post_meta( $id, '_wp_page_template', 'page-landing.php' );
+		/* Only claim the template slot when the page has none. A page copied from the old
+		   dynamiqes.com theme carries that theme's template name (e.g. page-revamp-template.php);
+		   core resets that to "default" on every wp_update_post() because this theme has no such
+		   file, so put it back — then the old theme still renders the page if it is re-activated.
+		   The template_include filter below routes imported pages to page-landing.php here anyway. */
+		if ( $prev_tpl && 'default' !== $prev_tpl ) {
+			update_post_meta( $id, '_wp_page_template', $prev_tpl );
+		} else {
+			update_post_meta( $id, '_wp_page_template', 'page-landing.php' );
+		}
 		update_post_meta( $id, '_dq_landing_source', dq_landing_source_base() . '/' . $slug . '/' );
+		update_post_meta( $id, '_dq_landing_h1', $data['title'] );
 		update_post_meta( $id, '_dq_landing_intro', $data['intro'] );
 		if ( $data['description'] ) {
 			update_post_meta( $id, '_dq_seo_description', $data['description'] );
@@ -277,9 +290,90 @@ function dq_import_landing_pages( $sideload = false ) {
 		}
 		$report[] = $slug . ': ' . ( $existing ? 'updated' : 'created' ) . ' (' . mb_strlen( wp_strip_all_tags( $data['content'] ) ) . ' chars)';
 	}
-	/* Re-point the Blogs dropdown to the new pages. */
-	if ( function_exists( 'dq_seed_content' ) ) {
-		dq_seed_content();
+	/* Re-point the Blogs dropdown to the new pages (menu links only — not the full seeder,
+	   which would also reset the front page and posts page on an existing site). */
+	if ( function_exists( 'dq_repair_blog_menu_links' ) ) {
+		dq_repair_blog_menu_links();
 	}
+	return $report;
+}
+
+/**
+ * Imported landing pages always render with page-landing.php in this theme, whatever
+ * template name the page carries. Pages copied from the old dynamiqes.com theme keep
+ * that theme's template in _wp_page_template (e.g. page-revamp-template.php); without
+ * this they would fall back to the generic page.php and show only the title.
+ */
+add_filter( 'template_include', function ( $template ) {
+	if ( is_singular( 'page' ) && dq_is_landing_page( get_queried_object() ) ) {
+		$landing = locate_template( 'page-landing.php' );
+		if ( $landing ) {
+			return $landing;
+		}
+	}
+	return $template;
+}, 20 );
+
+/** True for an imported landing page, or for a still-empty page with one of the landing slugs. */
+function dq_is_landing_page( $post ) {
+	if ( ! $post instanceof WP_Post || 'page' !== $post->post_type ) {
+		return false;
+	}
+	if ( get_post_meta( $post->ID, '_dq_landing_source', true ) ) {
+		return true;
+	}
+	return '' === trim( $post->post_content ) && in_array( $post->post_name, dq_landing_slugs(), true );
+}
+
+/**
+ * Read-only stand-in for a landing page that has not been imported yet (the customizer
+ * preview of this theme before activation, or a site where the first-load import failed):
+ * the old page is fetched and parsed on demand and kept in a transient for 12 hours.
+ * Nothing is written to the page. Returns the parsed array, or null when unavailable.
+ */
+function dq_landing_live_data( $slug ) {
+	if ( ! in_array( $slug, dq_landing_slugs(), true ) ) {
+		return null;
+	}
+	$key  = 'dq_landing_live_' . $slug;
+	$data = get_transient( $key );
+	if ( is_array( $data ) ) {
+		return $data;
+	}
+	if ( 'fail' === $data ) {
+		return null; // recent fetch failed; do not retry on every view
+	}
+	$data = dq_landing_parse( $slug );
+	if ( is_wp_error( $data ) ) {
+		set_transient( $key, 'fail', 10 * MINUTE_IN_SECONDS );
+		return null;
+	}
+	set_transient( $key, $data, 12 * HOUR_IN_SECONDS );
+	return $data;
+}
+
+/**
+ * First admin load after activation: a site that already has the six landing pages as
+ * empty shells (their content lived in the old theme's template files) gets them filled
+ * from dynamiqes.com automatically, so the "Blogs" dropdown works without a manual import.
+ * Pages that have content, or were already imported, are left alone. Returns the report.
+ */
+function dq_auto_import_landing_pages() {
+	$pending = array();
+	foreach ( dq_landing_slugs() as $slug ) {
+		$page = get_page_by_path( $slug );
+		if ( $page && 'publish' === $page->post_status && '' === trim( $page->post_content ) && ! get_post_meta( $page->ID, '_dq_landing_source', true ) ) {
+			$pending[] = $slug;
+		}
+	}
+	if ( ! $pending ) {
+		return array();
+	}
+	$only = function () use ( $pending ) {
+		return $pending;
+	};
+	add_filter( 'dq_landing_slugs', $only, 99 );
+	$report = dq_import_landing_pages( true );
+	remove_filter( 'dq_landing_slugs', $only, 99 );
 	return $report;
 }

@@ -161,6 +161,39 @@ function dq_default_menu_items() {
 	);
 }
 
+/**
+ * Saved menus can carry stale "Blogs" sub-links. The seeder stores each landing article as a
+ * fixed custom link when it cannot find the page at seed time (blog-index or product fallback),
+ * and a saved link never updates itself — so a site that gets the landing pages later, or a
+ * staging copy whose posts page differs, keeps sending visitors to the fallback. Repoint those
+ * custom sub-items to the landing page at render time whenever the page exists. Items an
+ * editor pointed at a specific page/post (post_type items) are left alone.
+ */
+add_filter( 'wp_nav_menu_objects', function ( $items, $args ) {
+	if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) {
+		return $items;
+	}
+	$landing = null;
+	foreach ( $items as $item ) {
+		if ( empty( $item->menu_item_parent ) || 'custom' !== $item->type ) {
+			continue;
+		}
+		if ( null === $landing ) {
+			$landing = array();
+			foreach ( dq_blog_landing_items() as $b ) {
+				if ( $b['object_id'] ) {
+					$landing[ $b['title'] ] = $b['url'];
+				}
+			}
+		}
+		$title = trim( wp_strip_all_tags( $item->title ) );
+		if ( isset( $landing[ $title ] ) && untrailingslashit( $item->url ) !== untrailingslashit( $landing[ $title ] ) ) {
+			$item->url = $landing[ $title ];
+		}
+	}
+	return $items;
+}, 10, 2 );
+
 /** Primary navigation: assigned menu, or the default structure. */
 function dq_primary_menu() {
 	if ( has_nav_menu( 'primary' ) ) {
@@ -252,17 +285,21 @@ function dq_services() {
 	) );
 }
 
-/** Lifestyle gallery photos (home carousel between Why Choose and Our Services).
- *  Placeholders reuse the services photos until the final set is dropped in. */
+/** Campaign posters for the "Less friction, more flow" marquee (home, between Why
+ *  Choose and Our Services). Portrait creatives with the copy baked in — the strip
+ *  keeps each one's own proportions, so the alt text carries the headline. */
 function dq_gallery_photos() {
 	return apply_filters( 'dq_gallery_photos', array(
-		array( 'Consultation session with a DynamIQ specialist', 'assets/services/consultation.jpg' ),
-		array( 'Team collaborating during an implementation', 'assets/services/implementation.jpg' ),
-		array( 'Developers reviewing a custom process', 'assets/services/development.jpg' ),
-		array( 'Hands-on training for a client team', 'assets/services/training.jpg' ),
-		array( 'Helpdesk specialist supporting a customer', 'assets/services/support.jpg' ),
+		array( 'Less friction, more flow.', 'assets/gallery/less-friction-more-flow.jpg' ),
+		array( 'If your back office feels like laundry day, we can help you automate the mess so your business runs cleaner.', 'assets/gallery/back-office-laundry-day.jpg' ),
+		array( 'Big business problems? Let us carry the heavy IT.', 'assets/gallery/big-business-problems.jpg' ),
+		array( 'Work shouldn’t follow you to bed. Reliable systems and responsive support keep business problems from becoming after-hours problems.', 'assets/gallery/work-shouldnt-follow-you-to-bed.jpg' ),
+		array( 'Drowning in manual work? We can always help.', 'assets/gallery/drowning-in-manual-work.jpg' ),
+		array( 'Work should feel like this. We’ll take care of the IT so you can enjoy the results.', 'assets/gallery/work-should-feel-like-this.jpg' ),
+		array( 'Your business is growing, but your system is not. Evolve with SAP Business One and future-proof your business.', 'assets/gallery/your-business-is-growing.jpg' ),
 	) );
 }
+
 
 /** Footer video wall: the newest video uploads in the media library, normalised to
  *  video / poster / label. Poster = the attachment's featured image if one is set

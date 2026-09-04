@@ -23,7 +23,8 @@ $explore  = array(
 );
 /* Home-page video marquee above the footer — same treatment as the Life-at-DynamIQ
  * photo marquee mid-page, but with clips: the four newest video uploads in the media
- * library (see dq_video_wall_items() for the placeholder top-up rules). */
+ * library (see dq_video_wall_items() for the placeholder top-up rules). Sources are
+ * attached lazily by main.js so the clips never delay the rest of the page. */
 $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 ?>
 <div class="site-end">
@@ -34,9 +35,11 @@ $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 			<?php foreach ( array( false, true ) as $dup ) : // second pass is the seamless-loop copy ?>
 			<?php foreach ( $videos as $v ) : ?>
 				<figure class="video-tile" data-video="<?php echo esc_url( $v['video'] ); ?>" data-poster="<?php echo esc_url( $v['poster'] ); ?>" data-label="<?php echo esc_attr( $v['label'] ); ?>"<?php echo $dup ? ' aria-hidden="true"' : ' role="button" tabindex="0" aria-label="' . esc_attr( sprintf( /* translators: %s: clip label */ __( 'Open %s in full view', 'dynamiqes' ), $v['label'] ) ) . '"'; ?>>
-					<video muted loop playsinline preload="metadata"<?php if ( ! empty( $v['poster'] ) ) : ?> poster="<?php echo esc_url( $v['poster'] ); ?>"<?php endif; ?>>
-						<source src="<?php echo esc_url( $v['video'] ); ?>" type="video/mp4">
-					</video>
+					<?php /* No src in the markup on purpose: the clips are large, the tiles are shipped twice
+					         and main.js clones more sets to fill the track, so a src here would start every copy
+					         downloading with the page. main.js attaches the tile's data-video once the wall is
+					         near the viewport (see "5b · Video wall"). */ ?>
+					<video muted loop playsinline preload="none"<?php if ( ! empty( $v['poster'] ) ) : ?> poster="<?php echo esc_url( $v['poster'] ); ?>"<?php endif; ?>></video>
 					<span class="video-tile-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
 				</figure>
 			<?php endforeach; ?>

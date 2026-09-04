@@ -134,9 +134,25 @@
     window.addEventListener('resize', function () { clearTimeout(wallRT); wallRT = setTimeout(wallFill, 200); });
   }
   var wallVideos = function () { return document.querySelectorAll('.video-tile video'); };
-  if (wallVideos().length && !reduce) {
+  /* The tiles ship with no src (footer.php): the clips are tens of MB each and every
+     copy in the track is its own <video>, so with a src in the markup they would all
+     start downloading with the page and starve the images and scripts above the fold.
+     wallArm() attaches the tile's data-video to each copy the first time the wall comes
+     near the viewport; clones made before that inherit no src and are armed then too. */
+  var wallArm = function () {
+    wallVideos().forEach(function (v) {
+      if (v.getAttribute('src')) { return; }
+      var tile = v.closest('.video-tile');
+      var src = tile ? tile.getAttribute('data-video') : '';
+      if (src) { v.preload = 'auto'; v.setAttribute('src', src); }
+    });
+  };
+  if (wallVideos().length) {
     var wall = document.querySelector('.video-marq');
-    var wallPlay = function (on) { wallVideos().forEach(function (v) { v.muted = true; if (on) { v.play().catch(function () {}); } else { v.pause(); } }); };
+    var wallPlay = function (on) {
+      if (on) { wallArm(); }
+      wallVideos().forEach(function (v) { v.muted = true; if (on && !reduce) { v.play().catch(function () {}); } else { v.pause(); } });
+    };
     if ('IntersectionObserver' in window && wall) {
       new IntersectionObserver(function (entries) {
         entries.forEach(function (en) { wallPlay(en.isIntersecting); });
@@ -159,6 +175,7 @@
     var lbTile = null, lbVid = null, lbTimer = null;
     var lbOpen = function (tile) {
       var vid = tile.querySelector('video'); if (!vid || lbVid) { return; }
+      wallArm();                                      // a tile opened before the wall was near view has no src yet
       clearTimeout(lbTimer);
       lbTile = tile; lbVid = vid;
       lbCap.textContent = tile.getAttribute('data-label') || '';
