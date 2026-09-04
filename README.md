@@ -114,4 +114,4 @@ The repo carries a self-contained WordPress under `.local-wp/` (portable PHP 8.3
 
 Then open http://localhost:8787/ — admin at http://localhost:8787/wp-admin/ (user `admin`, password `admin`). Stop with Ctrl+C.
 
-First-time setup on another machine (already done here): unzip the three downloads in `.local-wp/dl/` as `php/`, `www/`, and `www/wp-content/plugins/sqlite-database-integration/`, copy the plugin's `db.copy` to `www/wp-content/db.php`, then run `php bootstrap.php` and `php seed.php` from `.local-wp/`.
+First-time setup on another machine: put the three downloads in `.local-wp/dl/` — `php.zip` (PHP 8.3 NTS x64 from https://windows.php.net/download/), `wordpress.zip` (https://wordpress.org/latest.zip) and `sqlite-database-integration.zip` (https://downloads.wordpress.org/plugin/sqlite-database-integration.zip) — keep `.local-wp/php/php.ini`, `router.php`, `bootstrap.php` and `seed.php`, then run `.un-local.ps1 -Setup`. It unzips everything, writes the SQLite `db.php` drop-in, junction-links the theme, installs WordPress (admin / admin) and seeds the demo content.
