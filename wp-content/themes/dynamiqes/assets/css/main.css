@@ -1170,7 +1170,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .sub-page .eyebrow{margin-bottom:18px}
 
 .header-form,.topbar{height:auto;min-height:44px;background:var(--color-ink);color:var(--color-on-accent);font-size:var(--fs-sm);font-weight:500}
-.header-form .wrap,.topbar .wrap{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px 24px;padding-block:9px}
+.header-form .wrap,.topbar .wrap{min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:12px 28px;padding-block:9px}
 .header-form a,.topbar a{display:inline-flex;align-items:center;gap:8px;color:var(--brand);font-size:var(--fs-xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:color .2s,gap .2s}
 .header-form a:hover,.topbar a:hover{color:var(--color-brand-light);gap:12px}
 

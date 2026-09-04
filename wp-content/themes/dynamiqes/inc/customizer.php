@@ -28,7 +28,7 @@ add_action( 'customize_register', function ( WP_Customize_Manager $wp ) {
 	$wp->add_section( 'dq_brand', array( 'title' => __( 'Brand & header', 'dynamiqes' ), 'panel' => $panel ) );
 	$image( 'dq_logo_nav', __( 'Navigation logo', 'dynamiqes' ), 'dq_brand', __( 'Defaults to assets/logos/DynamIQ_Logo_blk.svg', 'dynamiqes' ) );
 	$image( 'dq_logo_footer', __( 'Footer logo (with tagline)', 'dynamiqes' ), 'dq_brand' );
-	$text( 'dq_header_cta_text', __( 'Top bar text', 'dynamiqes' ), 'Request A Free Business Analysis Today!', 'dq_brand' );
+	$text( 'dq_header_cta_text', __( 'Top bar text', 'dynamiqes' ), "Something slowing your business down? Let's Figure it out!", 'dq_brand' );
 	$text( 'dq_header_cta_label', __( 'Top bar link label', 'dynamiqes' ), 'REQUEST NOW!', 'dq_brand' );
 	$check( 'dq_google_fonts', __( 'Load Roboto from Google Fonts', 'dynamiqes' ), true, 'dq_brand' );
 

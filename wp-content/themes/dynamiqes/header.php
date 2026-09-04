@@ -20,7 +20,7 @@
 
 <div class="header-form">
 	<div class="wrap">
-		<p><?php echo esc_html( get_theme_mod( 'dq_header_cta_text', 'Request A Free Business Analysis Today!' ) ); ?></p>
+		<p><?php echo esc_html( get_theme_mod( 'dq_header_cta_text', "Something slowing your business down? Let's Figure it out!" ) ); ?></p>
 		<a href="<?php echo esc_url( dq_home_anchor( 'contact' ) ); ?>"><?php echo esc_html( get_theme_mod( 'dq_header_cta_label', 'REQUEST NOW!' ) ); ?> <span class="arr" aria-hidden="true">→</span></a>
 	</div>
 </div>
