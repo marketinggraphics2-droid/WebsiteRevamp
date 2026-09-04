@@ -60,6 +60,7 @@ $explore  = array(
 		</div>
 	</div>
 </footer>
+<?php get_template_part( 'template-parts/chatbot' ); // mockup widget, no backend yet ?>
 <?php wp_footer(); ?>
 </body>
 </html>
