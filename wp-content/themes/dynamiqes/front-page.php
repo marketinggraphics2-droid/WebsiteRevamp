@@ -10,7 +10,7 @@ get_header();
 $products  = dq_get_products();
 $sap       = dq_get_product_by_key( 'sap' );
 $suite     = array_values( array_filter( $products, function ( $p ) { return 'sap' !== $p['key']; } ) );
-$news      = dq_news_items( 4 );
+$news      = dq_news_items( 5 ); // 1 featured + 2×2 grid
 $featured  = array_shift( $news );
 $contact   = dq_contact_info();
 $sap_logo  = get_theme_mod( 'dq_sap_logo', '' );
@@ -78,20 +78,27 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 <section class="iq" id="products">
 	<div class="wrap">
 		<div class="sec-head"<?php dq_reveal(); ?>>
-			<span class="eyebrow"><?php esc_html_e( 'Our Products', 'dynamiqes' ); ?></span>
-			<h2><?php esc_html_e( 'The IQ Suite', 'dynamiqes' ); ?></h2>
+			<h2><?php esc_html_e( 'Our Products', 'dynamiqes' ); ?></h2>
 		</div>
 		<div class="iq-grid">
 			<?php if ( $sap ) : ?>
 			<a class="iq-card all feature" href="<?php echo esc_url( $sap['url'] ); ?>"<?php dq_reveal( '', 0 ); ?>>
 				<span class="iq-art no-lazyload skip-lazy" style="background-image:url('<?php echo esc_url( $sap['card_art'] ); ?>')"></span>
 				<span class="iq-logo sap-card-logo">
-					<img class="lg-d no-lazyload skip-lazy" src="<?php echo esc_url( $sap['logo'] ); ?>" alt="<?php echo esc_attr( $sap['name'] ); ?>" loading="lazy">
-					<img class="lg-l no-lazyload skip-lazy" src="<?php echo esc_url( $sap['logo_light'] ); ?>" alt="" aria-hidden="true" loading="lazy">
+					<img class="lg-d no-lazyload skip-lazy" src="<?php echo esc_url( $sap['logo'] ); ?>" alt="<?php echo esc_attr( $sap['name'] ); ?>">
+					<img class="lg-l no-lazyload skip-lazy" src="<?php echo esc_url( $sap['logo_light'] ); ?>" alt="" aria-hidden="true">
 				</span>
 				<div class="iq-foot">
-					<p class="iq-desc"><?php echo esc_html( $sap['card_desc'] ); ?></p>
-					<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+					<div class="iq-copy">
+						<span class="iq-tagline"><?php echo esc_html( $sap['card_tagline'] ); ?></span>
+						<div class="iq-detail">
+							<span class="iq-title-row">
+								<span class="iq-title"><?php echo esc_html( $sap['card_title'] ); ?></span>
+								<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+							</span>
+							<p class="iq-desc"><?php echo esc_html( $sap['card_desc'] ); ?></p>
+						</div>
+					</div>
 				</div>
 			</a>
 			<?php endif; ?>
@@ -100,12 +107,20 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 				<span class="iq-art no-lazyload skip-lazy" style="background-image:url('<?php echo esc_url( $p['card_art'] ); ?>')"></span>
 				<span class="iq-hover-art no-lazyload skip-lazy" style="background-image:url('<?php echo esc_url( $p['card_photo'] ); ?>')"></span>
 				<span class="iq-logo">
-					<img class="lg-d no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>" loading="lazy">
-					<img class="lg-l no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="" aria-hidden="true" loading="lazy">
+					<img class="lg-d no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>">
+					<img class="lg-l no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="" aria-hidden="true">
 				</span>
 				<div class="iq-foot">
-					<p class="iq-desc"><?php echo esc_html( $p['card_desc'] ); ?></p>
-					<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+					<div class="iq-copy">
+						<span class="iq-tagline"><?php echo esc_html( $p['card_tagline'] ); ?></span>
+						<div class="iq-detail">
+							<span class="iq-title-row">
+								<span class="iq-title"><?php echo esc_html( $p['card_title'] ); ?></span>
+								<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
+							</span>
+							<p class="iq-desc"><?php echo esc_html( $p['card_desc'] ); ?></p>
+						</div>
+					</div>
 				</div>
 			</a>
 			<?php endforeach; ?>
@@ -120,6 +135,10 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 		<div class="sap-copy"<?php dq_reveal(); ?>>
 			<img class="sap-logo-rev" src="<?php echo esc_url( $sap_logo ); ?>" alt="SAP Business One" loading="lazy">
 			<p class="sap-lead"><?php echo esc_html( $sap['overview'][0] ?? $sap['description'] ); ?></p>
+			<?php $sap_photo_copy = get_theme_mod( 'dq_sap_photo_copy', '' ); $sap_photo_copy = $sap_photo_copy ? $sap_photo_copy : DQ_URI . '/assets/products/site-media/sap-b1-warehouse-office.jpg'; ?>
+			<figure class="sap-photo sap-photo-copy<?php echo $sap_photo_copy ? '' : ' is-placeholder'; ?>">
+				<?php if ( $sap_photo_copy ) : ?><img src="<?php echo esc_url( $sap_photo_copy ); ?>" alt="<?php esc_attr_e( 'Warehouse manager reviewing SAP Business One on a laptop', 'dynamiqes' ); ?>" loading="lazy"><?php else : ?><span><?php esc_html_e( 'Photo', 'dynamiqes' ); ?></span><?php endif; ?>
+			</figure>
 			<?php if ( ! empty( $sap['overview'][1] ) ) : ?><p class="sap-sub"><?php echo esc_html( $sap['overview'][1] ); ?></p><?php endif; ?>
 			<div class="dynamiq-cta"><a href="<?php echo esc_url( $sap['url'] ); ?>"><?php esc_html_e( 'See SAP Business One Features', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></a></div>
 		</div>
@@ -130,48 +149,14 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 				<p><?php echo esc_html( $f[1] ); ?></p>
 			</article>
 			<?php endforeach; ?>
+			<?php $sap_photo_grid = get_theme_mod( 'dq_sap_photo_grid', '' ); $sap_photo_grid = $sap_photo_grid ? $sap_photo_grid : DQ_URI . '/assets/products/site-media/sap-b1-analytics-monitor.jpg'; ?>
+			<figure class="feat feat-photo sap-photo<?php echo $sap_photo_grid ? '' : ' is-placeholder'; ?>"<?php dq_reveal( 'reveal', 5 * 90 ); ?>>
+				<?php if ( $sap_photo_grid ) : ?><img src="<?php echo esc_url( $sap_photo_grid ); ?>" alt="<?php esc_attr_e( 'Analyst pointing at SAP Business One reports on a monitor', 'dynamiqes' ); ?>" loading="lazy"><?php else : ?><span><?php esc_html_e( 'Photo', 'dynamiqes' ); ?></span><?php endif; ?>
+			</figure>
 		</div>
 	</div>
 </section>
 <?php endif; ?>
-
-<!-- ═══ NEWS AND ANNOUNCEMENTS ═══ -->
-<section class="whatsnew" id="news-events">
-	<div class="wrap">
-		<div class="sec-head"<?php dq_reveal(); ?>>
-			<span class="eyebrow"><?php esc_html_e( 'News & Events', 'dynamiqes' ); ?></span>
-			<h2><?php esc_html_e( 'Explore what\'s new.', 'dynamiqes' ); ?></h2>
-			<p><?php esc_html_e( 'Discover the latest updates, events, and stories from DynamIQ.', 'dynamiqes' ); ?></p>
-		</div>
-		<?php if ( $featured ) : ?>
-		<div class="news-layout"<?php dq_reveal( 'scale' ); ?>>
-			<a class="news-feature<?php echo $featured['image'] ? '' : ' no-img'; ?>" href="<?php echo esc_url( $featured['url'] ); ?>">
-				<?php if ( $featured['image'] ) : ?><img src="<?php echo esc_url( $featured['image'] ); ?>" alt="<?php echo esc_attr( $featured['title'] ); ?>" loading="lazy"><?php endif; ?>
-				<div class="news-feature-body">
-					<div class="news-meta"><span class="news-tag"><?php echo esc_html( $featured['cat'] ); ?></span><span class="news-date"><?php echo esc_html( $featured['date'] ); ?></span></div>
-					<h3><?php echo esc_html( $featured['title'] ); ?></h3>
-				</div>
-			</a>
-			<div class="news-side">
-				<div class="news-list">
-					<?php foreach ( $news as $n ) : ?>
-					<a class="news-item" href="<?php echo esc_url( $n['url'] ); ?>">
-						<span class="news-thumb"><?php if ( $n['image'] ) : ?><img src="<?php echo esc_url( $n['image'] ); ?>" alt="<?php echo esc_attr( $n['title'] ); ?>" loading="lazy"><?php endif; ?></span>
-						<div class="news-item-body">
-							<h4><?php echo esc_html( $n['title'] ); ?></h4>
-							<div class="news-meta"><span class="news-tag"><?php echo esc_html( $n['cat'] ); ?></span><span class="news-date"><?php echo esc_html( $n['date'] ); ?></span></div>
-						</div>
-					</a>
-					<?php endforeach; ?>
-				</div>
-				<div class="news-cta">
-					<a class="btn btn-orange" href="<?php echo esc_url( dq_news_url() ); ?>"><?php esc_html_e( 'See All News & Events', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></a>
-				</div>
-			</div>
-		</div>
-		<?php endif; ?>
-	</div>
-</section>
 
 <!-- ═══ WHY CHOOSE DYNAMIQ ═══ -->
 <section class="we-are-accredited" id="about">
@@ -181,14 +166,37 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 				<span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'SAP Premier Partner', 'dynamiqes' ); ?></span>
 				<h2<?php dq_reveal( '', 80 ); ?>><?php esc_html_e( 'Why Choose DynamIQ as Your SAP Premier Partner?', 'dynamiqes' ); ?></h2>
 			</div>
-			<div class="accredited-visual"<?php dq_reveal(); ?>>
-				<img src="<?php echo esc_url( $badge ); ?>" alt="<?php esc_attr_e( 'SAP Premier Partner', 'dynamiqes' ); ?>" loading="lazy">
-			</div>
+			<?php // photo frame (Customizer: dq_partner_photo, bundled default below) with the partner badge in its top-left corner ?>
+			<?php $accredited_photo = get_theme_mod( 'dq_partner_photo', '' ); $accredited_photo = $accredited_photo ? $accredited_photo : DQ_URI . '/assets/brand/sap-partner-store-owners.jpg'; ?>
+			<figure class="accredited-visual"<?php dq_reveal(); ?>>
+				<img class="accredited-photo" src="<?php echo esc_url( $accredited_photo ); ?>" alt="<?php esc_attr_e( 'Business owners reviewing their SAP Business One system with DynamIQ', 'dynamiqes' ); ?>" loading="lazy">
+				<img class="accredited-badge" src="<?php echo esc_url( $badge ); ?>" alt="<?php esc_attr_e( 'SAP Premier Partner', 'dynamiqes' ); ?>" loading="lazy">
+			</figure>
 		</div>
 		<div class="accredited-copy">
 			<p<?php dq_reveal( '', 150 ); ?>>DynamIQ Enterprise Solution Inc. stands as your premier choice for SAP solutions in the Philippines, now proudly recognized as a Premier SAP Partner. Our mission is to serve as your preferred partner in global growth and digital transformation.</p>
 			<p<?php dq_reveal( '', 220 ); ?>>Client satisfaction is at the heart of everything we do. As a Premier SAP Partner, we prioritize your business needs, ensuring our solutions seamlessly align with your objectives. Our commitment extends beyond being a conventional software provider; we are your dedicated partner invested in your success.</p>
 			<p<?php dq_reveal( '', 290 ); ?>>Our deep-rooted expertise in Enterprise Resource Planning (ERP) systems sets us apart. We provide a comprehensive experience that goes beyond traditional consulting, tailoring solutions meticulously to your unique requirements. With a proven track record of successful implementations and satisfied clients, DynamIQ is your trusted partner for SAP excellence. Choose DynamIQ, your Premier SAP Partner, and embark on a transformative journey toward business growth and success.</p>
+		</div>
+	</div>
+</section>
+
+<!-- ═══ LIFESTYLE GALLERY · auto-scrolling photo carousel ═══ -->
+<section class="gallery" aria-labelledby="gallery-hook">
+	<div class="wrap">
+		<div class="sec-head center gallery-head"<?php dq_reveal(); ?>>
+			<span class="eyebrow"><?php esc_html_e( 'Life at DynamIQ', 'dynamiqes' ); ?></span>
+			<h2 id="gallery-hook"><?php esc_html_e( 'Less friction, more flow.', 'dynamiqes' ); ?></h2>
+		</div>
+	</div>
+	<div class="gallery-marq"<?php dq_reveal( 'fade' ); ?>>
+		<div class="gallery-track">
+			<?php foreach ( dq_gallery_photos() as $g ) : ?>
+				<figure class="gallery-item"><img src="<?php echo esc_url( dq_asset( $g[1] ) ); ?>" alt="<?php echo esc_attr( $g[0] ); ?>" loading="lazy"></figure>
+			<?php endforeach; ?>
+			<?php foreach ( dq_gallery_photos() as $g ) : ?>
+				<figure class="gallery-item" aria-hidden="true"><img src="<?php echo esc_url( dq_asset( $g[1] ) ); ?>" alt="" loading="lazy"></figure>
+			<?php endforeach; ?>
 		</div>
 	</div>
 </section>
@@ -203,10 +211,10 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 		<div class="serv-timeline">
 			<?php $show_img = get_theme_mod( 'dq_services_images', true ); foreach ( dq_services() as $i => $s ) : ?>
 			<div class="serv-step"<?php dq_reveal( '', $i * 90 ); ?>>
+				<?php if ( $show_img && ! empty( $s['image'] ) ) : ?><img class="serv-img" src="<?php echo esc_url( dq_asset( $s['image'] ) ); ?>" alt="<?php echo esc_attr( $s['title'] ); ?>" loading="lazy"><?php endif; ?>
 				<div class="serv-node"><span class="serv-num-badge"><?php echo esc_html( $s['num'] ); ?></span></div>
 				<h3><?php echo esc_html( $s['title'] ); ?></h3>
 				<p><?php echo esc_html( $s['text'] ); ?></p>
-				<?php if ( $show_img && ! empty( $s['image'] ) ) : ?><img class="serv-img" src="<?php echo esc_url( dq_asset( $s['image'] ) ); ?>" alt="<?php echo esc_attr( $s['title'] ); ?>" loading="lazy"><?php endif; ?>
 			</div>
 			<?php endforeach; ?>
 		</div>
@@ -240,6 +248,42 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 			</article>
 			<?php endforeach; ?>
 		</div>
+	</div>
+</section>
+
+<!-- ═══ NEWS AND ANNOUNCEMENTS ═══ -->
+<section class="whatsnew" id="news-events">
+	<div class="wrap">
+		<div class="sec-head"<?php dq_reveal(); ?>>
+			<span class="eyebrow"><?php esc_html_e( 'News & Events', 'dynamiqes' ); ?></span>
+			<h2><?php esc_html_e( 'Explore what\'s new.', 'dynamiqes' ); ?></h2>
+			<p><?php esc_html_e( 'Discover the latest updates, events, and stories from DynamIQ.', 'dynamiqes' ); ?></p>
+		</div>
+		<?php if ( $featured ) : ?>
+		<div class="news-layout"<?php dq_reveal( 'scale' ); ?>>
+			<a class="news-card news-feature<?php echo $featured['image'] ? '' : ' no-img'; ?>" href="<?php echo esc_url( $featured['url'] ); ?>">
+				<?php if ( $featured['image'] ) : ?><img src="<?php echo esc_url( $featured['image'] ); ?>" alt="<?php echo esc_attr( $featured['title'] ); ?>" loading="lazy"><?php endif; ?>
+				<div class="news-card-body">
+					<div class="news-meta"><span class="news-tag"><?php echo esc_html( $featured['cat'] ); ?></span><span class="news-date"><?php echo esc_html( $featured['date'] ); ?></span></div>
+					<h3><?php echo esc_html( $featured['title'] ); ?></h3>
+				</div>
+			</a>
+			<div class="news-grid">
+				<?php foreach ( $news as $n ) : ?>
+				<a class="news-card<?php echo $n['image'] ? '' : ' no-img'; ?>" href="<?php echo esc_url( $n['url'] ); ?>">
+					<?php if ( $n['image'] ) : ?><img src="<?php echo esc_url( $n['image'] ); ?>" alt="<?php echo esc_attr( $n['title'] ); ?>" loading="lazy"><?php endif; ?>
+					<div class="news-card-body">
+						<div class="news-meta"><span class="news-tag"><?php echo esc_html( $n['cat'] ); ?></span><span class="news-date"><?php echo esc_html( $n['date'] ); ?></span></div>
+						<h3><?php echo esc_html( $n['title'] ); ?></h3>
+					</div>
+				</a>
+				<?php endforeach; ?>
+			</div>
+		</div>
+		<div class="news-cta"<?php dq_reveal(); ?>>
+			<a class="btn btn-orange" href="<?php echo esc_url( dq_news_url() ); ?>"><?php esc_html_e( 'See All News & Events', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></a>
+		</div>
+		<?php endif; ?>
 	</div>
 </section>
 

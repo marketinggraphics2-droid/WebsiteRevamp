@@ -40,7 +40,9 @@ function dq_product_field_map() {
 		'feature_image'  => array( 'image', __( 'Features image', 'dynamiqes' ), __( 'Leave empty to hide the features showcase image.', 'dynamiqes' ) ),
 		'card_art'       => array( 'image', __( 'Home card artwork', 'dynamiqes' ), __( 'Monitor render shown on the IQ Suite card on the home page.', 'dynamiqes' ) ),
 		'card_photo'     => array( 'image', __( 'Home card hover photo', 'dynamiqes' ), '' ),
-		'card_desc'      => array( 'textarea', __( 'Home card description', 'dynamiqes' ), __( 'Two short sentences.', 'dynamiqes' ) ),
+		'card_tagline'   => array( 'text', __( 'Home card tagline', 'dynamiqes' ), __( 'One short benefit line shown over the photo on the IQ Suite card at rest (e.g. Run my business better).', 'dynamiqes' ) ),
+		'card_title'     => array( 'text', __( 'Home card title', 'dynamiqes' ), __( 'Two or three words shown under the logo when the IQ Suite card is hovered (e.g. Self-Service Portal).', 'dynamiqes' ) ),
+		'card_desc'      => array( 'textarea', __( 'Home card description', 'dynamiqes' ), __( 'Two short sentences, revealed when the card is hovered.', 'dynamiqes' ) ),
 		'strip_desc'     => array( 'text', __( 'Hero strip tooltip', 'dynamiqes' ), __( 'One line shown when hovering the logo in the home hero.', 'dynamiqes' ) ),
 		'listing'        => array( 'lines', __( 'Products page paragraphs', 'dynamiqes' ), __( 'One paragraph per line.', 'dynamiqes' ) ),
 		'overview'       => array( 'lines', __( 'Overview paragraphs', 'dynamiqes' ), __( 'One paragraph per line.', 'dynamiqes' ) ),
@@ -123,6 +125,8 @@ function dq_product_defaults() {
 			'feature_image'  => '',
 			'card_art'       => 'assets/products/photos/all.jpg',
 			'card_photo'     => 'assets/products/photos/all.jpg',
+			'card_tagline'   => 'Run my business better',
+			'card_title'     => 'Core ERP Platform',
 			'card_desc'      => 'SAP Business One lets you manage your entire business — finance, sales, inventory, and operations — in one affordable platform. It\'s the flagship ERP for small and mid-market companies that the whole IQ Suite is built on.',
 			'strip_desc'     => 'The ERP platform the whole IQ Suite is built on.',
 			'listing'        => array(
@@ -161,6 +165,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/site-media/dynamic-portal-features.png',
 			'card_art'       => 'assets/products/official/portal.png',
 			'card_photo'     => 'assets/products/photos/portal.jpg',
+			'card_tagline'   => 'Let customers help themselves',
+			'card_title'     => 'Self-Service Portal',
 			'card_desc'      => 'Web self-service portal built on SAP Business One. Customers, vendors, and staff transact securely from any browser.',
 			'strip_desc'     => 'Web self-service portal built on SAP Business One.',
 			'listing'        => array(
@@ -199,6 +205,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/official/tax.jpg',
 			'card_art'       => 'assets/products/official/tax.png',
 			'card_photo'     => 'assets/products/photos/tax.jpg',
+			'card_tagline'   => 'Make compliance less painful',
+			'card_title'     => 'BIR Tax Compliance',
 			'card_desc'      => 'BIR-compliant tax computation and reporting for SAP B1. Keeps Philippine businesses CAS-ready with accurate filings.',
 			'strip_desc'     => 'BIR-compliant tax computation and reporting for SAP B1.',
 			'listing'        => array(
@@ -236,6 +244,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/site-media/dynamiq---barcoding.png',
 			'card_art'       => 'assets/products/official/barcode.png',
 			'card_photo'     => 'assets/products/photos/barcode.jpg',
+			'card_tagline'   => 'Know what\'s happening with your inventory',
+			'card_title'     => 'Barcode & Scanning',
 			'card_desc'      => 'Barcode scanning for faster inventory and warehouse control. Speeds up receiving, picking, and counts with live accuracy.',
 			'strip_desc'     => 'Barcode scanning for faster inventory and warehouse control.',
 			'listing'        => array(
@@ -272,6 +282,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/site-media/IQ-Link-mobile-v2.png',
 			'card_art'       => 'assets/products/official/link.png',
 			'card_photo'     => 'assets/products/photos/link.jpg',
+			'card_tagline'   => 'Make your systems talk to each other',
+			'card_title'     => 'System Integration',
 			'card_desc'      => 'Integration layer connecting SAP B1 to your other systems. Syncs e-commerce, banking, and third-party apps seamlessly.',
 			'strip_desc'     => 'Integration layer connecting SAP B1 to your other systems.',
 			'listing'        => array(
@@ -308,6 +320,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/official/rem.png',
 			'card_art'       => 'assets/products/official/rem.png',
 			'card_photo'     => 'assets/products/photos/rem.jpg',
+			'card_tagline'   => 'Keep every property on track',
+			'card_title'     => 'Real Estate Management',
 			'card_desc'      => 'Real estate and property management on SAP Business One. Streamlines leasing, billing, and collections in one system.',
 			'strip_desc'     => 'Real estate and property management on SAP Business One.',
 			'listing'        => array(
@@ -345,6 +359,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/site-media/IQ-Ai-screen.png',
 			'card_art'       => 'assets/products/official/ai.png',
 			'card_photo'     => 'assets/products/photos/ai.jpg',
+			'card_tagline'   => 'Get smarter answers',
+			'card_title'     => 'AI Insights & Automation',
 			'card_desc'      => 'AI-powered insights and automation for SAP Business One. Surfaces trends and flags exceptions so you decide faster.',
 			'strip_desc'     => 'AI-powered insights and automation for SAP Business One.',
 			'listing'        => array(
@@ -382,6 +398,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/official/desk.png',
 			'card_art'       => 'assets/products/official/desk.png',
 			'card_photo'     => 'assets/products/photos/desk.jpg',
+			'card_tagline'   => 'Fix what\'s slowing your team down',
+			'card_title'     => 'IT Helpdesk & Ticketing',
 			'card_desc'      => 'IT helpdesk and ticketing integrated with SAP B1. Tracks issues, SLAs, and resolutions in the platform you already use.',
 			'strip_desc'     => 'IT helpdesk and ticketing integrated with SAP B1.',
 			'listing'        => array(
@@ -418,6 +436,8 @@ function dq_product_defaults() {
 			'feature_image'  => 'assets/products/official/ecom.png',
 			'card_art'       => 'assets/products/official/ecom.png',
 			'card_photo'     => 'assets/products/photos/ecom.jpg',
+			'card_tagline'   => 'Connect your online business',
+			'card_title'     => 'E-Commerce Storefront',
 			'card_desc'      => 'E-commerce storefront synced with SAP Business One. Products, prices, and orders update automatically as you sell.',
 			'strip_desc'     => 'E-commerce storefront synced with SAP Business One.',
 			'listing'        => array(
@@ -467,7 +487,7 @@ function dq_get_product( $post = null ) {
 	$base     = isset( $defaults[ $key ] ) ? $defaults[ $key ] : array(
 		'key' => $key ? $key : 'custom', 'slug' => $post->post_name, 'name' => $post->post_title, 'menu_label' => $post->post_title,
 		'title' => $post->post_title, 'description' => '', 'logo' => '', 'logo_light' => '', 'background' => '', 'hero' => '',
-		'overview_image' => '', 'feature_image' => '', 'card_art' => '', 'card_photo' => '', 'card_desc' => '', 'strip_desc' => '',
+		'overview_image' => '', 'feature_image' => '', 'card_art' => '', 'card_photo' => '', 'card_tagline' => '', 'card_title' => '', 'card_desc' => '', 'strip_desc' => '',
 		'listing' => array(), 'overview' => array(), 'closing' => '', 'features_intro' => '', 'features' => array(), 'faqs' => array(), 'order' => 99,
 	);
 	$product = $base;

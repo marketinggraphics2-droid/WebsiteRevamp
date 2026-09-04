@@ -163,9 +163,8 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 }
 .nav.scrolled{ box-shadow:0 8px 28px rgba(var(--rgb-ink),.08); }
 /* Designer review: taller bar (~88px, within the 80–100px ask) + larger logo so
-   the nav reads clearly; it still condenses a little on scroll. */
-.nav .wrap{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding-block:14px; min-height:88px; transition:padding .3s, min-height .3s; }
-.nav.scrolled .wrap{ padding-block:10px; min-height:72px; }
+   the nav reads clearly. Height is fixed — on scroll only the shadow deepens. */
+.nav .wrap{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding-block:14px; min-height:88px; }
 .nav .logo-link{ display:inline-flex; align-items:center; }
 .nav .logo-link::before{
   content:""; display:block; width:158px; height:35px;
@@ -488,26 +487,30 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   IQ SUITE (PRODUCTS) · Adobe-style photo-reveal cards · LIGHT theme
-   Default: light card + black logo. Hover: product stock photo fills
-   the card, logo swaps to white, text goes white (the Adobe peg).
+   IQ SUITE (PRODUCTS) · photo + tagline cards that flip to the mockup
+   Default: product stock photo fills the card (no tint), white logo and a
+   one-line white tagline. Hover: light card, black logo, official monitor
+   artwork slides in, and the tagline gives way to title + description.
    ═══════════════════════════════════════════════════════════════ */
 .iq{
   padding-block:var(--sec); position:relative;
   background:linear-gradient(180deg,transparent 0,var(--bg-2) var(--section-blend),var(--bg-2) calc(100% - var(--section-blend)),transparent 100%);
 }
-/* minmax(...,auto): rows may grow so the 2-sentence descriptions never clip */
-.iq-grid{ display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:minmax(clamp(158px,15vw,196px),auto); gap:14px; }
+/* Fixed-height rows: the description is revealed on hover inside an absolutely
+   positioned footer, so a card never grows (and never shifts the grid) while hovered. */
+.iq-grid{ display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:minmax(clamp(200px,18.5vw,248px),auto); gap:14px; }
 .iq-card{
   position:relative; isolation:isolate; overflow:hidden;
   min-height:0; border-radius:14px;
   border:1px solid var(--line); background:var(--card-grad);
-  padding:21px 26px 26px; display:flex; flex-direction:column; justify-content:space-between; gap:24px;
+  --iq-pad-x:26px; --iq-pad-b:24px;
+  --iq-text-shadow:0 1px 2px rgba(var(--rgb-night),.7), 0 2px 14px rgba(var(--rgb-night),.5);
+  padding:21px var(--iq-pad-x) var(--iq-pad-b); display:flex; flex-direction:column; justify-content:flex-start;
   transition:transform .55s cubic-bezier(.16,1,.3,1), border-color .45s, box-shadow .55s;
 }
 .iq-card:hover{ transform:translateY(-6px); border-color:rgba(var(--rgb-brand),.55); box-shadow:0 34px 66px -26px rgba(var(--rgb-ink),.32); }
 /* flagship tile — spans 2×2, full product photo behind white logo + copy */
-.iq-card.feature{ grid-column:span 2; grid-row:span 2; padding:28px 32px 30px; }
+.iq-card.feature{ grid-column:span 2; grid-row:span 2; --iq-pad-x:32px; --iq-pad-b:28px; padding-top:28px; }
 .iq-card.feature .iq-art{ inset:0; z-index:0; opacity:1; transform:none;
   background-size:cover; background-position:center; background-repeat:no-repeat; filter:none; }
 .iq-card.feature::after{ content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
@@ -515,65 +518,116 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .iq-card.feature .iq-logo{ height:clamp(30px,3vw,42px); }
 .iq-card.feature .iq-logo .lg-d{ opacity:0; }
 .iq-card.feature .iq-logo .lg-l{ opacity:1; }
-.iq-card.feature .iq-desc{ color:var(--color-white); max-width:38ch; font-size:var(--fs-body); }
+.iq-card.feature .iq-title{ color:var(--color-white); font-size:var(--fs-card); }
+.iq-card.feature .iq-desc{ color:var(--color-white); font-size:var(--fs-body); line-height:var(--lh-body); }
+.iq-card.feature .iq-desc{ -webkit-line-clamp:6; }
 .iq-card.feature .iq-go{ opacity:1; transform:none; color:var(--color-white); border-color:rgba(var(--rgb-white),.55); }
 .iq-card.feature:hover .iq-go{ background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
-/* Official monitor artwork by default; original full-card photo returns on hover */
+/* Full-card photo at rest; official monitor artwork replaces it on hover */
 .iq-art{ position:absolute; inset:0; z-index:-1; opacity:0; transform:scale(1.06);
   background-size:cover; background-position:center;
   transition:opacity .55s ease, transform .9s cubic-bezier(.16,1,.3,1); }
 .iq-card:not(.all) .iq-art{
-  inset:clamp(38px,3.2vw,42px) 8px 0 48%; z-index:1; opacity:1; transform:none;
+  inset:clamp(38px,3.2vw,42px) 8px 0 48%; z-index:1; opacity:0; transform:translateY(6px) scale(.96);
   background-size:contain; background-position:right bottom; background-repeat:no-repeat;
   filter:drop-shadow(0 12px 18px rgba(var(--rgb-ink),.12));
 }
 .iq-hover-art{
-  position:absolute; inset:0; z-index:0; opacity:0; transform:scale(1.06);
+  position:absolute; inset:0; z-index:0; opacity:1; transform:scale(1);
   background-size:cover; background-position:center;
   transition:opacity .45s ease,transform .85s cubic-bezier(.16,1,.3,1);
 }
-.iq-hover-art::after{ content:""; position:absolute; inset:0;
-  background:linear-gradient(180deg,rgba(var(--rgb-night),.35) 0%,rgba(var(--rgb-night),.55) 55%,rgba(var(--rgb-night),.85) 100%); }
-.iq-card:not(.all):hover .iq-art{ opacity:0; transform:translateY(6px) scale(.96); }
-.iq-card:not(.all):hover .iq-hover-art{ opacity:1; transform:scale(1); }
-/* logo lockup pinned top-left */
+/* no tint on the photo; the white tagline and logo rely on soft shadows for legibility */
+.iq-card:not(.all) .lg-l{ filter:drop-shadow(0 1px 2px rgba(var(--rgb-night),.6)) drop-shadow(0 4px 14px rgba(var(--rgb-night),.35)); }
+.iq-card:not(.all):hover .iq-art{ opacity:1; transform:none; }
+.iq-card:not(.all):hover .iq-hover-art{ opacity:0; transform:scale(1.06); }
+/* logo lockup pinned top-left: white over the photo at rest, black on the light hover card */
 .iq-logo{ position:relative; z-index:3; height:clamp(25px,2.5vw,31px); }
 .iq-logo img{ height:100%; width:auto; max-width:82%; object-fit:contain; object-position:left center;
   transition:opacity .45s ease; }
 .iq-logo .lg-l{ position:absolute; left:0; top:0; opacity:0; }
 .sap-card-logo .lg-l{ filter:none; }
-.iq-card:not(.all):hover .lg-d{ opacity:0; }
-.iq-card:not(.all):hover .lg-l{ opacity:1; }
-.iq-foot{ position:relative; z-index:3; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; }
-.iq-desc{ font-size:var(--fs-sm); line-height:var(--lh-body); color:var(--soft); max-width:30ch; transition:color .45s ease; }
-.iq-card:not(.all) .iq-desc{ max-width:46%; }
-.iq-card:hover .iq-desc{ color:var(--color-white); }
-.iq-go{ width:40px; height:40px; border-radius:50%; border:1px solid var(--line); display:grid; place-items:center;
+.iq-card:not(.all) .lg-d{ opacity:0; }
+.iq-card:not(.all) .lg-l{ opacity:1; }
+.iq-card:not(.all):hover .lg-d{ opacity:1; }
+.iq-card:not(.all):hover .lg-l{ opacity:0; }
+/* footer pinned to the bottom edge, absolutely positioned so the card's (grid-fixed) height
+   never depends on the copy */
+.iq-foot{ position:absolute; left:var(--iq-pad-x); right:var(--iq-pad-x); bottom:var(--iq-pad-b); z-index:3; display:flex; }
+/* tagline (rest) and detail (hover) share one grid cell, bottom-aligned, and cross-fade */
+.iq-copy{ display:grid; grid-template-columns:100%; min-width:0; width:100%; }
+.iq-copy > *{ grid-area:1 / 1; align-self:end; min-width:0;
+  transition:opacity .35s ease, transform .5s cubic-bezier(.16,1,.3,1); }
+.iq-tagline{ font-family:var(--font-sans); font-weight:700; font-size:clamp(1.05rem,.95rem + .45vw,1.3rem); line-height:var(--lh-heading);
+  letter-spacing:-.015em; color:var(--color-white); text-shadow:var(--iq-text-shadow); max-width:18ch; }
+.iq-detail{ display:grid; grid-template-rows:auto 1fr; row-gap:8px; opacity:0; transform:translateY(8px); pointer-events:none; }
+.iq-card:hover .iq-tagline{ opacity:0; transform:translateY(-8px); }
+.iq-card:hover .iq-detail{ opacity:1; transform:none; pointer-events:auto; }
+/* at rest the tagline may run across most of the photo; on the light hover card the detail
+   copy is capped at under half the card so it stays left of the monitor artwork (which starts
+   at 48%). The arrow flows inline after the title's last word, so a long title wraps inside
+   the column instead of pushing the arrow onto the artwork. */
+.iq-card:not(.all) .iq-tagline{ max-width:72%; }
+.iq-card:not(.all) .iq-detail{ max-width:46%; }
+.iq-card.feature .iq-detail{ max-width:52ch; }
+.iq-title-row{ display:block; }
+.iq-title{ display:inline; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-body); line-height:var(--lh-heading);
+  letter-spacing:-.01em; color:var(--text); }
+.iq-desc{ min-height:0; overflow:hidden; font-size:var(--fs-sm); line-height:1.45; color:var(--soft);
+  display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:5; }
+/* the flagship tile is always the photo state, so its detail copy stays white */
+.iq-card.feature .iq-title, .iq-card.feature .iq-desc{ color:var(--color-white); text-shadow:var(--iq-text-shadow); }
+.iq-card.feature .iq-tagline{ font-size:var(--fs-card); }
+.iq-go{ width:34px; height:34px; margin:-7px 0 -7px 10px; vertical-align:middle; border-radius:50%; border:1px solid var(--line); display:inline-grid; place-items:center;
   flex:0 0 auto; color:var(--soft); opacity:0; transform:translateX(-6px);
   transition:opacity .4s, transform .4s cubic-bezier(.16,1,.3,1), background .3s, color .3s, border-color .3s; }
 .iq-card:hover .iq-go{ opacity:1; transform:none; background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
-.iq-go svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
-@media (max-width:900px){ .iq-grid{ grid-template-columns:repeat(2,1fr); } .iq-card.feature{ grid-column:span 2; grid-row:span 1; } }
-@media (max-width:560px){ .iq-grid{ grid-template-columns:1fr; grid-auto-rows:auto; } .iq-card{ min-height:180px; } .iq-card.feature{ grid-column:auto; grid-row:auto; min-height:240px; } }
-/* touch devices have no hover — keep the card action visible */
+.iq-go svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+/* below 1200px a 3-up card is too narrow for title + description beside the monitor artwork,
+   so drop to two columns (cards stay wide enough for the hover copy) */
+@media (max-width:1200px){ .iq-grid{ grid-template-columns:repeat(2,1fr); } .iq-card.feature{ grid-column:span 2; grid-row:span 1; min-height:320px; } }
+@media (max-width:560px){ .iq-grid{ grid-template-columns:1fr; grid-auto-rows:auto; } .iq-card{ min-height:200px; } .iq-card.feature{ grid-column:auto; grid-row:auto; min-height:260px; } }
+/* touch devices have no hover — keep the card action visible, and let the footer sit in
+   flow so a card can size to its copy on narrow screens */
 @media (hover:none){
   .iq-go{ opacity:1; transform:none; background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
-  /* …but .iq-foot is a space-between row, so a permanently visible arrow lands
-     on top of the monitor artwork (.iq-art occupies the right 52% of the card).
-     On a mouse this never collides: the arrow only appears on hover, and the
-     monitor fades to the hover photo at that same moment. Touch has no such
-     moment, so stack the arrow UNDER the copy, inside the left column the
-     artwork doesn't reach.
-     ALL cards stack, including .all/.feature. Its photo is full-bleed so the
-     arrow never collided there — but left in the space-between row it floated
-     mid-right against the ragged edge of the paragraph, reading as unanchored
-     next to the bottom-left arrows on every other card. Consistency wins. */
-  .iq-card .iq-foot{ flex-direction:column; align-items:flex-start; gap:14px; }
+  .iq-card{ justify-content:space-between; gap:24px; }
+  .iq-card .iq-foot{ position:relative; left:auto; right:auto; bottom:auto; }
+  .iq-card .iq-copy{ grid-template-rows:auto auto; row-gap:8px; }
+  .iq-card .iq-copy > *{ grid-area:auto; }
+  .iq-card .iq-detail{ max-width:36ch; }
+  .iq-card .iq-detail{ opacity:1; transform:none; pointer-events:auto; }
+  .iq-card .iq-title-row{ display:none; }
+  .iq-card:not(.all) .iq-desc{ color:var(--color-white); text-shadow:var(--iq-text-shadow); }
 }
 
 /* ═══════════════════════════════════════════════════════════════
    SAP BUSINESS ONE · light bento · Adobe-style unmask reveal
    ═══════════════════════════════════════════════════════════════ */
+/* ── lifestyle gallery · self-scrolling photo carousel (same -50% loop as .trust) ── */
+.gallery{ padding-block:clamp(28px,4vw,56px); overflow:hidden; }
+/* hook above the strip: centred eyebrow + one-line title */
+.gallery-head{ margin-bottom:clamp(22px,3vw,40px); gap:12px; }
+.gallery-head h2{ font-size:var(--fs-h2); line-height:var(--lh-heading); letter-spacing:-.02em; }
+.gallery-marq{ position:relative; overflow:hidden; }
+.gallery-marq::before,
+.gallery-marq::after{ content:""; position:absolute; top:0; bottom:0; z-index:2; width:clamp(24px,7%,110px); pointer-events:none; }
+.gallery-marq::before{ left:0; background:linear-gradient(90deg,var(--bg),rgba(var(--rgb-white),0)); }
+.gallery-marq::after{ right:0; background:linear-gradient(270deg,var(--bg),rgba(var(--rgb-white),0)); }
+.gallery-track{ display:flex; gap:clamp(12px,1.4vw,20px); width:-webkit-max-content; width:max-content;
+  will-change:transform; animation:galleryMarq 46s linear infinite; }
+.gallery-marq:hover .gallery-track{ animation-play-state:paused; }
+@keyframes galleryMarq{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(calc(-50% - clamp(6px,.7vw,10px)),0,0); } }
+.gallery-item{ --gh:clamp(200px,26vw,340px); margin:0; flex:0 0 auto; height:var(--gh); width:calc(var(--gh) * 4 / 3); overflow:hidden;
+  border-radius:16px; border:1px solid var(--line); box-shadow:0 22px 44px -28px rgba(var(--rgb-ink),.35); }
+.gallery-item img{ display:block; width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.16,1,.3,1); }
+.gallery-item:hover img{ transform:scale(1.04); }
+@media (prefers-reduced-motion:reduce){
+  .gallery-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; }
+  .gallery-item[aria-hidden]{ display:none; }
+  .gallery-marq::before, .gallery-marq::after{ display:none; }
+}
+
 .sap-business-one{ position:relative; padding-block:var(--sec); }
 .sap-inner{ display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(34px,5vw,72px); align-items:start; }
 
@@ -619,8 +673,23 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .play-badge{ width:56px; height:56px; border-radius:50%; background:var(--orange); display:grid; place-items:center; flex:0 0 auto; box-shadow:0 10px 30px -6px var(--orange-glow); transition:transform .3s; }
 .play-badge svg{ width:22px; height:22px; fill:var(--color-on-accent); margin-left:3px; }
 
-@media (max-width:980px){ .sap-inner{ grid-template-columns:1fr; } .sap-copy{ position:static; } }
-@media (max-width:560px){ .sap-bento{ grid-template-columns:1fr; } .sap-bento .feat:last-of-type{ grid-column:auto; } }
+/* photo slots — one in the copy column under the lead, one filling the empty bento cell.
+   Placeholder look until a real image is set (Customizer: dq_sap_photo_copy / dq_sap_photo_grid). */
+.sap-photo{ margin:0; overflow:hidden; border-radius:14px; border:1px solid var(--line); }
+.sap-photo img{ display:block; width:100%; height:100%; object-fit:cover; }
+/* portrait photo in the bento: bias the crop upward so the subject's face survives the wide 21:9 / 16:9 crops on tablet and phone */
+.sap-bento .feat-photo img{ object-position:center 30%; }
+.sap-photo.is-placeholder{ display:grid; place-items:center;
+  background:linear-gradient(135deg,rgba(var(--rgb-brand),.10),rgba(var(--rgb-brand),.03)), var(--card-grad);
+  border-style:dashed; border-color:rgba(var(--rgb-brand),.45); }
+.sap-photo.is-placeholder span{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-xs); letter-spacing:.14em; text-transform:uppercase; color:var(--soft); }
+.sap-photo-copy{ width:100%; aspect-ratio:16/9; }
+.feat-photo, .home-page .feat.feat-photo{ padding:0; min-height:200px; } /* outranks the later .home-page .feat padding so the photo tile stays edge to edge */
+.feat-photo:hover{ transform:none; }
+.feat-photo::after{ display:none; }
+
+@media (max-width:980px){ .sap-inner{ grid-template-columns:1fr; } .sap-copy{ position:static; } .sap-photo-copy{ max-width:520px; } .sap-bento .feat-photo{ grid-column:1 / -1; aspect-ratio:21/9; min-height:0; } }
+@media (max-width:560px){ .sap-bento{ grid-template-columns:1fr; } .sap-bento .feat:last-of-type{ grid-column:auto; } .sap-bento .feat-photo{ aspect-ratio:16/9; } }
 
 /* ═══════════════════════════════════════════════════════════════
    NEWS & ANNOUNCEMENTS · "Explore what's new" (Adobe-style feature)
@@ -630,59 +699,41 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .whatsnew .sec-head{ max-width:640px; margin-bottom:clamp(12px,1.8vw,22px); }
 .whatsnew .sec-head h2{ font-size:var(--fs-h2); }
 .whatsnew .sec-head p{ font-size:var(--fs-body); }
-/* featured + list layout (category tabs removed per designer review —
-   the dedicated News & Events page will own filtering) */
-.news-layout{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(20px,2.4vw,34px); align-items:stretch; min-height:clamp(500px,42vw,590px); }
-.news-feature{ position:relative; display:block; border-radius:14px; overflow:hidden; border:1px solid var(--line);
-  height:100%; min-height:0; box-shadow:0 30px 60px -34px rgba(var(--rgb-ink),.3); }
-.news-feature img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.16,1,.3,1); }
-.news-feature:hover img{ transform:scale(1.045); }
-.news-feature::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 38%,rgba(var(--rgb-night),.86)); }
-.news-feature-body{ position:absolute; left:0; right:0; bottom:0; z-index:1; padding:clamp(22px,2.4vw,32px); display:flex; flex-direction:column; gap:14px; }
-.news-feature-body h3{ color:var(--color-white); font-size:var(--fs-h3); line-height:var(--lh-heading); max-width:24ch; order:2; }
-.news-meta{ display:flex; align-items:center; gap:14px; order:1; }
+/* featured story (left half) + 2×2 grid (right half) — every card carries the
+   same treatment: full-bleed photo, dark scrim, tag + date, white title bottom-left */
+.news-layout{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(14px,1.6vw,22px); align-items:stretch; }
+.news-grid{ display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-rows:1fr; gap:clamp(14px,1.6vw,22px); min-height:0; }
+/* odd trailing card (e.g. only 3 stories) spans the row so the 2×2 never shows a hole */
+.news-grid .news-card:last-child:nth-child(odd){ grid-column:1 / -1; }
+.news-card{ position:relative; display:block; border-radius:14px; overflow:hidden; border:1px solid var(--line);
+  min-height:0; background:var(--bg-2); box-shadow:0 30px 60px -34px rgba(var(--rgb-ink),.3); }
+/* the featured card has no in-flow children (image, scrim and body are all absolute),
+   so its height comes from aspect-ratio; the grid stretches to match it */
+.news-feature{ aspect-ratio:1/1; min-height:clamp(320px,36vw,560px); }
+.news-card img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.16,1,.3,1); }
+.news-card:hover img{ transform:scale(1.045); }
+.news-card::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 38%,rgba(var(--rgb-night),.86)); }
+.news-card-body{ position:absolute; left:0; right:0; bottom:0; z-index:1; padding:clamp(14px,1.4vw,20px); display:flex; flex-direction:column; gap:8px; }
+.news-card-body h3{ color:var(--color-white); font-size:var(--fs-body); line-height:var(--lh-heading); letter-spacing:-.01em; order:2;
+  display:-webkit-box; -webkit-line-clamp:3; line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.news-feature .news-card-body{ padding:clamp(22px,2.4vw,32px); gap:14px; }
+.news-feature .news-card-body h3{ font-size:var(--fs-h3); max-width:24ch; -webkit-line-clamp:4; line-clamp:4; }
+.news-meta{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; order:1; }
 .news-tag{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-2xs); letter-spacing:.12em; text-transform:uppercase;
   color:var(--orange); background:rgba(var(--rgb-brand),.14); border:1px solid rgba(var(--rgb-brand),.32); padding:5px 10px; border-radius:4px; }
 .news-date{ font-size:var(--fs-xs); color:var(--faint); }
-.news-feature-body .news-date{ color:rgba(var(--rgb-white),.72); }
-/* right-hand column: list on top, CTA pinned under it */
-.news-side{ display:flex; flex-direction:column; gap:14px; min-height:0; }
-.news-side .news-list{ flex:1 1 auto; min-height:0; }
-.news-cta{ flex:0 0 auto; display:flex; justify-content:flex-end; }
-/* right-hand list */
-.news-list{ display:flex; flex-direction:column; gap:16px; height:auto; max-height:590px; min-height:0; overflow-y:auto; padding:6px 6px 6px 0;
-  overscroll-behavior-y:auto;
-  scrollbar-width:thin; scrollbar-color:var(--line) transparent;
-  -webkit-mask-image:linear-gradient(180deg,transparent 0,var(--color-black) 26px,var(--color-black) calc(100% - 26px),transparent 100%);
-  mask-image:linear-gradient(180deg,transparent 0,var(--color-black) 26px,var(--color-black) calc(100% - 26px),transparent 100%); }
-.news-list::-webkit-scrollbar{ width:6px; }
-.news-list::-webkit-scrollbar-thumb{ background:var(--line); border-radius:6px; }
-.news-item{ display:grid; grid-template-columns:130px 1fr; gap:18px; align-items:center; }
-.news-thumb{ border-radius:9px; overflow:hidden; aspect-ratio:4/3; border:1px solid var(--line); background:var(--bg-2); }
-.news-thumb img{ width:100%; height:100%; object-fit:cover; transition:transform .5s cubic-bezier(.16,1,.3,1); }
-.news-item:hover .news-thumb img{ transform:scale(1.06); }
-.news-item-body{ display:flex; flex-direction:column; gap:11px; }
-.news-item-body h4{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-lede); line-height:var(--lh-heading); letter-spacing:-.01em; color:var(--text); transition:color .25s;
-  display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
-.news-item:hover .news-item-body h4{ color:var(--orange); }
-.news-item.hide{ display:none; }
+.news-card-body .news-date{ color:rgba(var(--rgb-white),.72); }
+.news-card.no-img{ background:linear-gradient(135deg,var(--color-ink),var(--color-gray)); }
+.news-cta{ display:flex; justify-content:flex-end; margin-top:clamp(18px,2vw,28px); }
 @media (max-width:900px){
   .whatsnew{ height:auto; padding-block:var(--sec); }
   .whatsnew > .wrap{ height:auto; display:block; }
   .news-layout{ grid-template-columns:1fr; }
-  /* ⚠ .news-feature has NO in-flow children — the image, the ::after scrim and
-     .news-feature-body are all position:absolute — so its height came entirely
-     from aspect-ratio. As a STRETCHED grid item, WebKit resolves the row height
-     from that (empty) content first and collapses the card to 0: the featured
-     story vanished on iOS in Safari AND Chrome, which share WebKit.
-     align-self:start stops the stretch; min-height guarantees a visible box even
-     where aspect-ratio is ignored. It sits just under the 16/10 height so the
-     aspect ratio still governs wherever it works. */
-  .news-feature{ height:auto; aspect-ratio:16/10; align-self:start;
-    min-height:clamp(200px,52vw,320px); }
-  .news-list{ height:auto; overflow:visible; padding-right:0; margin-top:20px; }
+  /* WebKit collapses a stretched, child-less aspect-ratio box to 0 — pin it */
+  .news-feature{ aspect-ratio:16/10; align-self:start; min-height:clamp(200px,52vw,320px); }
+  .news-grid .news-card{ aspect-ratio:4/3; }
 }
-@media (max-width:480px){ .news-item{ grid-template-columns:100px 1fr; gap:14px; } }
+@media (max-width:480px){ .news-grid{ grid-template-columns:1fr; gap:14px; } .news-grid .news-card{ aspect-ratio:16/10; } .news-cta{ justify-content:stretch; } .news-cta .btn{ width:100%; justify-content:center; } }
 
 /* ═══════════════════════════════════════════════════════════════
    WHY CHOOSE (WE ARE ACCREDITED)
@@ -717,15 +768,20 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   font-size:var(--fs-lede); line-height:1.65;
 }
 .accredited-copy p:first-child{ padding-top:0; border-top:0; }
-/* fills the space under the heading; badge centres in what's left */
+/* photo frame under the heading (Customizer: dq_partner_photo). Shows the dashed placeholder until a photo is set;
+   the SAP partner badge sits as a small chip in the frame's top-left corner. */
 .accredited-visual{
-  position:relative; min-height:0; flex:1; width:100%; display:grid; place-items:center;
-  overflow:visible; background:transparent;
+  position:relative; margin:0; width:100%; aspect-ratio:4/3; max-height:clamp(220px,34dvh,360px);
+  display:grid; place-items:center; overflow:hidden; border-radius:14px; border:1px solid var(--line);
+  background:var(--card-grad);
 }
-.accredited-visual img{
-  width:auto; max-width:min(100%,320px); height:auto; max-height:clamp(180px,26dvh,280px);
-  object-fit:contain; object-position:center; display:block;
+.accredited-visual.is-placeholder{
+  background:linear-gradient(135deg,rgba(var(--rgb-brand),.10),rgba(var(--rgb-brand),.03)), var(--card-grad);
+  border-style:dashed; border-color:rgba(var(--rgb-brand),.45);
 }
+.accredited-photo{ width:100%; height:100%; object-fit:cover; object-position:right center; display:block; } /* photo is mirrored (subjects on the right); right-anchored crop keeps them in frame and clear of the badge */
+.accredited-placeholder{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-xs); letter-spacing:.14em; text-transform:uppercase; color:var(--soft); }
+.accredited-badge{ position:absolute; top:18px; left:18px; z-index:1; width:auto; height:clamp(56px,9dvh,84px); object-fit:contain; }
 
 @media (min-width:901px) and (max-height:720px){
   .we-are-accredited{ padding-block:24px; }
@@ -738,8 +794,7 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   .we-are-accredited{ height:auto; min-height:0; padding-block:var(--sec); overflow:visible; }
   .accredited-grid{ grid-template-columns:1fr; gap:36px; }
   .accredited-left{ gap:28px; }
-  .accredited-visual{ flex:0 0 auto; aspect-ratio:auto; }
-  .accredited-visual img{ max-height:none; }
+  .accredited-visual{ aspect-ratio:16/10; max-height:none; }
   .accredited-copy{ gap:20px; }
   .accredited-copy p{ font-size:var(--fs-body); }
 }
@@ -751,10 +806,15 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 /* numbered process timeline — 01→05 as a connected journey */
 .serv-timeline{ position:relative; margin-top:clamp(32px,4vw,54px);
   display:grid; grid-template-columns:repeat(5,1fr); gap:clamp(18px,2vw,30px); }
-.serv-timeline::before{ content:""; position:absolute; top:28px; left:10%; right:10%; height:2px; z-index:0;
-  background:linear-gradient(90deg,rgba(var(--rgb-brand),.5),rgba(var(--rgb-brand),.14)); }
 .serv-step{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; }
-.serv-node{ display:flex; justify-content:center; }
+/* connector runs through the badge row; drawn per node so it follows the badges under the photos */
+.serv-node{ position:relative; display:flex; justify-content:center; width:100%; }
+/* each segment runs from this badge's centre to the next badge's centre (columns are equal 1fr), so the joins
+   sit under the badges — no overlapping or seams between segments; one flat colour so the rail reads as a single line */
+.serv-node::before{ content:""; position:absolute; top:50%; left:50%; right:calc(-50% - clamp(18px,2vw,30px)); height:2px; z-index:-1; transform:translateY(-50%);
+  background:rgba(var(--rgb-brand),.3); }
+.serv-step:last-child .serv-node::before{ display:none; }
+.serv-num-badge{ position:relative; z-index:1; }
 .serv-num-badge{ width:56px; height:56px; border-radius:50%; display:grid; place-items:center;
   font-family:var(--font-sans); font-weight:700; font-size:1.375rem; letter-spacing:-.02em;
   color:var(--orange); background:var(--bg); border:2px solid rgba(var(--rgb-brand),.42);
@@ -766,15 +826,12 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .serv-cta{ text-align:center; margin-top:clamp(40px,5vw,60px); }
 @media (max-width:900px){
   .serv-timeline{ grid-template-columns:1fr; gap:0; margin-top:clamp(26px,5vw,38px); }
-  .serv-timeline::before{ display:none; }
   .serv-step{ display:grid; grid-template-columns:56px 1fr; column-gap:20px; row-gap:6px; align-items:start; text-align:left; padding-bottom:30px; }
-  .serv-node{ grid-column:1; grid-row:1 / span 2; position:relative; }
-  .serv-node::before{ content:""; position:absolute; top:60px; bottom:-30px; left:50%; transform:translateX(-50%);
-    width:2px; background:linear-gradient(180deg,rgba(var(--rgb-brand),.42),rgba(var(--rgb-brand),.12)); }
+  .serv-node{ grid-column:1; grid-row:2 / span 2; width:auto; }
+  .serv-node::before{ display:none; } /* stacked cards: photo sits between steps, so no connector */
   .serv-step:last-child{ padding-bottom:0; }
-  .serv-step:last-child .serv-node::before{ display:none; }
-  .serv-step h3{ grid-column:2; min-height:56px; display:flex; align-items:center; }
-  .serv-step p{ grid-column:2; max-width:60ch; }
+  .serv-step h3{ grid-column:2; grid-row:2; min-height:56px; display:flex; align-items:center; }
+  .serv-step p{ grid-column:2; grid-row:3; max-width:60ch; }
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -790,7 +847,10 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
    masked container whose child runs an infinite transform animation — the whole
    marquee rendered blank on iPhone while the heading above it showed fine.
    Overlays are universally supported and look identical over a solid colour. */
-.stories-marq{ position:relative; overflow:hidden; }
+/* overflow:hidden is needed to clip the scrolling track, but it also clipped the
+   card's 6px hover lift and its 50px shadow. Breathing room via padding that a
+   negative margin cancels: layout is unchanged, the clip edge moves outside. */
+.stories-marq{ position:relative; overflow:hidden; padding-block:14px 48px; margin-block:-14px -48px; }
 .stories-marq::before,
 .stories-marq::after{ content:""; position:absolute; top:0; bottom:0; z-index:2;
   width:clamp(18px,4%,56px); pointer-events:none; }
@@ -809,9 +869,9 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   min-height:300px; transition:transform .4s cubic-bezier(.16,1,.3,1), border-color .4s, box-shadow .4s;
 }
 .story:hover{ transform:translateY(-6px); border-color:rgba(var(--rgb-brand),.4); box-shadow:0 24px 50px -26px rgba(var(--rgb-ink),.22); }
-.story-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:44px; }
-.story-logo{ height:38px; display:flex; align-items:center; }
-.story-logo img{ height:100%; width:auto; max-width:170px; object-fit:contain; object-position:left center; }
+.story-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:64px; }
+.story-logo{ height:56px; display:flex; align-items:center; }
+.story-logo img{ height:100%; width:auto; max-width:220px; object-fit:contain; object-position:left center; }
 .story-q{ font-family:var(--font-sans); font-size:var(--fs-display); font-weight:900; line-height:1; height:34px; color:var(--orange); opacity:.32; flex:0 0 auto; }
 .story blockquote{ font-size:var(--fs-sm); line-height:var(--lh-relaxed); color:var(--soft); font-style:italic; flex:1;
   display:-webkit-box; -webkit-line-clamp:6; line-clamp:6; -webkit-box-orient:vertical; overflow:hidden; }
@@ -846,8 +906,15 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .contact-us > .wrap{ width:100%; min-width:0; }
 .contact-media{
   position:absolute; inset:calc(-1 * var(--contact-bleed)) 0; z-index:-2; pointer-events:none; background:transparent;
-  -webkit-mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),var(--color-black) calc(100% - var(--section-blend)),transparent 100%);
-  mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),var(--color-black) calc(100% - var(--section-blend)),transparent 100%);
+  /* Bottom feather ends AT the section edge (not in the bleed): the opaque
+     .video-wall that follows paints over the bleed, so a fade placed there was
+     hidden and read as a hard line. The fade now runs up into the section, behind
+     the panel's lower edge and across the margins beside it. */
+  --contact-feather:clamp(110px,14vh,190px);
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),
+    var(--color-black) calc(100% - var(--contact-bleed) - var(--contact-feather)),transparent calc(100% - var(--contact-bleed)));
+  mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),
+    var(--color-black) calc(100% - var(--contact-bleed) - var(--contact-feather)),transparent calc(100% - var(--contact-bleed)));
 }
 .contact-media video{
   width:100%; height:100%; object-fit:cover; opacity:0;
@@ -895,6 +962,9 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 #otherField.show{ display:block; }
 .submit-row{ margin-top:4px; }
 .submit-row .btn{ width:auto; }
+/* contact submit: static button — no lift, no arrow slide (colour change on hover only) */
+.submit-row .btn, .submit-row .btn:hover{ transform:none; }
+.submit-row .btn .arr, .submit-row .btn:hover .arr{ transform:none; transition:none; }
 
 .get-in-touch{ align-self:start; }
 .get-in-touch h3{ font-size:var(--fs-subheading); margin-bottom:10px; }
@@ -921,6 +991,70 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 /* ═══════════════════════════════════════════════════════════════
    FOOTER
    ═══════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════
+   VIDEO WALL · clip marquee above the footer (home page). Mirrors the
+   Life-at-DynamIQ photo marquee (.gallery-marq) — edge-to-edge track,
+   rounded tiles, faded edges, auto-scroll that pauses on hover — with
+   16:9 video tiles instead of 4:3 photos.
+   ═══════════════════════════════════════════════════════════════ */
+.site-end{ position:relative; }
+/* top band is transparent so the contact panel's drop shadow (which overhangs the
+   section above) fades out instead of being sliced by an opaque edge */
+.video-wall{ position:relative; z-index:1; padding-block:clamp(28px,4vw,56px) 0; overflow:hidden;
+  background:linear-gradient(180deg,transparent 0,var(--bg) var(--section-blend)); }
+.video-marq{ position:relative; overflow:hidden; }
+.video-marq::before,
+.video-marq::after{ content:""; position:absolute; top:0; bottom:0; z-index:2; width:clamp(24px,7%,110px); pointer-events:none; }
+.video-marq::before{ left:0; background:linear-gradient(90deg,var(--bg),rgba(var(--rgb-white),0)); }
+.video-marq::after{ right:0; background:linear-gradient(270deg,var(--bg),rgba(var(--rgb-white),0)); }
+.video-track{ display:flex; gap:clamp(12px,1.4vw,20px); width:-webkit-max-content; width:max-content;
+  will-change:transform; animation:galleryMarq 46s linear infinite; }
+.video-marq:hover .video-track{ animation-play-state:paused; }
+.video-tile{ --vh:clamp(200px,26vw,340px); margin:0; flex:0 0 auto; height:var(--vh); width:calc(var(--vh) * 16 / 9); overflow:hidden;
+  border-radius:16px; border:1px solid var(--line); background:var(--color-night); box-shadow:0 22px 44px -28px rgba(var(--rgb-ink),.35); }
+.video-tile video{ display:block; width:100%; height:100%; object-fit:cover; }
+/* tiles open the lightbox: pointer + a play badge that shows on hover/focus */
+.video-tile[role="button"]{ cursor:pointer; }
+.video-tile[role="button"]:focus-visible{ outline:3px solid var(--orange); outline-offset:3px; }
+.video-tile{ position:relative; }
+.video-tile-hint{ position:absolute; inset:0; display:grid; place-items:center; pointer-events:none; opacity:0; transition:opacity .25s;
+  background:rgba(var(--rgb-night),.22); color:var(--color-white); }
+.video-tile-hint svg{ width:58px; height:58px; padding:16px; border-radius:50%; fill:currentColor; background:rgba(var(--rgb-night),.55);
+  border:1px solid rgba(var(--rgb-white),.35); backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); transform:scale(.9); transition:transform .3s cubic-bezier(.16,1,.3,1); }
+.video-tile:hover .video-tile-hint, .video-tile:focus-visible .video-tile-hint{ opacity:1; }
+.video-tile:hover .video-tile-hint svg{ transform:none; }
+.video-marq.is-held .video-track{ animation-play-state:paused; }
+/* ── lightbox ── sits above the chat widget (1200); the backdrop blurs the page */
+.video-lightbox{ position:fixed; inset:0; z-index:1300; display:grid; place-items:center; padding:clamp(16px,3vw,40px); }
+/* the author display:grid above beats the UA [hidden]{display:none}; without this the invisible
+   lightbox sits over the whole page and swallows every hover and click */
+.video-lightbox[hidden]{ display:none; }
+.video-lightbox-backdrop{ position:absolute; inset:0; background:rgba(var(--rgb-night),.78); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  opacity:0; transition:opacity .3s; }
+.video-lightbox-panel{ position:relative; width:min(1200px,92vw); max-height:calc(100dvh - 2 * clamp(16px,3vw,40px)); display:flex; flex-direction:column;
+  border-radius:16px; overflow:hidden; background:var(--color-night); box-shadow:0 60px 120px -40px rgba(0,0,0,.7), 0 0 0 1px rgba(var(--rgb-white),.12);
+  opacity:0; transform:translateY(18px) scale(.96); transition:opacity .3s, transform .5s cubic-bezier(.16,1,.3,1); }
+.video-lightbox.is-open .video-lightbox-backdrop, .video-lightbox.is-open .video-lightbox-panel{ opacity:1; }
+.video-lightbox.is-open .video-lightbox-panel{ transform:none; }
+.video-lightbox-stage{ display:block; width:100%; aspect-ratio:16/9; max-height:calc(100dvh - 2 * clamp(16px,3vw,40px) - 52px); background:var(--color-black); }
+.video-lightbox-stage video{ display:block; width:100%; height:100%; object-fit:contain; }
+.video-lightbox-cap{ flex:0 0 auto; padding:14px 18px; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-2xs); letter-spacing:.12em; text-transform:uppercase; color:rgba(var(--rgb-white),.78); }
+.video-lightbox-cap:empty{ display:none; }
+.video-lightbox-close{ position:absolute; top:12px; right:12px; z-index:2; width:44px; height:44px; display:grid; place-items:center; border:1px solid rgba(var(--rgb-white),.35); border-radius:50%;
+  background:rgba(var(--rgb-night),.6); color:var(--color-white); cursor:pointer; backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); transition:background .2s, transform .2s; }
+.video-lightbox-close svg{ width:20px; height:20px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; }
+.video-lightbox-close:hover{ background:var(--orange); border-color:var(--orange); transform:rotate(90deg); }
+.video-lightbox-close:focus-visible{ outline:3px solid var(--orange); outline-offset:2px; }
+.has-lightbox, .has-lightbox body{ overflow:hidden; }
+/* the footer's top fade exists to blend out of a coloured section; with the
+   same-coloured video wall directly above it, it only smudges the tiles */
+.video-wall + .footer::before{ display:none; }
+@media (prefers-reduced-motion:reduce){
+  .video-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; }
+  .video-tile[aria-hidden]{ display:none; }
+  .video-marq::before, .video-marq::after{ display:none; }
+}
+
 .footer{ position:relative; z-index:1; padding-block:clamp(56px,7vw,84px) 32px; background:var(--bg); }
 .footer::before{
   content:""; position:absolute; left:0; right:0; top:calc(-1 * var(--section-blend)); height:var(--section-blend);
@@ -1204,6 +1338,12 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .cta-panel p{position:relative;max-width:54ch;margin:20px auto 0;color:rgba(var(--rgb-white),.78);font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
 .cta-panel .btn,.cta-panel .dynamiq-cta{position:relative;margin-top:28px}
 .cta-panel .btn{min-width:220px}
+/* phone line under the CTA button: the icon had no size rule and rendered at the SVG's
+   intrinsic size (~400px). Same 34px orange tile the home contact card uses for its icons. */
+.cta-panel .cta-phone{position:relative;display:flex;justify-content:center;margin:22px auto 0;max-width:none;font-size:var(--fs-sm)}
+.cta-panel .cta-phone a{display:inline-flex;align-items:center;gap:10px;color:rgba(var(--rgb-white),.86);font-weight:700;transition:color .2s}
+.cta-panel .cta-phone a:hover{color:var(--color-on-accent)}
+.cta-panel .cta-phone svg{width:34px;height:34px;padding:9px;flex:0 0 auto;border-radius:9px;fill:var(--orange);background:rgba(var(--rgb-brand),.14);border:1px solid rgba(var(--rgb-brand),.32)}
 
 .footer{position:relative;z-index:1;padding-block:clamp(56px,7vw,84px) 32px;background:var(--surface)}
 .footer-logo{width:190px;height:72px;object-fit:contain;object-position:left center}
@@ -1279,11 +1419,29 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   .home-page .book-free-demo,
   .home-page .contact-us{padding-block:clamp(28px,4.5dvh,56px)}
 
+  /* ONE SCREEN: video wall + footer together fill the last viewport. The wrapper
+     is a min-height:100dvh flex column; the footer keeps its natural height and
+     the marquee takes the rest, so tile height follows the row and width follows
+     from the 16:9 ratio. min-height (not height) lets the pair grow on very short
+     windows rather than crush the footer's link columns. */
+  .home-page .site-end{min-height:100dvh;display:flex;flex-direction:column}
+  .home-page .video-wall{flex:1 1 auto;min-height:0;display:flex;flex-direction:column;padding-block:clamp(28px,4.5dvh,56px) 0}
+  .home-page .video-marq{flex:1 1 auto;min-height:0;display:flex;align-items:center}
+  /* tile height = the viewport minus the footer's natural height (~470px) and the
+     wall's own padding; width follows from 16:9. Leaving height:auto here would let
+     the clip's 1920px intrinsic frame set the width and blow the tile up to a full
+     screen — the strip must be sized from the row, not from the media. */
+  .home-page .video-tile{--vh:clamp(200px,calc(100dvh - 540px),440px)}
+  .home-page .footer{flex:0 0 auto;padding-block:clamp(28px,4.5dvh,56px) 24px}
+  .home-page .footer-top{padding-bottom:clamp(24px,3.5dvh,48px)}
+
   .home-page .iq .sec-head{margin-bottom:clamp(22px,3dvh,36px)}
 
   .home-page .sap-business-one{padding-block:clamp(24px,3.5dvh,44px)}
   .home-page .sap-inner{grid-template-columns:.8fr 1.2fr;gap:clamp(28px,4vw,56px);align-items:start}
   .home-page .sap-copy{top:calc(var(--nav-h,64px) + 18px);gap:14px}
+  /* photo height follows the viewport so logo → lead → photo → sub → CTA always fits one screen */
+  .home-page .sap-photo-copy{aspect-ratio:auto;height:clamp(120px,20dvh,260px)}
   .home-page .sap-bento{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
   .home-page .sap-bento .feat:last-of-type{grid-column:auto}
   .home-page .feat{padding:18px 18px 17px;gap:6px}
@@ -1292,10 +1450,23 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   /* 1.55, up from 1.42 — designer review: the tighter leading read as cramped */
   .home-page .feat p{line-height:1.55}
 
-  .home-page .whatsnew .sec-head{margin-bottom:16px}
-  .home-page .news-layout{height:clamp(400px,57dvh,510px);min-height:0}
-  .home-page .news-side{height:100%;min-height:0}
-  .home-page .news-list{height:auto;max-height:none}
+  /* ONE SCREEN, same recipe as the other landing sections: shared padding-block,
+     type scale untouched, and the card area sized by the viewport instead of the
+     photos. The section is a flex column exactly one view tall (100dvh minus the
+     84px scroll-margin the anchor lands under); heading and CTA keep their natural
+     height and the featured/2×2 layout takes what remains, so the featured card
+     drops its aspect-ratio and both halves size from the row. The 560px floor only
+     matters on very short windows. */
+  .home-page .whatsnew{height:max(560px,calc(100dvh - 84px));min-height:0}
+  .home-page .whatsnew>.wrap{height:100%;display:flex;flex-direction:column;min-height:0}
+  .home-page .whatsnew .sec-head{flex:0 0 auto;margin-bottom:clamp(14px,2dvh,22px)}
+  .home-page .news-layout{flex:1 1 auto;min-height:0;gap:14px}
+  .home-page .news-grid{gap:14px;min-height:0}
+  .home-page .news-feature{aspect-ratio:auto;height:100%;min-height:0}
+  .home-page .news-grid .news-card{min-height:0}
+  .home-page .news-card-body h3{-webkit-line-clamp:2;line-clamp:2}
+  .home-page .news-feature .news-card-body h3{-webkit-line-clamp:4;line-clamp:4}
+  .home-page .news-cta{flex:0 0 auto;margin-top:clamp(14px,2dvh,24px)}
 
   .home-page .serv-stack{margin-top:clamp(22px,3dvh,38px);gap:22px}
   .home-page .serv{min-height:min(400px,calc(100dvh - 130px));max-height:calc(100dvh - 96px)}
@@ -1653,11 +1824,9 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 /* Logos are real <img> elements now (SEO-friendly alt text, swappable from WP) */
 .nav .logo-link::before,.footer .logo-link::before{display:none}
 .logo-nav{display:block;width:158px;height:35px;object-fit:contain;object-position:left center}
-.nav.scrolled .logo-nav{width:146px;height:32px}
 .logo-footer{display:block;width:186px;height:70px;object-fit:contain;object-position:left center}
 /* one header on every page */
 .sub-page .nav .wrap{min-height:88px}
-.sub-page .nav.scrolled .wrap{min-height:72px}
 /* accessibility */
 .skip-link{position:absolute;left:-999px;top:8px;z-index:999;padding:10px 16px;border-radius:8px;background:var(--orange);color:#fff;font-weight:700}
 .skip-link:focus{left:8px}
@@ -1667,9 +1836,9 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 /* eyebrow for headings that need a sub-page margin */
 .sub-page .eyebrow{display:inline-flex}
 /* services · optional photo per step (from assets/services) */
-.serv-img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:auto;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s}
+.serv-img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-bottom:6px;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s}
 .serv-step:hover .serv-img{transform:translateY(-3px);box-shadow:0 22px 40px -24px rgba(var(--rgb-ink),.35)}
-@media(max-width:900px){.serv-img{grid-column:2;max-width:420px}}
+@media(max-width:900px){.serv-img{grid-column:1 / -1;grid-row:1;max-width:420px;margin-bottom:10px}}
 /* contact form feedback */
 .form-msg{margin-top:12px;padding:12px 14px;border-radius:10px;font-size:var(--fs-sm);display:none}
 .form-msg.show{display:block}
@@ -1690,6 +1859,9 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .post-card-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1)}
 .post-card:hover .post-card-media img{transform:scale(1.05)}
 .post-card-body{display:flex;flex-direction:column;gap:12px;padding:22px 22px 24px}
+/* .news-meta carries order:1 for the home news cards (meta above the title in a bottom-aligned
+   column); inside a post card that pushed tag + date below the "Read more" link. Restore DOM order. */
+.post-card-body .news-meta{order:0}
 .post-card-body h2,.post-card-body h3{font-size:var(--fs-card);line-height:var(--lh-heading);letter-spacing:-.01em}
 .post-card-body p{font-size:var(--fs-sm);color:var(--soft);line-height:var(--lh-body)}
 .post-card .tlink{margin-top:auto;font-size:var(--fs-xs)}
@@ -1722,21 +1894,26 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .search-form input{flex:1;border:1px solid var(--line);border-radius:10px;padding:12px 16px;font:inherit;background:var(--bg-2)}
 .search-form input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(var(--rgb-brand),.13)}
 /* news feature fallback when there is no image */
-.news-feature.no-img{background:linear-gradient(135deg,var(--color-ink),var(--color-gray))}
 /* ensure wide media never scrolls the page */
 .wrap>table,.entry-content table{display:block;overflow-x:auto}
 
 /* ── Lazy-load plugin compatibility (Smush, a3, etc.) ──
-   Those plugins add `.lazyload{opacity:0}` / `.lazyloaded{opacity:1}` to every image and
-   background element they process, which overrode the theme's own hidden hover layers on
-   the IQ Suite cards (photo + white logo showed permanently). These rules win by specificity. */
-.iq-card .iq-hover-art.lazyload,.iq-card .iq-hover-art.lazyloading,.iq-card .iq-hover-art.lazyloaded{opacity:0}
-.iq-card:not(.all):hover .iq-hover-art.lazyloaded{opacity:1;transform:scale(1)}
-.iq-card .iq-logo .lg-l.lazyload,.iq-card .iq-logo .lg-l.lazyloading,.iq-card .iq-logo .lg-l.lazyloaded{opacity:0}
-.iq-card:not(.all):hover .iq-logo .lg-l.lazyloaded,.iq-card.feature .iq-logo .lg-l.lazyloaded{opacity:1}
-.iq-card.feature .iq-logo .lg-d.lazyloaded,.iq-card:not(.all):hover .iq-logo .lg-d.lazyloaded{opacity:0}
-.iq-card:not(.all) .iq-art.lazyload,.iq-card:not(.all) .iq-art.lazyloading,.iq-card:not(.all) .iq-art.lazyloaded{opacity:1}
-.iq-card:not(.all):hover .iq-art.lazyloaded{opacity:0}
+   Those plugins add .lazyload{opacity:0} / .lazyloaded{opacity:1} to every image and
+   background element they process, which would override the theme's own state layers on the
+   IQ Suite cards (monitor artwork + black logo are hover-only). These rules win by specificity. */
+.iq-card .iq-hover-art.lazyload,.iq-card .iq-hover-art.lazyloading{opacity:0}
+.iq-card .iq-hover-art.lazyloaded{opacity:1;transform:scale(1)}
+.iq-card:not(.all):hover .iq-hover-art.lazyloaded{opacity:0;transform:scale(1.06)}
+.iq-card .iq-logo .lg-l.lazyload,.iq-card .iq-logo .lg-l.lazyloading{opacity:0}
+.iq-card:not(.all) .iq-logo .lg-l.lazyloaded,.iq-card.feature .iq-logo .lg-l.lazyloaded{opacity:1}
+.iq-card:not(.all):hover .iq-logo .lg-l.lazyloaded{opacity:0}
+.iq-card.feature .iq-logo .lg-d.lazyloaded,.iq-card:not(.all) .iq-logo .lg-d.lazyloaded{opacity:0}
+.iq-card:not(.all):hover .iq-logo .lg-d.lazyloaded{opacity:1}
+/* a plugin that never flips the dark logo to .lazyloaded (it is transparent at rest, so some
+   loaders skip it) must not keep it hidden once the card is hovered */
+.iq-card:not(.all):hover .iq-logo .lg-d.lazyload,.iq-card:not(.all):hover .iq-logo .lg-d.lazyloading{opacity:1}
+.iq-card:not(.all) .iq-art.lazyload,.iq-card:not(.all) .iq-art.lazyloading,.iq-card:not(.all) .iq-art.lazyloaded{opacity:0}
+.iq-card:not(.all):hover .iq-art.lazyloaded{opacity:1;transform:none}
 .iq-card.feature .iq-art.lazyloaded{opacity:1}
 .banner-strip-track img.lazyload,.trust-track img.lazyload{opacity:1}
 
