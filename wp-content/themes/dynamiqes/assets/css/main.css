@@ -1170,7 +1170,17 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .sub-page .eyebrow{margin-bottom:18px}
 
 .header-form,.topbar{height:auto;min-height:44px;background:var(--color-ink);color:var(--color-on-accent);font-size:var(--fs-sm);font-weight:500}
-.header-form .wrap,.topbar .wrap{min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:12px 28px;padding-block:9px}
+.header-form .wrap,.topbar .wrap{min-height:44px;display:flex;align-items:center;justify-content:flex-start;gap:8px 24px;padding-block:6px}
+.header-form__cta{display:flex;align-items:center;flex-wrap:wrap;gap:6px 28px;min-width:0}
+.header-form__cta p{margin:0}
+/* Top-bar search · presentational only for now (no form, nothing submits). */
+.topbar-search{margin-left:auto;flex:0 1 260px;min-width:170px;height:32px;display:flex;align-items:center;gap:6px;padding:0 4px 0 14px;border:1px solid rgba(255,255,255,.18);border-radius:999px;background:rgba(255,255,255,.06);transition:border-color .2s,background .2s}
+.topbar-search:focus-within{border-color:var(--brand);background:rgba(255,255,255,.09)}
+.topbar-search__input{flex:1;min-width:0;height:100%;border:0;background:transparent;color:var(--color-on-accent);font:inherit;font-size:var(--fs-sm);font-weight:400;letter-spacing:0;outline:0}
+.topbar-search__input::placeholder{color:rgba(255,255,255,.55)}
+.topbar-search__input::-webkit-search-cancel-button{-webkit-appearance:none;appearance:none}
+.topbar-search__btn{flex:none;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:50%;background:var(--brand);color:var(--color-ink);cursor:pointer;transition:background .2s}
+.topbar-search__btn:hover{background:var(--color-brand-light)}
 .header-form a,.topbar a{display:inline-flex;align-items:center;gap:8px;color:var(--brand);font-size:var(--fs-xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:color .2s,gap .2s}
 .header-form a:hover,.topbar a:hover{color:var(--color-brand-light);gap:12px}
 
@@ -1550,6 +1560,8 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
     flex-wrap:wrap;justify-content:center;gap:0 16px;text-align:center}
   .header-form p,.topbar p{max-width:none;font-size:.8125rem;line-height:1.35}
   .header-form a,.topbar a{font-size:.75rem;min-height:40px}
+  .header-form__cta{flex:1 0 100%;justify-content:center;gap:0 16px}
+  .topbar-search{margin:2px auto 4px;flex:1 1 100%;max-width:320px;height:36px}
   /* Type floor + touch targets for every NON-home page. The homepage got these
      in its own stylesheet; products and the product-detail template were still
      rendering 12px footer labels and 17px-tall link rows. */

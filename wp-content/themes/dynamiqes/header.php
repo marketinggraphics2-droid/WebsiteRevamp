@@ -20,8 +20,15 @@
 
 <div class="header-form">
 	<div class="wrap">
-		<p><?php echo esc_html( get_theme_mod( 'dq_header_cta_text', 'Something slowing your business down?' ) ); ?></p>
-		<a href="<?php echo esc_url( dq_home_anchor( 'contact' ) ); ?>"><?php echo esc_html( get_theme_mod( 'dq_header_cta_label', "Let's Figure it out!" ) ); ?> <span class="arr" aria-hidden="true">→</span></a>
+		<div class="header-form__cta">
+			<p><?php echo esc_html( get_theme_mod( 'dq_header_cta_text', 'Something slowing your business down?' ) ); ?></p>
+			<a href="<?php echo esc_url( dq_home_anchor( 'contact' ) ); ?>"><?php echo esc_html( get_theme_mod( 'dq_header_cta_label', "Let's Figure it out!" ) ); ?> <span class="arr" aria-hidden="true">→</span></a>
+		</div>
+		<?php /* Top-bar search · UI only for now (no form, nothing submits). Swap for get_search_form() when it goes live. */ ?>
+		<div class="topbar-search" role="search">
+			<input type="search" class="topbar-search__input" placeholder="<?php esc_attr_e( 'Search…', 'dynamiqes' ); ?>" aria-label="<?php esc_attr_e( 'Search', 'dynamiqes' ); ?>" autocomplete="off">
+			<button type="button" class="topbar-search__btn" aria-label="<?php esc_attr_e( 'Search', 'dynamiqes' ); ?>"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.8-3.8"/></svg></button>
+		</div>
 	</div>
 </div>
 
