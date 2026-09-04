@@ -252,6 +252,65 @@ function dq_services() {
 	) );
 }
 
+/** Lifestyle gallery photos (home carousel between Why Choose and Our Services).
+ *  Placeholders reuse the services photos until the final set is dropped in. */
+function dq_gallery_photos() {
+	return apply_filters( 'dq_gallery_photos', array(
+		array( 'Consultation session with a DynamIQ specialist', 'assets/services/consultation.jpg' ),
+		array( 'Team collaborating during an implementation', 'assets/services/implementation.jpg' ),
+		array( 'Developers reviewing a custom process', 'assets/services/development.jpg' ),
+		array( 'Hands-on training for a client team', 'assets/services/training.jpg' ),
+		array( 'Helpdesk specialist supporting a customer', 'assets/services/support.jpg' ),
+	) );
+}
+
+/** Footer video wall: the newest video uploads in the media library, normalised to
+ *  video / poster / label. Poster = the attachment's featured image if one is set
+ *  (Media > edit > "Featured image" on a video). When fewer than $count clips have
+ *  been uploaded, the strip is topped up with bundled placeholder clips so it is
+ *  never thin; with no uploads at all it is placeholders only. */
+function dq_video_wall_items( $count = 4 ) {
+	$out   = array();
+	$posts = get_posts( array(
+		'post_type'      => 'attachment',
+		'post_mime_type' => 'video',
+		'post_status'    => 'inherit',
+		'posts_per_page' => $count,
+		'orderby'        => 'date',
+		'order'          => 'DESC',
+	) );
+	foreach ( $posts as $a ) {
+		$url = wp_get_attachment_url( $a->ID );
+		if ( ! $url ) {
+			continue;
+		}
+		$poster   = has_post_thumbnail( $a->ID ) ? get_the_post_thumbnail_url( $a->ID, 'dq-wide' ) : '';
+		$title    = trim( get_the_title( $a ) );
+		$out[]    = array(
+			'video'  => $url,
+			'poster' => $poster ? $poster : '',
+			'label'  => '' !== $title ? $title : __( 'Video', 'dynamiqes' ),
+		);
+	}
+	if ( count( $out ) < $count ) {
+		$fill = array(
+			array( 'video' => dq_hero_video_url(), 'poster' => dq_hero_poster_url(), 'label' => __( 'DynamIQ in motion', 'dynamiqes' ) ),
+			array( 'video' => file_exists( DQ_DIR . '/assets/video/contact-gradient.mp4' ) ? DQ_URI . '/assets/video/contact-gradient.mp4' : '', 'poster' => '', 'label' => __( 'Brand reel', 'dynamiqes' ) ),
+			array( 'video' => 'https://dynamiqes.com/wp-content/themes/dynamiqes/assets/images/homepage/dynamiqes-video-banner.mp4', 'poster' => '', 'label' => __( 'SAP Business One overview', 'dynamiqes' ) ),
+		);
+		$have = wp_list_pluck( $out, 'video' );
+		foreach ( $fill as $f ) {
+			if ( count( $out ) >= $count ) {
+				break;
+			}
+			if ( $f['video'] && ! in_array( $f['video'], $have, true ) ) {
+				$out[] = $f;
+			}
+		}
+	}
+	return apply_filters( 'dq_video_wall_items', array_slice( $out, 0, $count ) );
+}
+
 /** Client logos for the trust marquee. */
 function dq_trust_logos() {
 	return apply_filters( 'dq_trust_logos', array(

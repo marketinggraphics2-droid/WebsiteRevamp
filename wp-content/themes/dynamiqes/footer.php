@@ -21,7 +21,30 @@ $explore  = array(
 	array( __( 'News & Events', 'dynamiqes' ), dq_news_url() ),
 	array( __( 'Testimonials', 'dynamiqes' ), dq_home_anchor( 'testimonials' ) ),
 );
+/* Home-page video marquee above the footer — same treatment as the Life-at-DynamIQ
+ * photo marquee mid-page, but with clips: the four newest video uploads in the media
+ * library (see dq_video_wall_items() for the placeholder top-up rules). */
+$videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 ?>
+<div class="site-end">
+<?php if ( $videos ) : ?>
+<section class="video-wall" aria-label="<?php esc_attr_e( 'DynamIQ in motion', 'dynamiqes' ); ?>">
+	<div class="video-marq"<?php dq_reveal( 'fade' ); ?>>
+		<div class="video-track">
+			<?php foreach ( array( false, true ) as $dup ) : // second pass is the seamless-loop copy ?>
+			<?php foreach ( $videos as $v ) : ?>
+				<figure class="video-tile" data-video="<?php echo esc_url( $v['video'] ); ?>" data-poster="<?php echo esc_url( $v['poster'] ); ?>" data-label="<?php echo esc_attr( $v['label'] ); ?>"<?php echo $dup ? ' aria-hidden="true"' : ' role="button" tabindex="0" aria-label="' . esc_attr( sprintf( /* translators: %s: clip label */ __( 'Open %s in full view', 'dynamiqes' ), $v['label'] ) ) . '"'; ?>>
+					<video muted loop playsinline preload="metadata"<?php if ( ! empty( $v['poster'] ) ) : ?> poster="<?php echo esc_url( $v['poster'] ); ?>"<?php endif; ?>>
+						<source src="<?php echo esc_url( $v['video'] ); ?>" type="video/mp4">
+					</video>
+					<span class="video-tile-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+				</figure>
+			<?php endforeach; ?>
+			<?php endforeach; ?>
+		</div>
+	</div>
+</section>
+<?php endif; ?>
 <footer class="footer">
 	<div class="wrap">
 		<div class="footer-top">
@@ -60,6 +83,20 @@ $explore  = array(
 		</div>
 	</div>
 </footer>
+</div><!-- .site-end -->
+<?php if ( $videos ) : ?>
+<!-- video lightbox: one shared player, fed by whichever tile was clicked. Lives outside
+     .site-end / .video-wall (both position:relative + z-index) so its own z-index wins
+     over the sticky nav and the chat widget. -->
+<div class="video-lightbox" hidden>
+	<div class="video-lightbox-backdrop" data-close></div>
+	<div class="video-lightbox-panel" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Video', 'dynamiqes' ); ?>">
+		<button type="button" class="video-lightbox-close" data-close aria-label="<?php esc_attr_e( 'Close video', 'dynamiqes' ); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+		<div class="video-lightbox-stage"></div><!-- the clicked tile's own <video> is moved in here, so playback simply continues -->
+		<p class="video-lightbox-cap"></p>
+	</div>
+</div>
+<?php endif; ?>
 <?php get_template_part( 'template-parts/chatbot' ); // mockup widget, no backend yet ?>
 <?php wp_footer(); ?>
 </body>

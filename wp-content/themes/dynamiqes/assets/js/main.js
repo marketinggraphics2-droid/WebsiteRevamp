@@ -13,20 +13,31 @@
   var cfg = window.DQ || {};
 
   if (window.Lenis && !reduce) {
-    try { new Lenis({ autoRaf: true, anchors: true, allowNestedScroll: true }); } catch (e) {}
+    try { window.dqLenis = new Lenis({ autoRaf: true, anchors: true, allowNestedScroll: true }); } catch (e) {}
   }
 
   /* 1 · Scroll-reveal (adds .in; CSS handles the motion) */
   var reveals = [].slice.call(document.querySelectorAll('[data-reveal]'));
+  var show = function (el) { el.classList.add('in'); };
+  /* data-reveal="reveal" (clip-path unmask) elements are 100% clipped while hidden, and Chromium
+     reports an empty intersection rect for a fully clipped element, so observing the tile itself
+     never fires. Observe its parent instead and reveal the parent's unmask children together
+     (the per-tile --d stagger still runs in CSS). */
+  var isUnmask = function (el) { return el.getAttribute('data-reveal') === 'reveal'; };
+  var watchTarget = function (el) { return isUnmask(el) && el.parentElement ? el.parentElement : el; };
+  var revealTarget = function (target) {
+    if (target.hasAttribute('data-reveal')) { show(target); }
+    [].forEach.call(target.children, function (c) { if (isUnmask(c)) { show(c); } });
+  };
   if (reduce) {
-    reveals.forEach(function (el) { el.classList.add('in'); });
+    reveals.forEach(show);
   } else if ('IntersectionObserver' in window) {
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
-        if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+        if (en.isIntersecting) { revealTarget(en.target); io.unobserve(en.target); }
       });
     }, { rootMargin: '0px 0px -8% 0px', threshold: 0.06 });
-    reveals.forEach(function (el) { io.observe(el); });
+    reveals.forEach(function (el) { io.observe(watchTarget(el)); });
     var vh0 = window.innerHeight || document.documentElement.clientHeight;
     reveals.forEach(function (el) {
       var r = el.getBoundingClientRect();
@@ -92,6 +103,102 @@
     } else {
       contactVideo.play().catch(function () {});
     }
+  }
+
+  /* 5b · Video wall · seamless marquee + play-while-visible.
+     The CSS loop slides the track by exactly half its width, so the copy in the
+     second half must be at least a viewport wide or the tail shows as blank before
+     the snap. The server ships two identical sets (works without JS on wide tiles);
+     here we keep appending PAIRS of sets — an even count keeps -50% landing on a
+     set boundary — until half the track covers the screen. Clones are aria-hidden. */
+  var wallTrack = document.querySelector('.video-track');
+  if (wallTrack && !reduce) {
+    var wallSet = [].slice.call(wallTrack.querySelectorAll('.video-tile:not([aria-hidden])'));
+    var wallFill = function () {
+      if (!wallSet.length) { return; }
+      var guard = 0;
+      while (wallTrack.scrollWidth / 2 < window.innerWidth + 40 && guard < 6) {
+        for (var k = 0; k < 2; k++) {
+          wallSet.forEach(function (tile) {
+            var c = tile.cloneNode(true);
+            c.setAttribute('aria-hidden', 'true');
+            var v = c.querySelector('video'); if (v) { v.removeAttribute('aria-label'); v.muted = true; }
+            wallTrack.appendChild(c);
+          });
+        }
+        guard++;
+      }
+    };
+    wallFill();
+    var wallRT;
+    window.addEventListener('resize', function () { clearTimeout(wallRT); wallRT = setTimeout(wallFill, 200); });
+  }
+  var wallVideos = function () { return document.querySelectorAll('.video-tile video'); };
+  if (wallVideos().length && !reduce) {
+    var wall = document.querySelector('.video-marq');
+    var wallPlay = function (on) { wallVideos().forEach(function (v) { v.muted = true; if (on) { v.play().catch(function () {}); } else { v.pause(); } }); };
+    if ('IntersectionObserver' in window && wall) {
+      new IntersectionObserver(function (entries) {
+        entries.forEach(function (en) { wallPlay(en.isIntersecting); });
+      }, { rootMargin: '25% 0px' }).observe(wall);
+    } else {
+      wallPlay(true);
+    }
+  }
+
+  /* 5c · Video lightbox · click / Enter / Space on a tile opens that clip large with sound.
+     The tile's own <video> element is MOVED into the lightbox stage and moved back on close,
+     so playback simply continues from the current frame — no second download, no seeking
+     (which also sidesteps servers that ignore Range requests). Marquee holds, scroll locks. */
+  var lb = document.querySelector('.video-lightbox');
+  if (lb && wallTrack) {
+    var lbStage = lb.querySelector('.video-lightbox-stage');
+    var lbCap = lb.querySelector('.video-lightbox-cap');
+    var lbClose = lb.querySelector('.video-lightbox-close');
+    var lbMarq = document.querySelector('.video-marq');
+    var lbTile = null, lbVid = null, lbTimer = null;
+    var lbOpen = function (tile) {
+      var vid = tile.querySelector('video'); if (!vid || lbVid) { return; }
+      clearTimeout(lbTimer);
+      lbTile = tile; lbVid = vid;
+      lbCap.textContent = tile.getAttribute('data-label') || '';
+      lbStage.appendChild(vid);                       // element moves; playback state travels with it
+      vid.controls = true; vid.muted = false; vid.volume = 1;
+      lb.hidden = false;
+      requestAnimationFrame(function () { lb.classList.add('is-open'); });
+      document.documentElement.classList.add('has-lightbox');
+      if (window.dqLenis && window.dqLenis.stop) { window.dqLenis.stop(); }
+      if (lbMarq) { lbMarq.classList.add('is-held'); }
+      wallVideos().forEach(function (v) { v.pause(); }); // the other tiles (the moved one no longer matches)
+      vid.play().catch(function () {});
+      lbClose.focus();
+    };
+    var lbShut = function () {
+      if (lb.hidden || !lbVid) { return; }
+      var vid = lbVid, tile = lbTile;
+      lb.classList.remove('is-open');
+      vid.muted = true; vid.controls = false;          // sound stops at once; the frame keeps running
+      document.documentElement.classList.remove('has-lightbox');
+      if (window.dqLenis && window.dqLenis.start) { window.dqLenis.start(); }
+      if (lbMarq) { lbMarq.classList.remove('is-held'); }
+      lbTimer = setTimeout(function () {               // after the fade, hand the element back to its tile
+        lb.hidden = true;
+        var hint = tile.querySelector('.video-tile-hint');
+        if (hint) { tile.insertBefore(vid, hint); } else { tile.appendChild(vid); }
+        if (!reduce) { wallVideos().forEach(function (v) { v.play().catch(function () {}); }); } else { vid.pause(); }
+        lbVid = null; lbTile = null;
+      }, 320);
+      tile.focus();
+    };
+    wallTrack.addEventListener('click', function (ev) {
+      var tile = ev.target.closest('.video-tile'); if (tile) { lbOpen(tile); }
+    });
+    wallTrack.addEventListener('keydown', function (ev) {
+      if (ev.key !== 'Enter' && ev.key !== ' ') { return; }
+      var tile = ev.target.closest('.video-tile[role="button"]'); if (tile) { ev.preventDefault(); lbOpen(tile); }
+    });
+    lb.addEventListener('click', function (ev) { if (ev.target.closest('[data-close]')) { lbShut(); } });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { lbShut(); } });
   }
 
   /* 6 · Feature-card cursor glow */
