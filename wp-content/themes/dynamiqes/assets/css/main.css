@@ -1,0 +1,1760 @@
+/* ============================================================
+   DynamIQ Enterprise Solution — theme stylesheet
+   Sections: 1 tokens+home · 2 products listing · 3 product detail · 4 composition system · 5 WordPress + modern-UI layer
+   ============================================================ */
+
+/* ═══ 1 · TOKENS, SHARED COMPONENTS, HOME SECTIONS ═══ */
+/* ═══════════════════════════════════════════════════════════════
+   DESIGN TOKENS · Kemana-style motion + DynamIQ design-system palette
+   (orange #F88F10, dark #252324 / #4F5257, mist #D9D9D9)
+   ═══════════════════════════════════════════════════════════════ */
+:root{
+  color-scheme: light;
+  /* unified color palette */
+  --color-brand:#F88F10; --color-brand-light:#FFA83A; --color-brand-dark:#D97400;
+  --color-ink:#252324; --color-gray:#4F5257; --color-mist:#D9D9D9;
+  --color-surface:#FFFFFF; --color-surface-muted:#F5F4F2; --color-surface-warm:#FBFAF8;
+  --color-white:#FFFFFF; --color-black:#000000; --color-on-accent:var(--color-white);
+  --rgb-brand:248,143,16; --rgb-ink:37,35,36; --rgb-gray:79,82,87;
+  --rgb-white:255,255,255; --rgb-scrim:20,18,19; --rgb-night:9,13,20; --rgb-cool:214,221,227;
+
+  /* semantic color roles */
+  --orange:var(--color-brand); --orange-2:var(--color-brand-light); --orange-deep:var(--color-brand-dark);
+  --orange-glow:rgba(var(--rgb-brand),.5); --gray:var(--color-gray); --mist:var(--color-mist);
+  --grad-dark:linear-gradient(90deg,var(--color-ink) 0%,var(--color-gray) 140.31%);
+  --font-sans:"Roboto",sans-serif;
+  /* unified type scale */
+  --fs-2xs:.6875rem; /* 11px · tags / micro labels */
+  --fs-xs:.75rem; /* 12px · metadata / eyebrows */
+  --fs-sm:.875rem; /* 14px · compact copy / controls */
+  --fs-body:1rem; /* 16px · default reading size */
+  --fs-lede:clamp(1rem,.96rem + .2vw,1.125rem); /* 16–18px */
+  --fs-card:clamp(1.125rem,1.03rem + .4vw,1.375rem); /* 18–22px */
+  --fs-subheading:clamp(1.5rem,1.25rem + 1.2vw,2.25rem); /* 24–36px */
+  --fs-h3:clamp(1.25rem,1.1rem + .65vw,1.5rem); /* 20–24px */
+  --fs-h2:clamp(2rem,1.5rem + 2vw,3.25rem); /* 32–52px */
+  --fs-h1:clamp(2.5rem,1.7rem + 3.5vw,4.75rem); /* 40–76px */
+  /* hero headline · height-aware as well as width-aware, so a one-screen hero
+     still fits on short laptops instead of pushing its CTAs below the fold */
+  --fs-hero:clamp(1.875rem,1rem + 1.9vw + 1.1vh,4.25rem); /* 30–68px */
+  --fs-display:clamp(2.5rem,2rem + 2.2vw,3.625rem); /* 40–58px */
+  --lh-tight:1.08; --lh-heading:1.22; --lh-body:1.6; --lh-relaxed:1.7;
+  --wrap:1440px; --pad:clamp(20px,4vw,64px); --sec:clamp(64px,6vw,96px); --r:14px; --r-pill:10px;
+  --section-blend:clamp(48px,5vw,88px);
+  --hf-h:44px; --nav-h:64px; /* measured at runtime for the full-height hero */
+
+  /* LIGHT theme — the only theme */
+  --bg:var(--color-surface); --bg-2:var(--color-surface-muted);
+  --panel:var(--color-surface); --panel-2:var(--color-surface-muted);
+  --text:var(--color-ink); --soft:rgba(var(--rgb-ink),.72); --faint:rgba(var(--rgb-ink),.5);
+  --line:rgba(var(--rgb-ink),.12); --line-2:rgba(var(--rgb-ink),.07);
+  --field-bg:var(--color-surface); --ghost-bg:rgba(var(--rgb-ink),.02);
+  --card-grad:linear-gradient(180deg,var(--color-surface),var(--color-surface-warm));
+  --nav-bg:rgba(var(--rgb-white),.78); --nav-bg-2:rgba(var(--rgb-white),.93); --panel-glass:rgba(var(--rgb-white),.98);
+  --glow1:rgba(var(--rgb-brand),.1); --glow2:rgba(var(--rgb-cool),.55); --glow3:rgba(var(--rgb-brand),.06);
+  --sap-filter:none;
+  --shadow:0 20px 50px rgba(var(--rgb-ink),.1); --shadow-lg:0 40px 90px rgba(var(--rgb-ink),.14);
+}
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+html{ -webkit-text-size-adjust:100%; }
+#news-events,#services,#testimonials,#contact{ scroll-margin-top:calc(var(--nav-h,64px) + 16px); }
+body{
+  font-family:var(--font-sans); font-size:var(--fs-body); line-height:var(--lh-body);
+  color:var(--text); background:var(--bg);
+  -webkit-font-smoothing:antialiased; overflow-x:clip;
+}
+body::before{
+  content:""; position:fixed; inset:0; z-index:0; pointer-events:none;
+  background:
+    radial-gradient(900px 600px at 85% -5%, var(--glow1), transparent 60%),
+    radial-gradient(760px 620px at 6% 14%, var(--glow2), transparent 55%),
+    radial-gradient(1000px 800px at 50% 108%, var(--glow3), transparent 60%);
+}
+img,svg,video{ display:block; max-width:100%; }
+a{ color:inherit; text-decoration:none; }
+button{ font:inherit; cursor:pointer; background:none; border:0; color:inherit; }
+::selection{ background:var(--orange); color:var(--color-on-accent); }
+:focus-visible{ outline:2px solid var(--orange); outline-offset:3px; border-radius:4px; }
+
+.wrap{ width:100%; max-width:var(--wrap); margin-inline:auto; padding-inline:var(--pad); position:relative; z-index:1; }
+
+/* ═══ TYPE ═══ */
+h1,h2,h3,h4{ font-family:var(--font-sans); letter-spacing:-.025em; font-weight:700; line-height:var(--lh-tight); }
+h1{ font-size:var(--fs-h1); }
+h2{ font-size:var(--fs-h2); }
+h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015em; }
+.lede{ font-size:var(--fs-lede); color:var(--soft); line-height:var(--lh-relaxed); }
+
+.sec-head{ max-width:760px; margin-bottom:clamp(30px,3.5vw,50px); display:grid; gap:16px; }
+.sec-head.center{ margin-inline:auto; text-align:center; justify-items:center; }
+.sec-head p{ color:var(--soft); font-size:var(--fs-lede); }
+
+.eyebrow{
+  font-family:var(--font-sans); font-size:clamp(.875rem,.82rem + .2vw,1rem); font-weight:700;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--orange);
+  display:inline-flex; align-items:center;
+}
+
+/* ═══ BUTTONS ═══ */
+.btn{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--font-sans); font-size:var(--fs-sm); font-weight:700;
+  padding:16px 32px; border-radius:var(--r-pill); white-space:nowrap;
+  transition:transform .3s cubic-bezier(.2,.7,.2,1), background .25s, color .25s, box-shadow .35s, border-color .25s;
+  will-change:transform;
+}
+.btn .arr{ transition:transform .3s cubic-bezier(.2,.7,.2,1); }
+.btn:hover .arr{ transform:translateX(5px); }
+.btn-orange{ background:var(--orange); color:var(--color-on-accent); box-shadow:0 10px 30px -8px var(--orange-glow); }
+.btn-orange:hover{ background:var(--orange-2); box-shadow:0 18px 46px -8px var(--orange-glow); transform:translateY(-2px); }
+.btn-ghost{ border:1.5px solid var(--line); color:var(--text); background:var(--ghost-bg); }
+.btn-ghost:hover{ border-color:var(--orange); background:rgba(var(--rgb-brand),.08); transform:translateY(-2px); }
+
+.tlink{
+  font-family:var(--font-sans); font-size:var(--fs-sm); font-weight:700;
+  letter-spacing:.14em; text-transform:uppercase; color:var(--orange);
+  display:inline-flex; align-items:center; gap:9px;
+}
+.tlink .arr{ transition:transform .3s cubic-bezier(.2,.7,.2,1); }
+.tlink:hover .arr{ transform:translateX(5px); }
+
+/* ═══ REVEAL SYSTEM (Kemana-style scroll appear) ═══ */
+[data-reveal]{
+  opacity:0; transform:translateY(32px);
+  transition:opacity .9s cubic-bezier(.16,1,.3,1), transform .9s cubic-bezier(.16,1,.3,1);
+  transition-delay:var(--d,0ms); will-change:opacity,transform;
+}
+[data-reveal="fade"]{ transform:none; }
+[data-reveal="right"]{ transform:translateX(40px); }
+[data-reveal="scale"]{ transform:scale(.95); }
+/* "reveal" = Adobe-style unmask: element wipes open from the top (timing set per-component) */
+[data-reveal="reveal"]{ clip-path:inset(0 0 100% 0 round 14px); }
+[data-reveal="reveal"].in{ clip-path:inset(0 0 0 0 round 14px); }
+[data-reveal].in{ opacity:1; transform:none; }
+@media (prefers-reduced-motion:reduce){ [data-reveal]{ opacity:1 !important; transform:none !important; clip-path:none !important; transition:none !important; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   HEADER FORM BAR
+   ═══════════════════════════════════════════════════════════════ */
+/* solid ink, not the gradient — designer review: better contrast for the CTA */
+.header-form{ background:var(--color-ink); border-bottom:1px solid var(--line-2); position:relative; z-index:2; }
+.header-form .wrap{ display:flex; align-items:center; justify-content:space-between; gap:14px 24px; padding-block:10px; flex-wrap:wrap; }
+.header-form p{ font-size:var(--fs-sm); color:var(--color-white); font-weight:500; letter-spacing:.01em; }
+.header-form .mobile---view{ display:none; }
+.header-form a{
+  font-family:var(--font-sans); font-size:var(--fs-xs); font-weight:700; letter-spacing:.08em;
+  color:var(--orange); display:inline-flex; align-items:center; gap:8px; transition:color .2s, gap .2s;
+}
+.header-form a:hover{ color:var(--orange-2); gap:12px; }
+@media (max-width:600px){
+  .header-form .desktop---view{ display:none; }
+  .header-form .mobile---view{ display:block; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   NAV
+   ═══════════════════════════════════════════════════════════════ */
+/* Solid white bar at all times — dark logo + dark links, condenses slightly on scroll */
+.nav{
+  position:sticky; top:0; z-index:60;
+  background:var(--bg); border-bottom:1px solid var(--line);
+  box-shadow:0 6px 24px rgba(var(--rgb-ink),.06);
+  transition:background .3s, border-color .3s, box-shadow .3s;
+}
+.nav.scrolled{ box-shadow:0 8px 28px rgba(var(--rgb-ink),.08); }
+/* Designer review: taller bar (~88px, within the 80–100px ask) + larger logo so
+   the nav reads clearly; it still condenses a little on scroll. */
+.nav .wrap{ display:flex; align-items:center; justify-content:space-between; gap:24px; padding-block:14px; min-height:88px; transition:padding .3s, min-height .3s; }
+.nav.scrolled .wrap{ padding-block:10px; min-height:72px; }
+.nav .logo-link{ display:inline-flex; align-items:center; }
+.nav .logo-link::before{
+  content:""; display:block; width:158px; height:35px;
+  background:url("../logos/DynamIQ_Logo_blk.svg") left center / contain no-repeat;
+}
+.logo-nav{ display:none; }
+
+.nav-menu{ display:flex; align-items:center; gap:2px; list-style:none; }
+.nav-menu > li{ position:relative; }
+.nav-menu > li > a{
+  display:flex; align-items:center; gap:7px;
+  /* 18px per designer review — the 14px links were easy to miss */
+  font-family:var(--font-sans); font-size:1.125rem; font-weight:500;
+  color:var(--soft); padding:10px 14px; border-radius:8px; white-space:nowrap;
+  transition:color .2s, background .2s;
+}
+.nav-menu > li > a:hover, .nav-menu > li:focus-within > a{ color:var(--text); background:rgba(var(--rgb-ink),.06); }
+.nav-menu > li.has-children > a::after{
+  content:""; width:0; height:0; border-left:4px solid transparent; border-right:4px solid transparent;
+  border-top:5px solid currentColor; opacity:.55; margin-left:2px;
+}
+/* light dropdowns with dark text, regardless of the bar state */
+.dropdown{
+  position:absolute; top:100%; left:0; min-width:270px; z-index:70;
+  --text:var(--color-ink); --soft:rgba(var(--rgb-ink),.72);
+  background:var(--bg); border:1px solid var(--line); border-radius:10px; box-shadow:var(--shadow-lg);
+  padding:9px; list-style:none;
+  opacity:0; visibility:hidden; transform:translateY(12px);
+  transition:opacity .22s ease, transform .22s cubic-bezier(.16,1,.3,1), visibility .22s;
+}
+.nav-menu > li:hover > .dropdown, .nav-menu > li:focus-within > .dropdown{ opacity:1; visibility:visible; transform:translateY(6px); }
+.dropdown a{
+  display:block; padding:10px 13px; border-radius:9px;
+  font-size:var(--fs-sm); font-weight:400; color:var(--soft);
+  transition:background .16s, color .16s, padding-left .16s;
+}
+.dropdown a:hover{ background:rgba(var(--rgb-brand),.1); color:var(--orange-deep); padding-left:17px; }
+
+.nav-check{ display:none; }
+.nav-burger{ display:none; flex-direction:column; gap:5px; padding:8px; }
+.nav-burger span{ width:24px; height:2px; background:var(--text); border-radius:2px; transition:.3s; }
+/* 1280px, up from 1160 — the 18px links need more room before folding to the burger */
+@media (max-width:1280px){
+  .nav-burger{ display:flex; }
+  .nav-menu{
+    display:none; position:absolute; top:100%; left:0; right:0;
+    --text:var(--color-ink); --soft:rgba(var(--rgb-ink),.72);
+    background:var(--bg); border-bottom:1px solid var(--line); box-shadow:0 20px 40px rgba(var(--rgb-ink),.1);
+    flex-direction:column; align-items:stretch; gap:2px;
+    padding:16px var(--pad) 30px; max-height:calc(100vh - 120px); overflow-y:auto;
+  }
+  .nav-check:checked ~ .nav-menu{ display:flex; }
+  .nav-check:checked ~ .nav-burger span:nth-child(1){ transform:translateY(7px) rotate(45deg); }
+  .nav-check:checked ~ .nav-burger span:nth-child(2){ opacity:0; }
+  .nav-check:checked ~ .nav-burger span:nth-child(3){ transform:translateY(-7px) rotate(-45deg); }
+  .nav-menu > li > a{ padding:13px 8px; }
+  .nav-menu > li > a:hover{ background:rgba(var(--rgb-ink),.06); }
+  .nav-menu > li.has-children > a::after{ margin-left:auto; }
+  .dropdown{ position:static; opacity:1; visibility:visible; transform:none; box-shadow:none; border:0; background:transparent; border-radius:0; padding:0 0 8px 14px; min-width:0; }
+  .dropdown a:hover{ padding-left:13px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HOME BANNER (HERO)
+   ═══════════════════════════════════════════════════════════════ */
+/* Full-bleed hero — the banner video IS the background, copy sits on a scrim.
+   Still lives below the always-solid white nav; it just fills whatever
+   viewport is left underneath the top chrome (--hf-h + --nav-h, measured in JS). */
+.home-banner{
+  position:relative; isolation:isolate; overflow:hidden; z-index:1;
+  background:var(--color-ink);
+  /* ONE SCREEN: the hero takes 100dvh minus the top chrome it sits under, so the
+     header bar + nav + hero together are exactly one viewport. (A literal 100dvh
+     here would push the hero's last 108px below the fold instead.)
+     Padding and type are vh-aware below so the content can't outgrow this. */
+  min-height:calc(100vh - var(--nav-h,64px) - var(--hf-h,44px));
+  min-height:calc(100dvh - var(--nav-h,64px) - var(--hf-h,44px));
+  display:flex; align-items:flex-end;
+  /* The strip is no longer a pinned full-bleed band, so no height has to be
+     reserved for it — it sits in the bottom row next to the buttons. */
+  padding-block:clamp(24px,4.5vh,72px) clamp(22px,4vh,54px);
+  /* dark surface tokens — shared components (secondary button, lede) re-tune themselves */
+  --text:var(--color-white);
+  --soft:rgba(var(--rgb-white),.8);
+  --line:rgba(var(--rgb-white),.34);
+  /* Frosted glass for the ghost button and the carousel pill. A BLACK tint, not
+     a white one — white frost over a bright video frame washes out and the white
+     logos/label disappear into it. Both consume this token so the bottom row
+     stays one consistent material. */
+  --ghost-bg:rgba(var(--rgb-night),.34);
+  --frost:blur(18px) saturate(125%);
+}
+/* The hero copy hugs the LEFT EDGE at every width — it deliberately opts out of
+   the shared centred 1440px column, which would otherwise push it toward the
+   middle of the screen on large displays. Only --pad insets it. */
+.home-banner .wrap{ position:relative; z-index:1; max-width:none; margin-inline:0;
+  display:flex; flex-direction:column; align-items:flex-start; gap:clamp(14px,2.4vh,26px); }
+.banner-content{ display:flex; flex-direction:column; align-items:flex-start;
+  gap:clamp(12px,2.2vh,22px); max-width:min(100%,880px); }
+/* Bottom row · buttons bottom-LEFT, product carousel filling the space to their
+   RIGHT. align-items:stretch is the whole trick: the strip inherits the row's
+   height from the tallest item (the buttons), so the two stay the same height
+   with no magic number to keep in sync when button padding or type changes. */
+.banner-base{ display:flex; align-items:stretch; flex-wrap:wrap;
+  gap:clamp(14px,2vw,28px); width:100%; }
+.banner-actions{ flex:0 0 auto; }
+/* 22ch keeps the headline to ~3 lines; --fs-hero shrinks with viewport height */
+.banner-content h1{ max-width:22ch; text-wrap:balance; font-size:var(--fs-hero); line-height:var(--lh-tight);
+  color:var(--color-white); text-shadow:0 2px 34px rgba(var(--rgb-night),.45); }
+.banner-content p{ max-width:54ch; font-size:var(--fs-lede); color:rgba(var(--rgb-white),.82); }
+/* No margin-top — .banner-base is a stretch row, so a margin here would be added
+   to the row height and make the strip taller than the buttons it must match.
+   The gap under the lede comes from .wrap's own gap instead. */
+.banner-actions{ display:flex; flex-wrap:wrap; align-items:center; gap:14px 18px; }
+.dynamiq-cta a{
+  display:inline-flex; align-items:center; gap:10px;
+  font-family:var(--font-sans); font-size:var(--fs-sm); font-weight:700;
+  background:var(--orange); color:var(--color-on-accent); padding:16px 34px; border-radius:var(--r-pill);
+  box-shadow:0 10px 30px -8px var(--orange-glow); transition:background .25s, transform .3s, box-shadow .35s;
+}
+.dynamiq-cta a:hover{ background:var(--orange-2); transform:translateY(-2px); box-shadow:0 18px 46px -8px var(--orange-glow); }
+.dynamiq-cta a .arr{ transition:transform .3s cubic-bezier(.2,.7,.2,1); }
+.dynamiq-cta a:hover .arr{ transform:translateX(5px); }
+.banner-secondary{
+  display:inline-flex; align-items:center; gap:9px;
+  font-family:var(--font-sans); font-size:var(--fs-sm); font-weight:700; letter-spacing:.02em;
+  color:var(--text); padding:16px 24px; border-radius:var(--r-pill);
+  border:1.5px solid var(--line); background:var(--ghost-bg); transition:border-color .25s, background .25s, transform .3s;
+  backdrop-filter:var(--frost); -webkit-backdrop-filter:var(--frost); /* glass over the hero video */
+}
+.banner-secondary:hover{ border-color:var(--orange); background:rgba(var(--rgb-brand),.08); transform:translateY(-2px); }
+.banner-secondary .arr{ transition:transform .3s cubic-bezier(.2,.7,.2,1); }
+.banner-secondary:hover .arr{ transform:translateX(4px); }
+
+/* full-bleed video layer */
+.banner-media{ position:absolute; inset:0; z-index:-2; pointer-events:none; }
+.banner-media video{
+  /* position+z-index are REQUIRED, not decorative. .banner-media is a stacking
+     context; a static video paints ABOVE any negative-z-index sibling, so the
+     ::after scrim below was rendering behind the video and doing nothing.
+     Both layers are explicitly ordered now — don't drop these. */
+  position:relative; z-index:0;
+  width:100%; height:100%; object-fit:cover; display:block; opacity:0;
+  /* Hard ceiling on how bright the footage can get. The clip is remote and its
+     frames can't be inspected here, so the copy's contrast cannot depend on
+     what happens to be playing; this guarantees a floor the ramps build on. */
+  filter:brightness(.65) saturate(1.06);
+  transition:opacity 1.4s cubic-bezier(.16,1,.3,1);
+  animation:bannerDrift 30s ease-in-out infinite alternate;
+}
+.banner-media video.is-ready{ opacity:1; }
+@keyframes bannerDrift{ from{ transform:scale(1.06); } to{ transform:scale(1.15); } }
+/* Scrim · a tint of black so the white copy stays readable over bright frames of
+   the video. Three stacked ramps rather than one flat fill, so the video is only
+   darkened where text actually sits and stays clean on the right:
+     1. left→right  — carries the headline and lede
+     2. bottom→top  — carries the bottom row (buttons + carousel)
+     3. a light overall tint to hold the mid-tones down
+   Sits above the video but below the copy: .banner-media is z-index:-2, this is
+   -1, and .home-banner .wrap is z-index:1. */
+.banner-media::after{
+  /* z-index:1 sits this ABOVE the video (z-index:0). It was -1, which put it
+     behind the static video and made the whole scrim invisible. .banner-media's
+     own z-index:-2 is what keeps the pair behind the copy. */
+  content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:
+    linear-gradient(90deg,rgba(var(--rgb-night),.66),rgba(var(--rgb-night),.40) 38%,rgba(var(--rgb-night),.10) 72%,rgba(var(--rgb-night),0)),
+    linear-gradient(0deg,rgba(var(--rgb-night),.60),rgba(var(--rgb-night),.24) 34%,rgba(var(--rgb-night),0) 68%),
+    rgba(var(--rgb-night),.16);
+}
+/* Narrow screens: the copy spans the full width, so a left-to-right ramp would
+   leave the right end of the headline unprotected. Go bottom-up only. */
+@media (max-width:900px){
+  .banner-media::after{
+    background:
+      linear-gradient(0deg,rgba(var(--rgb-night),.66),rgba(var(--rgb-night),.34) 46%,rgba(var(--rgb-night),.06) 82%),
+      rgba(var(--rgb-night),.22);
+  }
+}
+
+/* product strip · auto-scrolling IQ Suite logos occupying the bottom row to the
+   RIGHT of the buttons. Same marquee mechanic as .trust — a set plus one
+   duplicate, looped on -50%.
+   No explicit height: `align-items:stretch` on .banner-base makes it exactly as
+   tall as the buttons beside it. Border/background/blur/radius deliberately
+   mirror .banner-secondary so the row reads as one consistent set of controls. */
+.banner-strip{
+  position:relative; z-index:2; flex:1 1 320px; min-width:0;
+  display:flex; align-items:center; overflow:hidden;
+  border:1.5px solid var(--line); border-radius:var(--r-pill);
+  background:var(--ghost-bg);
+  backdrop-filter:var(--frost); -webkit-backdrop-filter:var(--frost);
+}
+.banner-strip-marq{ width:100%; overflow:hidden;
+  -webkit-mask-image:linear-gradient(90deg,transparent,var(--color-black) 9%,var(--color-black) 91%,transparent);
+  mask-image:linear-gradient(90deg,transparent,var(--color-black) 9%,var(--color-black) 91%,transparent); }
+.banner-strip-track{ display:flex; align-items:center; gap:clamp(36px,5vw,76px); width:max-content;
+  animation:bannerLogos 46s linear infinite; }
+/* pause on hover so the logos are actually clickable */
+.banner-strip:hover .banner-strip-track{ animation-play-state:paused; }
+@keyframes bannerLogos{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+.banner-strip-track a{ flex:0 0 auto; display:flex; align-items:center;
+  opacity:.82; transition:opacity .3s ease, transform .3s cubic-bezier(.2,.7,.2,1); }
+.banner-strip-track a:hover{ opacity:1; transform:translateY(-2px); }
+/* max-height keeps the logos inside the pill whatever height the buttons resolve
+   to — the clamp alone could exceed the row on short viewports. */
+.banner-strip-track img{ height:clamp(20px,3vh,30px); max-height:calc(100% - 16px);
+  width:auto; object-fit:contain; }
+
+/* hover card · one shared element, positioned over the strip by JS */
+.banner-tip{
+  position:absolute; z-index:4; left:0; bottom:0;
+  width:min(290px,calc(100% - 28px)); padding:13px 16px 15px;
+  border-radius:12px; border:1px solid rgba(var(--rgb-white),.18);
+  background:rgba(var(--rgb-night),.9);
+  box-shadow:0 26px 58px -20px rgba(var(--rgb-night),.75);
+  backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+  opacity:0; transform:translateY(8px); pointer-events:none;
+  transition:opacity .26s ease, transform .26s cubic-bezier(.16,1,.3,1);
+}
+.banner-tip.show{ opacity:1; transform:translateY(0); }
+.banner-tip-name{ font-size:var(--fs-sm); font-weight:700; color:var(--color-white); margin-bottom:5px; }
+.banner-tip-desc{ font-size:var(--fs-xs); line-height:var(--lh-body); color:rgba(var(--rgb-white),.78); }
+/* pointer, aimed at the hovered logo via --tip-x */
+.banner-tip::after{
+  content:""; position:absolute; bottom:-6px; left:var(--tip-x,50%);
+  width:11px; height:11px; transform:translateX(-50%) rotate(45deg);
+  background:rgba(var(--rgb-night),.9);
+  border-right:1px solid rgba(var(--rgb-white),.18); border-bottom:1px solid rgba(var(--rgb-white),.18);
+}
+/* touch devices have no hover — the logo is just a link there */
+@media (hover:none){ .banner-tip{ display:none; } }
+
+@media (max-width:900px){
+  /* Centre the block instead of bottom-aligning it. The desktop hero pins copy
+     to the bottom edge, but on a tall phone that left up to 290px of empty
+     video above the headline while everything crushed into the bottom third.
+     Symmetric padding so the breathing room is shared top and bottom. */
+  .home-banner{ align-items:center; padding-block:clamp(28px,5vh,56px); }
+  .banner-content h1{ max-width:20ch; }
+  .banner-content p{ max-width:46ch; }
+  /* Below 900 there isn't room for buttons and a readable carousel side by side,
+     so the strip takes its own line. Done explicitly rather than left to flex
+     wrap: once wrapped it has no sibling to inherit a height from, and relying
+     on the wrap point left it 29px tall at 600px wide. */
+  .banner-strip{ flex:1 1 100%; height:clamp(50px,7.4vh,60px); }
+}
+@media (max-width:560px){
+  /* Side by side, not stacked. Two full-width buttons cost 125px — the largest
+     block in the hero after the headline, and what forced the lede to be hidden
+     at 360px. Sharing one row costs ~57px. flex:1 1 0 + min-width:0 splits the
+     width evenly regardless of label length; nowrap stops them re-stacking. */
+  .banner-actions{ width:100%; flex-wrap:nowrap; gap:10px; }
+  .banner-actions .dynamiq-cta, .banner-secondary{ flex:1 1 0; min-width:0; }
+  .banner-actions .dynamiq-cta a, .banner-secondary{
+    width:100%; justify-content:center; padding-inline:12px; white-space:nowrap;
+  }
+}
+/* Short viewports (small laptops, landscape phones) — reclaim vertical space so the
+   hero still resolves to one screen. Declared last so it wins over the width queries
+   above when a screen is both narrow AND short. */
+@media (max-height:720px){
+  .home-banner{ padding-block:clamp(16px,3vh,36px) clamp(16px,3vh,34px); }
+  .banner-strip-track img{ height:clamp(18px,2.6vh,26px); }
+  .banner-content{ gap:clamp(10px,1.6vh,16px); }
+  .banner-content p{ font-size:var(--fs-body); }
+  .banner-actions{ gap:10px 14px; }
+}
+/* Very tight viewports (landscape phones, small portrait phones): the lede is the
+   first thing to go, so the headline, CTAs and product strip all stay on one
+   screen without colliding. Every other size keeps the full copy. */
+/* Landscape phones are WIDE but SHORT, so the ≤900px rule that drops the strip
+   onto its own line is exactly wrong there — it spends ~64px of vertical space
+   on a screen that has none, while leaving the row half empty. Put it back
+   beside the buttons whenever there is width to spare but not height. */
+@media (max-height:520px) and (min-width:601px){
+  .banner-strip{ flex:1 1 240px; height:auto; }
+  .home-banner{ padding-block:clamp(10px,2.4vh,26px); }
+  .home-banner .wrap{ gap:clamp(8px,1.8vh,16px); }
+}
+/* The height threshold was 700px, which hid the lede on 360x640 — a very common
+   Android size. Side-by-side buttons freed ~69px, so 640 now has room for it;
+   dropped to 620 so only genuinely tiny screens lose the copy. */
+@media (max-height:600px), (max-width:560px) and (max-height:620px){
+  .banner-content p{ display:none; }
+  .banner-content h1{ max-width:26ch; }
+}
+@media (prefers-reduced-motion:reduce){
+  .banner-media video{ animation:none; transform:none; opacity:1; }
+  /* no auto-scroll — let the strip be swiped/scrolled instead */
+  .banner-strip-track{ animation:none; }
+  .banner-strip-marq{ overflow-x:auto; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   TRUST LOGOS · two-way marquee (client logos)
+   ═══════════════════════════════════════════════════════════════ */
+.trust{ padding-block:clamp(34px,4vw,54px); background:var(--bg); overflow:hidden; }
+.trust-marq{ position:relative; overflow:hidden; }
+.trust-marq::before,
+.trust-marq::after{ content:""; position:absolute; top:0; bottom:0; z-index:2;
+  width:clamp(24px,7%,90px); pointer-events:none; }
+.trust-marq::before{ left:0; background:linear-gradient(90deg,var(--bg),rgba(var(--rgb-white),0)); }
+.trust-marq::after{ right:0; background:linear-gradient(270deg,var(--bg),rgba(var(--rgb-white),0)); }
+.trust-marq + .trust-marq{ margin-top:clamp(20px,2.8vw,36px); }
+/* one combined row carries 9 logos, so the loop runs a little longer per cycle */
+.trust-track{ display:flex; align-items:center; gap:clamp(44px,6vw,92px);
+  width:-webkit-max-content; width:max-content; will-change:transform; animation:trustMarq 64s linear infinite; }
+.trust-marq:hover .trust-track{ animation-play-state:paused; }
+/* sits ABOVE the marquee per designer review */
+.trust-note{ text-align:center; color:var(--soft); font-size:var(--fs-body); line-height:var(--lh-body);
+  max-width:72ch; margin:0 auto clamp(24px,3vw,40px); }
+@keyframes trustMarq{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
+.trust-track img{ height:clamp(26px,3vw,40px); width:auto; object-fit:contain; flex:0 0 auto;
+  opacity:1; filter:none; transition:opacity .3s ease, transform .3s ease; }
+.trust-track img:hover{ opacity:1; transform:scale(1.03); }
+@media (prefers-reduced-motion:reduce){
+  .trust-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; gap:36px 48px; }
+  .trust-marq::before, .trust-marq::after{ display:none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   IQ SUITE (PRODUCTS) · Adobe-style photo-reveal cards · LIGHT theme
+   Default: light card + black logo. Hover: product stock photo fills
+   the card, logo swaps to white, text goes white (the Adobe peg).
+   ═══════════════════════════════════════════════════════════════ */
+.iq{
+  padding-block:var(--sec); position:relative;
+  background:linear-gradient(180deg,transparent 0,var(--bg-2) var(--section-blend),var(--bg-2) calc(100% - var(--section-blend)),transparent 100%);
+}
+/* minmax(...,auto): rows may grow so the 2-sentence descriptions never clip */
+.iq-grid{ display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:minmax(clamp(158px,15vw,196px),auto); gap:14px; }
+.iq-card{
+  position:relative; isolation:isolate; overflow:hidden;
+  min-height:0; border-radius:14px;
+  border:1px solid var(--line); background:var(--card-grad);
+  padding:21px 26px 26px; display:flex; flex-direction:column; justify-content:space-between; gap:24px;
+  transition:transform .55s cubic-bezier(.16,1,.3,1), border-color .45s, box-shadow .55s;
+}
+.iq-card:hover{ transform:translateY(-6px); border-color:rgba(var(--rgb-brand),.55); box-shadow:0 34px 66px -26px rgba(var(--rgb-ink),.32); }
+/* flagship tile — spans 2×2, full product photo behind white logo + copy */
+.iq-card.feature{ grid-column:span 2; grid-row:span 2; padding:28px 32px 30px; }
+.iq-card.feature .iq-art{ inset:0; z-index:0; opacity:1; transform:none;
+  background-size:cover; background-position:center; background-repeat:no-repeat; filter:none; }
+.iq-card.feature::after{ content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
+  background:linear-gradient(180deg,rgba(var(--rgb-night),.5) 0%,rgba(var(--rgb-night),.32) 32%,rgba(var(--rgb-night),.6) 66%,rgba(var(--rgb-night),.9) 100%); }
+.iq-card.feature .iq-logo{ height:clamp(30px,3vw,42px); }
+.iq-card.feature .iq-logo .lg-d{ opacity:0; }
+.iq-card.feature .iq-logo .lg-l{ opacity:1; }
+.iq-card.feature .iq-desc{ color:var(--color-white); max-width:38ch; font-size:var(--fs-body); }
+.iq-card.feature .iq-go{ opacity:1; transform:none; color:var(--color-white); border-color:rgba(var(--rgb-white),.55); }
+.iq-card.feature:hover .iq-go{ background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
+/* Official monitor artwork by default; original full-card photo returns on hover */
+.iq-art{ position:absolute; inset:0; z-index:-1; opacity:0; transform:scale(1.06);
+  background-size:cover; background-position:center;
+  transition:opacity .55s ease, transform .9s cubic-bezier(.16,1,.3,1); }
+.iq-card:not(.all) .iq-art{
+  inset:clamp(38px,3.2vw,42px) 8px 0 48%; z-index:1; opacity:1; transform:none;
+  background-size:contain; background-position:right bottom; background-repeat:no-repeat;
+  filter:drop-shadow(0 12px 18px rgba(var(--rgb-ink),.12));
+}
+.iq-hover-art{
+  position:absolute; inset:0; z-index:0; opacity:0; transform:scale(1.06);
+  background-size:cover; background-position:center;
+  transition:opacity .45s ease,transform .85s cubic-bezier(.16,1,.3,1);
+}
+.iq-hover-art::after{ content:""; position:absolute; inset:0;
+  background:linear-gradient(180deg,rgba(var(--rgb-night),.35) 0%,rgba(var(--rgb-night),.55) 55%,rgba(var(--rgb-night),.85) 100%); }
+.iq-card:not(.all):hover .iq-art{ opacity:0; transform:translateY(6px) scale(.96); }
+.iq-card:not(.all):hover .iq-hover-art{ opacity:1; transform:scale(1); }
+/* logo lockup pinned top-left */
+.iq-logo{ position:relative; z-index:3; height:clamp(25px,2.5vw,31px); }
+.iq-logo img{ height:100%; width:auto; max-width:82%; object-fit:contain; object-position:left center;
+  transition:opacity .45s ease; }
+.iq-logo .lg-l{ position:absolute; left:0; top:0; opacity:0; }
+.sap-card-logo .lg-l{ filter:none; }
+.iq-card:not(.all):hover .lg-d{ opacity:0; }
+.iq-card:not(.all):hover .lg-l{ opacity:1; }
+.iq-foot{ position:relative; z-index:3; display:flex; align-items:flex-end; justify-content:space-between; gap:16px; }
+.iq-desc{ font-size:var(--fs-sm); line-height:var(--lh-body); color:var(--soft); max-width:30ch; transition:color .45s ease; }
+.iq-card:not(.all) .iq-desc{ max-width:46%; }
+.iq-card:hover .iq-desc{ color:var(--color-white); }
+.iq-go{ width:40px; height:40px; border-radius:50%; border:1px solid var(--line); display:grid; place-items:center;
+  flex:0 0 auto; color:var(--soft); opacity:0; transform:translateX(-6px);
+  transition:opacity .4s, transform .4s cubic-bezier(.16,1,.3,1), background .3s, color .3s, border-color .3s; }
+.iq-card:hover .iq-go{ opacity:1; transform:none; background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
+.iq-go svg{ width:17px; height:17px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+@media (max-width:900px){ .iq-grid{ grid-template-columns:repeat(2,1fr); } .iq-card.feature{ grid-column:span 2; grid-row:span 1; } }
+@media (max-width:560px){ .iq-grid{ grid-template-columns:1fr; grid-auto-rows:auto; } .iq-card{ min-height:180px; } .iq-card.feature{ grid-column:auto; grid-row:auto; min-height:240px; } }
+/* touch devices have no hover — keep the card action visible */
+@media (hover:none){
+  .iq-go{ opacity:1; transform:none; background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
+  /* …but .iq-foot is a space-between row, so a permanently visible arrow lands
+     on top of the monitor artwork (.iq-art occupies the right 52% of the card).
+     On a mouse this never collides: the arrow only appears on hover, and the
+     monitor fades to the hover photo at that same moment. Touch has no such
+     moment, so stack the arrow UNDER the copy, inside the left column the
+     artwork doesn't reach.
+     ALL cards stack, including .all/.feature. Its photo is full-bleed so the
+     arrow never collided there — but left in the space-between row it floated
+     mid-right against the ragged edge of the paragraph, reading as unanchored
+     next to the bottom-left arrows on every other card. Consistency wins. */
+  .iq-card .iq-foot{ flex-direction:column; align-items:flex-start; gap:14px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SAP BUSINESS ONE · light bento · Adobe-style unmask reveal
+   ═══════════════════════════════════════════════════════════════ */
+.sap-business-one{ position:relative; padding-block:var(--sec); }
+.sap-inner{ display:grid; grid-template-columns:.92fr 1.08fr; gap:clamp(34px,5vw,72px); align-items:start; }
+
+/* LEFT copy column — sticks under the nav so it stays visible while the 5 key points scroll past */
+.sap-copy{ position:sticky; top:calc(var(--nav-h,64px) + 28px); align-self:start;
+  display:flex; flex-direction:column; align-items:flex-start; gap:20px; }
+.sap-logo-rev{ height:44px; width:auto; opacity:.95; }
+.sap-lead{ font-family:var(--font-sans); font-weight:500; font-size:var(--fs-card); line-height:var(--lh-heading); letter-spacing:-.01em; color:var(--text); max-width:34ch; }
+.sap-sub{ color:var(--soft); font-size:var(--fs-body); line-height:var(--lh-relaxed); max-width:46ch; }
+.sap-more{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-xs); letter-spacing:.14em; text-transform:uppercase;
+  color:var(--orange); display:inline-flex; align-items:center; gap:10px; transition:gap .25s; }
+.sap-more:hover{ gap:15px; }
+.sap-more .arr{ transition:transform .3s cubic-bezier(.2,.7,.2,1); }
+.sap-more:hover .arr{ transform:translateX(4px); }
+
+/* RIGHT bento (five feature tiles) */
+.sap-bento{ position:relative; display:grid; grid-template-columns:repeat(2,1fr); gap:12px; align-content:start; }
+.sap-bento .feat:last-of-type{ grid-column:1 / -1; }
+.feat{
+  position:relative; overflow:hidden; border-radius:14px; padding:24px 24px 22px;
+  background:var(--card-grad); border:1px solid var(--line);
+  display:flex; flex-direction:column; gap:9px;
+  transition:transform .4s cubic-bezier(.16,1,.3,1), border-color .4s, box-shadow .4s;
+}
+.feat::after{ content:""; position:absolute; inset:0; opacity:0; transition:opacity .45s; pointer-events:none;
+  background:radial-gradient(340px 180px at var(--mx,50%) var(--my,0%),rgba(var(--rgb-brand),.12),transparent 60%); }
+.feat:hover{ transform:translateY(-4px); border-color:rgba(var(--rgb-brand),.4); box-shadow:0 20px 44px -22px rgba(var(--rgb-ink),.22); }
+.feat:hover::after{ opacity:1; }
+.feat h3{ display:flex; flex-direction:column; align-items:flex-start; gap:6px; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-body); line-height:var(--lh-heading); color:var(--text); }
+.feat h3 i{ font-style:normal; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-display); line-height:1; letter-spacing:-.03em;
+  background:linear-gradient(135deg, var(--orange) 15%, var(--orange-2)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+.feat p{ font-size:var(--fs-sm); color:var(--soft); line-height:var(--lh-body); }
+/* unmask reveal — more specific than .feat so it owns the transition; only clip-path/opacity
+   carry the per-tile stagger (var(--d)), hover transform/border stay instant */
+.feat[data-reveal="reveal"]{
+  opacity:0; transform:none; clip-path:inset(0 0 100% 0 round 14px);
+  transition:opacity .6s ease var(--d,0ms), clip-path .9s cubic-bezier(.16,1,.3,1) var(--d,0ms),
+             transform .45s cubic-bezier(.16,1,.3,1), border-color .4s, box-shadow .4s;
+}
+.feat[data-reveal="reveal"].in{ opacity:1; clip-path:inset(0 0 0 0 round 14px); }
+
+/* base play-badge kept here — reused by the News feature card (.wn-media) */
+.play-badge{ width:56px; height:56px; border-radius:50%; background:var(--orange); display:grid; place-items:center; flex:0 0 auto; box-shadow:0 10px 30px -6px var(--orange-glow); transition:transform .3s; }
+.play-badge svg{ width:22px; height:22px; fill:var(--color-on-accent); margin-left:3px; }
+
+@media (max-width:980px){ .sap-inner{ grid-template-columns:1fr; } .sap-copy{ position:static; } }
+@media (max-width:560px){ .sap-bento{ grid-template-columns:1fr; } .sap-bento .feat:last-of-type{ grid-column:auto; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   NEWS & ANNOUNCEMENTS · "Explore what's new" (Adobe-style feature)
+   ═══════════════════════════════════════════════════════════════ */
+.whatsnew{ height:auto; min-height:0; padding-block:var(--sec); }
+.whatsnew > .wrap{ height:auto; display:block; }
+.whatsnew .sec-head{ max-width:640px; margin-bottom:clamp(12px,1.8vw,22px); }
+.whatsnew .sec-head h2{ font-size:var(--fs-h2); }
+.whatsnew .sec-head p{ font-size:var(--fs-body); }
+/* featured + list layout (category tabs removed per designer review —
+   the dedicated News & Events page will own filtering) */
+.news-layout{ display:grid; grid-template-columns:1fr 1fr; gap:clamp(20px,2.4vw,34px); align-items:stretch; min-height:clamp(500px,42vw,590px); }
+.news-feature{ position:relative; display:block; border-radius:14px; overflow:hidden; border:1px solid var(--line);
+  height:100%; min-height:0; box-shadow:0 30px 60px -34px rgba(var(--rgb-ink),.3); }
+.news-feature img{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:transform .6s cubic-bezier(.16,1,.3,1); }
+.news-feature:hover img{ transform:scale(1.045); }
+.news-feature::after{ content:""; position:absolute; inset:0; background:linear-gradient(180deg,transparent 38%,rgba(var(--rgb-night),.86)); }
+.news-feature-body{ position:absolute; left:0; right:0; bottom:0; z-index:1; padding:clamp(22px,2.4vw,32px); display:flex; flex-direction:column; gap:14px; }
+.news-feature-body h3{ color:var(--color-white); font-size:var(--fs-h3); line-height:var(--lh-heading); max-width:24ch; order:2; }
+.news-meta{ display:flex; align-items:center; gap:14px; order:1; }
+.news-tag{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-2xs); letter-spacing:.12em; text-transform:uppercase;
+  color:var(--orange); background:rgba(var(--rgb-brand),.14); border:1px solid rgba(var(--rgb-brand),.32); padding:5px 10px; border-radius:4px; }
+.news-date{ font-size:var(--fs-xs); color:var(--faint); }
+.news-feature-body .news-date{ color:rgba(var(--rgb-white),.72); }
+/* right-hand column: list on top, CTA pinned under it */
+.news-side{ display:flex; flex-direction:column; gap:14px; min-height:0; }
+.news-side .news-list{ flex:1 1 auto; min-height:0; }
+.news-cta{ flex:0 0 auto; display:flex; justify-content:flex-end; }
+/* right-hand list */
+.news-list{ display:flex; flex-direction:column; gap:16px; height:auto; max-height:590px; min-height:0; overflow-y:auto; padding:6px 6px 6px 0;
+  overscroll-behavior-y:auto;
+  scrollbar-width:thin; scrollbar-color:var(--line) transparent;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,var(--color-black) 26px,var(--color-black) calc(100% - 26px),transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0,var(--color-black) 26px,var(--color-black) calc(100% - 26px),transparent 100%); }
+.news-list::-webkit-scrollbar{ width:6px; }
+.news-list::-webkit-scrollbar-thumb{ background:var(--line); border-radius:6px; }
+.news-item{ display:grid; grid-template-columns:130px 1fr; gap:18px; align-items:center; }
+.news-thumb{ border-radius:9px; overflow:hidden; aspect-ratio:4/3; border:1px solid var(--line); background:var(--bg-2); }
+.news-thumb img{ width:100%; height:100%; object-fit:cover; transition:transform .5s cubic-bezier(.16,1,.3,1); }
+.news-item:hover .news-thumb img{ transform:scale(1.06); }
+.news-item-body{ display:flex; flex-direction:column; gap:11px; }
+.news-item-body h4{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-lede); line-height:var(--lh-heading); letter-spacing:-.01em; color:var(--text); transition:color .25s;
+  display:-webkit-box; -webkit-line-clamp:2; line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+.news-item:hover .news-item-body h4{ color:var(--orange); }
+.news-item.hide{ display:none; }
+@media (max-width:900px){
+  .whatsnew{ height:auto; padding-block:var(--sec); }
+  .whatsnew > .wrap{ height:auto; display:block; }
+  .news-layout{ grid-template-columns:1fr; }
+  /* ⚠ .news-feature has NO in-flow children — the image, the ::after scrim and
+     .news-feature-body are all position:absolute — so its height came entirely
+     from aspect-ratio. As a STRETCHED grid item, WebKit resolves the row height
+     from that (empty) content first and collapses the card to 0: the featured
+     story vanished on iOS in Safari AND Chrome, which share WebKit.
+     align-self:start stops the stretch; min-height guarantees a visible box even
+     where aspect-ratio is ignored. It sits just under the 16/10 height so the
+     aspect ratio still governs wherever it works. */
+  .news-feature{ height:auto; aspect-ratio:16/10; align-self:start;
+    min-height:clamp(200px,52vw,320px); }
+  .news-list{ height:auto; overflow:visible; padding-right:0; margin-top:20px; }
+}
+@media (max-width:480px){ .news-item{ grid-template-columns:100px 1fr; gap:14px; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   WHY CHOOSE (WE ARE ACCREDITED)
+   ═══════════════════════════════════════════════════════════════ */
+.we-are-accredited{
+  height:auto; min-height:0; padding-block:var(--sec);
+  display:block; overflow:clip;
+  background:
+    radial-gradient(700px 420px at 8% 72%,rgba(var(--rgb-brand),.09),transparent 68%),
+    linear-gradient(180deg,transparent,rgba(var(--rgb-gray),.12),transparent);
+}
+/* Designer review round 2: TWO columns — the left column owns the eyebrow,
+   heading and SAP badge (heading must fit inside it); the copy on the right
+   is vertically centred against the section. */
+.accredited-grid{
+  width:100%; display:grid;
+  grid-template-columns:minmax(280px,.78fr) minmax(0,1.22fr);
+  column-gap:clamp(36px,5vw,72px); align-items:center;
+}
+.accredited-left{ display:flex; flex-direction:column; align-items:flex-start;
+  gap:clamp(26px,4vh,48px); height:100%; }
+.accredited-header{ display:flex; flex-direction:column; align-items:flex-start; gap:10px; }
+/* sized so the heading wraps INSIDE the left column instead of running past it */
+.accredited-header h2{ max-width:100%; font-size:clamp(1.75rem,1.25rem + 1.9vw,2.75rem); }
+.accredited-copy{
+  display:grid; align-content:center; align-self:center;
+  gap:clamp(12px,1.9vh,20px);
+}
+.accredited-copy p{
+  position:relative; padding:clamp(12px,1.6vh,18px) 0 0;
+  border-top:1px solid var(--line); color:var(--soft);
+  font-size:var(--fs-lede); line-height:1.65;
+}
+.accredited-copy p:first-child{ padding-top:0; border-top:0; }
+/* fills the space under the heading; badge centres in what's left */
+.accredited-visual{
+  position:relative; min-height:0; flex:1; width:100%; display:grid; place-items:center;
+  overflow:visible; background:transparent;
+}
+.accredited-visual img{
+  width:auto; max-width:min(100%,320px); height:auto; max-height:clamp(180px,26dvh,280px);
+  object-fit:contain; object-position:center; display:block;
+}
+
+@media (min-width:901px) and (max-height:720px){
+  .we-are-accredited{ padding-block:24px; }
+  .accredited-grid{ gap:10px; }
+  .accredited-header h2{ font-size:var(--fs-subheading); }
+  .accredited-copy{ gap:10px; }
+  .accredited-copy p{ padding-top:10px; font-size:var(--fs-body); line-height:var(--lh-body); }
+}
+@media (max-width:900px){
+  .we-are-accredited{ height:auto; min-height:0; padding-block:var(--sec); overflow:visible; }
+  .accredited-grid{ grid-template-columns:1fr; gap:36px; }
+  .accredited-left{ gap:28px; }
+  .accredited-visual{ flex:0 0 auto; aspect-ratio:auto; }
+  .accredited-visual img{ max-height:none; }
+  .accredited-copy{ gap:20px; }
+  .accredited-copy p{ font-size:var(--fs-body); }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OUR SERVICES
+   ═══════════════════════════════════════════════════════════════ */
+.our-services{ padding-block:var(--sec); }
+/* numbered process timeline — 01→05 as a connected journey */
+.serv-timeline{ position:relative; margin-top:clamp(32px,4vw,54px);
+  display:grid; grid-template-columns:repeat(5,1fr); gap:clamp(18px,2vw,30px); }
+.serv-timeline::before{ content:""; position:absolute; top:28px; left:10%; right:10%; height:2px; z-index:0;
+  background:linear-gradient(90deg,rgba(var(--rgb-brand),.5),rgba(var(--rgb-brand),.14)); }
+.serv-step{ position:relative; z-index:1; display:flex; flex-direction:column; align-items:center; text-align:center; gap:14px; }
+.serv-node{ display:flex; justify-content:center; }
+.serv-num-badge{ width:56px; height:56px; border-radius:50%; display:grid; place-items:center;
+  font-family:var(--font-sans); font-weight:700; font-size:1.375rem; letter-spacing:-.02em;
+  color:var(--orange); background:var(--bg); border:2px solid rgba(var(--rgb-brand),.42);
+  box-shadow:0 10px 26px -14px var(--orange-glow);
+  transition:background .3s, color .3s, border-color .3s, transform .35s cubic-bezier(.16,1,.3,1); }
+.serv-step:hover .serv-num-badge{ background:linear-gradient(135deg,var(--orange) 12%,var(--orange-2)); color:var(--color-on-accent); border-color:var(--orange); transform:translateY(-4px); }
+.serv-step h3{ font-size:var(--fs-h3); }
+.serv-step p{ font-size:var(--fs-sm); color:var(--soft); line-height:var(--lh-body); max-width:32ch; }
+.serv-cta{ text-align:center; margin-top:clamp(40px,5vw,60px); }
+@media (max-width:900px){
+  .serv-timeline{ grid-template-columns:1fr; gap:0; margin-top:clamp(26px,5vw,38px); }
+  .serv-timeline::before{ display:none; }
+  .serv-step{ display:grid; grid-template-columns:56px 1fr; column-gap:20px; row-gap:6px; align-items:start; text-align:left; padding-bottom:30px; }
+  .serv-node{ grid-column:1; grid-row:1 / span 2; position:relative; }
+  .serv-node::before{ content:""; position:absolute; top:60px; bottom:-30px; left:50%; transform:translateX(-50%);
+    width:2px; background:linear-gradient(180deg,rgba(var(--rgb-brand),.42),rgba(var(--rgb-brand),.12)); }
+  .serv-step:last-child{ padding-bottom:0; }
+  .serv-step:last-child .serv-node::before{ display:none; }
+  .serv-step h3{ grid-column:2; min-height:56px; display:flex; align-items:center; }
+  .serv-step p{ grid-column:2; max-width:60ch; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   HEAR FROM OUR CUSTOMERS
+   ═══════════════════════════════════════════════════════════════ */
+/* Kemana-style horizontal testimonial marquee · LIGHT */
+.hear-from-our-customer{
+  padding-block:var(--sec); overflow:hidden;
+  background:linear-gradient(180deg,transparent 0,var(--bg-2) var(--section-blend),var(--bg-2) calc(100% - var(--section-blend)),transparent 100%);
+}
+.hear-from-our-customer .sec-head{ margin-bottom:clamp(34px,4vw,52px); }
+/* ⚠ Edge fade via OVERLAYS, not mask-image. iOS Safari fails to composite a
+   masked container whose child runs an infinite transform animation — the whole
+   marquee rendered blank on iPhone while the heading above it showed fine.
+   Overlays are universally supported and look identical over a solid colour. */
+.stories-marq{ position:relative; overflow:hidden; }
+.stories-marq::before,
+.stories-marq::after{ content:""; position:absolute; top:0; bottom:0; z-index:2;
+  width:clamp(18px,4%,56px); pointer-events:none; }
+.stories-marq::before{ left:0; background:linear-gradient(90deg,var(--bg-2),transparent); }
+.stories-marq::after{ right:0; background:linear-gradient(270deg,var(--bg-2),transparent); }
+.stories-track{ display:flex; gap:18px; width:-webkit-max-content; width:max-content;
+  will-change:transform; animation:storiesMarq 80s linear infinite; }
+.stories-marq:hover .stories-track{ animation-play-state:paused; }
+@keyframes storiesMarq{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
+/* Longhands, not `flex:0 0 clamp(...)` — Safari has historically failed to
+   parse a clamp() basis inside the flex shorthand, dropping the whole rule. */
+.story{
+  flex-grow:0; flex-shrink:0; flex-basis:clamp(290px,26vw,350px);
+  display:flex; flex-direction:column; gap:16px;
+  background:var(--card-grad); border:1px solid var(--line); border-radius:14px; padding:28px 26px;
+  min-height:300px; transition:transform .4s cubic-bezier(.16,1,.3,1), border-color .4s, box-shadow .4s;
+}
+.story:hover{ transform:translateY(-6px); border-color:rgba(var(--rgb-brand),.4); box-shadow:0 24px 50px -26px rgba(var(--rgb-ink),.22); }
+.story-head{ display:flex; align-items:center; justify-content:space-between; gap:14px; min-height:44px; }
+.story-logo{ height:38px; display:flex; align-items:center; }
+.story-logo img{ height:100%; width:auto; max-width:170px; object-fit:contain; object-position:left center; }
+.story-q{ font-family:var(--font-sans); font-size:var(--fs-display); font-weight:900; line-height:1; height:34px; color:var(--orange); opacity:.32; flex:0 0 auto; }
+.story blockquote{ font-size:var(--fs-sm); line-height:var(--lh-relaxed); color:var(--soft); font-style:italic; flex:1;
+  display:-webkit-box; -webkit-line-clamp:6; line-clamp:6; -webkit-box-orient:vertical; overflow:hidden; }
+.story-foot{ display:flex; flex-direction:column; gap:12px; margin-top:auto; }
+.story-who{ display:grid; gap:3px; }
+.story-name{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-sm); color:var(--text); letter-spacing:-.01em; }
+.story-role{ font-size:var(--fs-xs); color:var(--faint); }
+.story-more{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-xs); color:var(--orange); display:inline-flex; align-items:center; gap:7px; transition:gap .2s; }
+.story-more:hover{ gap:11px; }
+@media (prefers-reduced-motion:reduce){
+  .stories-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; }
+  .stories-marq::before, .stories-marq::after{ display:none; }
+  .story{ flex-basis:320px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CONTACT US
+   ═══════════════════════════════════════════════════════════════ */
+.contact-us{
+  position:relative; isolation:isolate; overflow:visible; min-height:0;
+  display:grid; place-items:center; padding-block:var(--sec); background:transparent;
+  /* The video bleeds past the section so its soft mask edges land OUTSIDE the
+     form instead of across it. Needed because the desktop composition layer in
+     site-system.css squeezes .contact-us padding to ~28-56px, which is less
+     than --section-blend (48-88px) — so without the bleed the panel's top and
+     bottom sit inside the fade and appear to touch the white page. */
+  --contact-bleed:clamp(70px,8vh,130px);
+}
+/* place-items:center above makes this a content-sized grid item rather than a
+   stretched one, so at 320px it sized to ~322px and pushed the whole document
+   into horizontal scroll. width:100% + min-width:0 pins it to the grid area. */
+.contact-us > .wrap{ width:100%; min-width:0; }
+.contact-media{
+  position:absolute; inset:calc(-1 * var(--contact-bleed)) 0; z-index:-2; pointer-events:none; background:transparent;
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),var(--color-black) calc(100% - var(--section-blend)),transparent 100%);
+  mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),var(--color-black) calc(100% - var(--section-blend)),transparent 100%);
+}
+.contact-media video{
+  width:100%; height:100%; object-fit:cover; opacity:0;
+  transition:opacity 1.2s cubic-bezier(.16,1,.3,1);
+}
+.contact-media video.is-ready{ opacity:1; }
+.contact-media::after{
+  content:""; position:absolute; inset:0;
+  background:linear-gradient(rgba(var(--rgb-scrim),.1),rgba(var(--rgb-scrim),.1));
+}
+.contact-us > .wrap{ position:relative; z-index:1; width:100%; }
+/* Kemana-style panel · LIGHT */
+.contact-panel{
+  position:relative; overflow:hidden; border-radius:16px;
+  border:1px solid var(--line); background:var(--panel);
+  box-shadow:0 44px 96px -54px rgba(var(--rgb-ink),.4);
+  padding:clamp(24px,3.4vw,46px);
+}
+/* faint dot texture (peg's particle map) masked into the top-right */
+.contact-panel::before{ content:""; position:absolute; inset:0; z-index:0; pointer-events:none; opacity:.6;
+  background:radial-gradient(rgba(var(--rgb-ink),.055) 1px,transparent 1.5px); background-size:22px 22px;
+  -webkit-mask-image:radial-gradient(130% 95% at 100% 0%,var(--color-black),transparent 58%);
+  mask-image:radial-gradient(130% 95% at 100% 0%,var(--color-black),transparent 58%); }
+/* ember corner glow */
+.contact-panel::after{ content:""; position:absolute; top:-130px; right:-90px; width:440px; height:440px; z-index:0; pointer-events:none;
+  background:radial-gradient(circle,rgba(var(--rgb-brand),.15),transparent 62%); }
+.contact-grid{ position:relative; z-index:1; display:grid; grid-template-columns:1.08fr .92fr; gap:clamp(32px,4vw,58px); align-items:start; }
+.contact-form-side h2{ font-size:var(--fs-subheading); margin-bottom:16px; }
+.contact--us .row{ display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+.contact--us .full{ grid-column:1 / -1; }
+.field input, .field select, .field textarea{
+  width:100%; background:var(--bg-2); color:var(--text);
+  border:1px solid var(--line); border-radius:10px; padding:11px 15px;
+  font:inherit; font-size:var(--fs-sm); transition:border-color .2s, background .2s, box-shadow .2s;
+}
+.field textarea{ min-height:92px; resize:vertical; }
+.field input::placeholder, .field textarea::placeholder{ color:var(--faint); }
+.field select{ appearance:none; cursor:pointer; color:var(--soft);
+  background-image:linear-gradient(45deg,transparent 50%,var(--soft) 50%),linear-gradient(135deg,var(--soft) 50%,transparent 50%);
+  background-position:calc(100% - 22px) 55%, calc(100% - 16px) 55%; background-size:6px 6px; background-repeat:no-repeat; }
+.field select:valid{ color:var(--text); }
+.field select option{ background:var(--panel); color:var(--text); }
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--orange); background:var(--panel); box-shadow:0 0 0 3px rgba(var(--rgb-brand),.13); }
+#otherField{ display:none; }
+#otherField.show{ display:block; }
+.submit-row{ margin-top:4px; }
+.submit-row .btn{ width:auto; }
+
+.get-in-touch{ align-self:start; }
+.get-in-touch h3{ font-size:var(--fs-subheading); margin-bottom:10px; }
+/* designer review: description runs to the column margin (no ch cap) */
+.get-in-touch > p{ color:var(--soft); margin-bottom:20px; font-size:var(--fs-sm); line-height:var(--lh-body); }
+/* office location card (Singapore removed until real details are available) */
+.contact-info{ display:grid; grid-template-columns:1fr; gap:14px; }
+.loc-card{ border:1px solid var(--line); border-radius:14px; background:var(--bg-2); padding:20px 20px 22px;
+  display:grid; gap:11px; align-content:start; transition:border-color .3s, box-shadow .3s, transform .3s; }
+.loc-card:hover{ border-color:rgba(var(--rgb-brand),.4); box-shadow:0 18px 34px -24px rgba(var(--rgb-ink),.24); transform:translateY(-2px); }
+.loc-card h4{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-card); letter-spacing:-.01em; color:var(--text); }
+.loc-line{ display:flex; align-items:flex-start; gap:11px; }
+.loc-line .ic{ width:34px; height:34px; border-radius:9px; background:rgba(var(--rgb-brand),.12); border:1px solid rgba(var(--rgb-brand),.26); display:grid; place-items:center; flex:0 0 auto; }
+.loc-line .ic svg{ width:16px; height:16px; fill:var(--orange); }
+.loc-line p, .loc-line a{ font-size:var(--fs-sm); color:var(--text); line-height:var(--lh-body); }
+.loc-line a{ display:block; }
+.loc-line a:hover{ color:var(--orange); }
+.loc-tba{ color:var(--faint); font-style:italic; }
+@media (max-width:1080px){ .contact-info{ grid-template-columns:1fr; } }
+@media (max-width:900px){ .contact-grid{ grid-template-columns:1fr; } .contact-us{ min-height:0; } }
+@media (max-width:540px){ .contact--us .row{ grid-template-columns:1fr; } }
+@media (prefers-reduced-motion:reduce){ .contact-media{ display:none; } }
+
+/* ═══════════════════════════════════════════════════════════════
+   FOOTER
+   ═══════════════════════════════════════════════════════════════ */
+.footer{ position:relative; z-index:1; padding-block:clamp(56px,7vw,84px) 32px; background:var(--bg); }
+.footer::before{
+  content:""; position:absolute; left:0; right:0; top:calc(-1 * var(--section-blend)); height:var(--section-blend);
+  pointer-events:none; background:linear-gradient(180deg,transparent,var(--bg));
+}
+.footer-top{ display:grid; grid-template-columns:1.5fr .9fr .9fr 1.1fr; gap:44px; padding-bottom:48px; }
+.footer ul li{ font-size:var(--fs-sm); color:var(--soft); }
+.footer .logo-link::before{
+  content:""; display:block; width:186px; height:70px;
+  background:url("../logos/DynamIQ_Enterprise_Solution_Inc__with_Tagline_Logo_blk.svg") left center / contain no-repeat;
+}
+.logo-footer{ display:none; }
+.footer-brand p.name{ font-family:var(--font-sans); font-weight:700; font-size:var(--fs-sm); letter-spacing:.02em; margin-top:20px; }
+.footer-brand p.addr{ font-size:var(--fs-sm); color:var(--soft); margin-top:6px; }
+.footer-phones{ display:flex; flex-wrap:wrap; gap:10px; margin-top:18px; }
+.footer-phone{
+  display:inline-flex; align-items:center; gap:10px; padding:11px 14px;
+  border:1px solid rgba(var(--rgb-brand),.62); border-radius:6px;
+  font-size:1.125rem; font-weight:700; line-height:1.2; color:var(--text);
+  transition:background .2s ease,border-color .2s ease,color .2s ease,transform .2s ease;
+}
+.footer-phone svg{ width:19px; height:19px; flex:0 0 auto; fill:var(--orange); transition:fill .2s ease; }
+.footer-phone:hover{ background:var(--orange-deep); border-color:var(--orange-deep); color:var(--color-on-accent); transform:translateY(-2px); }
+.footer-phone:hover svg{ fill:var(--color-on-accent); }
+.socials{ display:flex; gap:9px; margin-top:22px; flex-wrap:wrap; }
+.socials a{ width:38px; height:38px; border:1px solid var(--line); border-radius:10px; display:grid; place-items:center; color:var(--soft); transition:color .2s, border-color .2s, background .2s, transform .2s; }
+.socials a:hover{ color:var(--orange); border-color:var(--orange); background:rgba(var(--rgb-brand),.08); transform:translateY(-2px); }
+.socials svg{ width:17px; height:17px; fill:currentColor; }
+.footer h4{ font-family:var(--font-sans); font-size:var(--fs-xs); font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--orange); margin-bottom:18px; }
+.footer ul{ list-style:none; display:grid; gap:11px; }
+.footer ul a{ font-size:var(--fs-sm); color:var(--soft); transition:color .18s, padding-left .18s; }
+.footer ul a:hover{ color:var(--text); padding-left:4px; }
+.footer-base{ border-top:1px solid var(--line-2); padding-top:24px; }
+.footer-base p{ font-size:var(--fs-xs); color:var(--faint); text-align:center; }
+.footer-base a{ color:var(--soft); }
+.footer-base a:hover{ color:var(--orange); }
+@media (max-width:900px){ .footer-top{ grid-template-columns:1fr 1fr; } .footer-brand{ grid-column:1 / -1; } }
+@media (max-width:560px){ .footer-top{ grid-template-columns:1fr; } }
+
+/* ═══ "Let Us Be Your Partner in Growth" CTA — two-column with a product visual ═══ */
+.book-free-demo .cta-panel{ text-align:left; padding:clamp(34px,5vw,68px); overflow:hidden; }
+.book-free-demo .book-inner{ position:relative; display:grid; grid-template-columns:1.1fr .9fr; gap:clamp(28px,4vw,56px); align-items:center; }
+.book-free-demo .book-copy{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:flex-start; gap:16px; }
+.book-free-demo .book-copy .eyebrow{ color:var(--orange-2); }
+.book-free-demo .book-inner h2{ margin:0; max-width:18ch; text-align:left; }
+.book-free-demo .book-inner p{ margin:0; max-width:46ch; text-align:left; color:rgba(var(--rgb-white),.82); }
+.book-free-demo .book-inner .dynamiq-cta{ margin-top:8px; }
+/* Photo treatment · bleeds off the panel's RIGHT edge, dissolving into the dark
+   panel toward the copy via a mask rather than sitting in a card. Absolute
+   positioning is relative to the panel's PADDING BOX, so it reaches the panel
+   edges and is clipped by the panel's own radius + overflow:hidden.
+   ⚠ The width cap is load-bearing, not cosmetic. The source is PORTRAIT
+   (980×1071, ratio .92). Spanning the full panel made the box ~3:1, and
+   object-fit:cover then threw away ~70% of the image height — the handshake was
+   cropped down to a zoomed band of knuckles. Keeping the box near-square holds
+   the whole gesture in frame. Do not restore `inset:0`. */
+.book-free-demo .book-visual{
+  position:absolute; inset:0 0 0 auto; width:min(58%,720px);
+  z-index:0; overflow:hidden; pointer-events:none;
+  border:0; border-radius:0; box-shadow:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,rgba(var(--rgb-ink),.5) 24%,var(--color-black) 54%);
+  mask-image:linear-gradient(90deg,transparent 0,rgba(var(--rgb-ink),.5) 24%,var(--color-black) 54%);
+}
+/* scale(1.12) leaves headroom so the parallax shift never exposes an edge.
+   object-position 44% == the clasped hands' centre in the source. */
+.book-free-demo .book-visual img{
+  width:100%; height:100%; object-fit:cover; object-position:center 44%;
+  display:block; filter:none; will-change:transform;
+  transform:translate3d(0,var(--book-parallax-y,0px),0) scale(1.12);
+  opacity:0; transition:opacity 1.1s cubic-bezier(.16,1,.3,1);
+}
+.book-free-demo .book-visual img.is-ready{ opacity:1; }
+@media (prefers-reduced-motion:reduce){
+  .book-free-demo .book-visual img{ transform:none; opacity:1; transition:none; }
+}
+@media (max-width:860px){
+  .book-free-demo .book-inner{ grid-template-columns:1fr; }
+  .book-free-demo .book-copy{ align-items:center; text-align:center; }
+  .book-free-demo .book-inner h2, .book-free-demo .book-inner p{ text-align:center; margin-inline:auto; }
+  /* stacked: the photo becomes a bottom band fading UP into the panel. Band
+     height and the panel's reserved space derive from ONE variable, so the copy
+     is guaranteed to clear the image however the clamp resolves. */
+  .book-free-demo .cta-panel{
+    --book-band-h:clamp(210px,46vw,310px);
+    padding-bottom:calc(var(--book-band-h) + clamp(24px,4vw,40px));
+  }
+  .book-free-demo .book-visual{
+    /* width:auto is required — the desktop rule's width cap would otherwise
+       win over left:0/right:0 and leave the band only 58% wide. */
+    inset:auto 0 0 0; width:auto; height:var(--book-band-h);
+    -webkit-mask-image:linear-gradient(180deg,transparent 0,rgba(var(--rgb-ink),.5) 26%,var(--color-black) 58%);
+    mask-image:linear-gradient(180deg,transparent 0,rgba(var(--rgb-ink),.5) 26%,var(--color-black) 58%);
+  }
+}
+
+/* ═══ MOBILE LEGIBILITY & TOUCH TARGETS (≤600px) ═══
+   Measured at 360/390/430: no horizontal overflow anywhere, but 13 selectors
+   rendered under 14px and 8 groups of controls were under the 44px touch
+   minimum — the worst being 24 "See More" links at 19px tall.
+   Type is fixed by raising the two SCALE FLOORS rather than patching each
+   selector, so anything added later inherits the fix. Desktop is untouched. */
+@media (max-width:600px){
+  /* 11px → 12px, 12px → 13px. These two tokens feed the news tags/dates, story
+     roles, footer headings, footer legal line and both "more" links. */
+  :root{ --fs-2xs:.75rem; --fs-xs:.8125rem; }
+
+  /* Controls carry full body-size type, not metadata size — they are the things
+     a thumb is aiming at. 44px is the accessible minimum touch height. */
+  .story-more,
+  .sap-more{ font-size:var(--fs-sm); min-height:44px; }
+  .news-tab{ font-size:var(--fs-sm); min-height:44px; padding-block:12px; }
+
+  /* Link lists were 17px tall — the text height, with no padding to hit.
+     inline-flex + min-height grows the target without moving the text. */
+  .footer ul a{ min-height:40px; display:inline-flex; align-items:center; }
+  .footer ul{ gap:4px; }
+  .loc-line a{ min-height:40px; display:flex; align-items:center; }
+  .socials a{ width:42px; height:42px; }
+}
+
+/* ═══ 2 · PRODUCTS LISTING ═══ */
+.products-page #sap-business-one,.products-page .product-row{scroll-margin-top:96px}
+.products-page .hero{position:relative;min-height:clamp(560px,76dvh,760px);display:grid;align-items:end;overflow:hidden;background:#202022;color:#fff}
+.products-page .hero::before{content:"";position:absolute;inset:0;background:url("../products/site-media/bg-products.jpg") center/cover no-repeat;filter:saturate(.82)}
+.products-page .hero::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,rgba(15,14,15,.products-page .94) 0%,rgba(15,14,15,.products-page .76) 48%,rgba(15,14,15,.products-page .26) 78%,rgba(15,14,15,.products-page .42) 100%)}
+.products-page .hero .wrap{position:relative;z-index:1;padding-block:clamp(92px,10vw,150px)}
+.products-page .hero h1{font-size:var(--h1);line-height:.94;letter-spacing:-.055em;max-width:8ch}
+.products-page .hero p{max-width:760px;margin-top:28px;font-size:var(--body);line-height:1.7;color:rgba(255,255,255,.products-page .78)}
+.products-page .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:34px}
+.products-page .intro{padding-block:var(--section);background:linear-gradient(180deg,var(--warm),.products-page #fff)}
+.products-page .intro-grid{display:grid;grid-template-columns:.78fr 1.22fr;gap:clamp(40px,6vw,100px);align-items:start}
+.products-page .intro h2{font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;max-width:12ch}
+.products-page .intro-copy{font-size:var(--body);line-height:1.75;color:var(--soft)}
+.products-page .sap-feature{padding-bottom:var(--section)}
+.products-page .sap-panel{display:grid;grid-template-columns:1fr 1fr;min-height:520px;border:1px solid var(--line);border-radius:18px;overflow:hidden;background:var(--warm)}
+.products-page .sap-media{position:relative;min-height:430px;background:linear-gradient(145deg,.products-page #eef2f5,.products-page #fff)}
+.products-page .sap-media::after{content:"";position:absolute;inset:auto 0 0;height:44%;background:linear-gradient(transparent,rgba(37,35,36,.products-page .08))}
+.products-page .sap-media>img{width:100%;height:100%;object-fit:cover;object-position:center}
+.products-page .sap-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,5vw,72px)}
+.products-page .sap-logo{width:min(100%,360px);max-height:72px;object-fit:contain;object-position:left;margin-bottom:28px}
+.products-page .sap-copy h2{font-size:var(--h2);line-height:1.05;letter-spacing:-.04em;margin-bottom:22px}
+.products-page .sap-copy p{font-size:var(--body);color:var(--soft);margin-top:14px}
+.products-page .text-link{display:inline-flex;align-items:center;gap:16px;width:max-content;margin-top:28px;color:var(--brand-dark);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
+.products-page .text-link span{font-size:20px;transition:transform .2s}.text-link:hover span{transform:translateX(4px)}
+.products-page .suite{padding-block:var(--section);background:#f5f4f2}
+.products-page .suite-head{margin-bottom:clamp(48px,6vw,84px)}
+.products-page .suite-head h2{font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;max-width:18ch}
+.products-page .suite-head p{font-size:var(--body);color:var(--soft);max-width:64ch}
+.products-page .product-list{display:grid;gap:22px}
+.products-page .product-row{display:grid;grid-template-columns:1.03fr .97fr;min-height:430px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
+.products-page .product-row:nth-child(even) .product-media{order:2}.product-row:nth-child(even) .product-copy{order:1}
+.products-page .product-media{position:relative;display:grid;place-items:center;min-height:360px;padding:clamp(24px,4vw,52px);overflow:hidden;background:linear-gradient(145deg,.products-page #f0f1f2,.products-page #fff 64%)}
+.products-page .product-media::before{content:"";position:absolute;width:360px;height:360px;border-radius:50%;background:rgba(var(--orange-rgb),.products-page .09);filter:blur(4px)}
+.products-page .product-media img{position:relative;z-index:1;width:100%;height:100%;max-height:330px;object-fit:contain}
+.products-page .product-copy{display:flex;flex-direction:column;justify-content:center;padding:clamp(32px,5vw,72px)}
+.products-page .product-logo{height:42px;width:auto;max-width:230px;object-fit:contain;object-position:left;margin-bottom:28px}
+.products-page .product-copy h3{font-size:var(--h3);line-height:1.1;letter-spacing:-.035em;margin-bottom:16px}
+.products-page .product-copy p{font-size:var(--body);color:var(--soft);margin-top:12px}
+.products-page .intro-grid{grid-template-columns:1fr}.intro h2,.products-page .suite-head h2{max-width:18ch}
+.products-page .sap-panel,.products-page .product-row{grid-template-columns:1fr}.sap-media{min-height:380px}.product-row:nth-child(even) .product-media{order:0}.product-row:nth-child(even) .product-copy{order:0}
+.products-page .hero{min-height:620px}.hero::after{background:linear-gradient(180deg,rgba(15,14,15,.products-page .54),rgba(15,14,15,.products-page .94) 58%)}.hero h1{max-width:9ch}
+.products-page .sap-media,.products-page .product-media{min-height:290px}.sap-panel{min-height:0}.sap-copy,.products-page .product-copy{padding:30px 24px 36px}
+@media (max-width:980px){
+  .products-page .intro-grid{grid-template-columns:1fr}.products-page .intro h2,.products-page .suite-head h2{max-width:18ch}
+  .products-page .sap-panel,.products-page .product-row{grid-template-columns:1fr}.products-page .sap-media{min-height:380px}
+  .products-page .product-row:nth-child(even) .product-media{order:0}.products-page .product-row:nth-child(even) .product-copy{order:0}
+}
+@media (max-width:600px){
+  .products-page .hero{min-height:620px}.products-page .hero::after{background:linear-gradient(180deg,rgba(15,14,15,.54),rgba(15,14,15,.94) 58%)}.products-page .hero h1{max-width:9ch}
+  .products-page .sap-media,.products-page .product-media{min-height:290px}.products-page .sap-panel{min-height:0}.products-page .sap-copy,.products-page .product-copy{padding:30px 24px 36px}
+}
+
+/* ═══ 3 · PRODUCT DETAIL ═══ */
+.detail-hero{position:relative;overflow:hidden;background:linear-gradient(125deg,#fff 0%,#fff 48%,#f4f2ef 100%)}.detail-hero::before{content:"";position:absolute;width:720px;height:720px;border-radius:50%;right:-180px;top:-280px;background:rgba(var(--orange-rgb),.12);filter:blur(2px)}.breadcrumbs{padding-top:30px;color:var(--faint);font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.1em}.breadcrumbs a{color:var(--brand-dark)}.hero-grid{position:relative;display:grid;grid-template-columns:.88fr 1.12fr;gap:clamp(36px,6vw,96px);align-items:center;min-height:clamp(620px,76dvh,780px);padding-block:clamp(60px,7vw,96px)}.hero-copy{position:relative;z-index:2}.hero-logo{width:min(100%,310px);max-height:70px;object-fit:contain;object-position:left;margin-bottom:34px}.hero-copy h1{font-size:var(--h1);line-height:.98;letter-spacing:-.052em;max-width:10ch}.hero-copy p{font-size:var(--body);line-height:1.75;color:var(--soft);margin-top:26px;max-width:62ch}.hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}.hero-media{position:relative;min-height:460px;display:grid;place-items:center}.hero-media::before{content:"";position:absolute;inset:8% 2% 4%;border-radius:28px;background:linear-gradient(145deg,#e7e9eb,#fff);box-shadow:0 35px 80px rgba(37,35,36,.12)}.hero-media img{position:relative;z-index:1;width:100%;max-height:540px;object-fit:contain}
+.overview{padding-block:var(--section)}.overview-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(44px,7vw,110px);align-items:center}.overview-media{min-height:430px;display:grid;place-items:center;padding:clamp(20px,3vw,44px);border-radius:18px;background:linear-gradient(145deg,#f0f1f2,#fff);overflow:hidden}.overview-media img{width:100%;max-height:470px;object-fit:contain}.overview-copy h2,.features-head h2,.faq-head h2{font-size:var(--h2);line-height:1.05;letter-spacing:-.045em}.overview-copy p{font-size:var(--body);line-height:1.75;color:var(--soft);margin-top:18px}.overview-copy .closing{color:var(--ink);font-weight:700}
+.features{padding-block:var(--section);background:#f5f4f2}.features-head{display:grid;grid-template-columns:.82fr 1.18fr;gap:clamp(40px,6vw,90px);align-items:end;margin-bottom:clamp(44px,5vw,72px)}.features-head p{font-size:var(--body);color:var(--soft);max-width:58ch}.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}.feature-group{position:relative;min-height:310px;padding:clamp(28px,3vw,42px);border:1px solid var(--line);border-radius:16px;background:#fff;overflow:hidden}.feature-group::before{content:"";position:absolute;width:160px;height:160px;border-radius:50%;right:-70px;top:-70px;background:rgba(var(--orange-rgb),.1)}.feature-group h3{position:relative;font-size:var(--h3);line-height:1.1;letter-spacing:-.03em;margin-bottom:24px}.feature-group ul{position:relative;display:grid;gap:13px;list-style:none;color:var(--soft);font-size:var(--body)}.feature-group li{display:flex;gap:10px}.feature-group li::before{content:"✓";color:var(--brand);font-weight:900}
+.showcase{padding-block:var(--section);background:#fff}.showcase-frame{border-radius:18px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(145deg,#f1f2f3,#fff);padding:clamp(20px,3vw,44px)}.showcase-frame img{width:100%;max-height:680px;object-fit:contain}
+.faq{padding-block:var(--section);background:linear-gradient(180deg,#fff,var(--warm))}.faq-grid{display:grid;grid-template-columns:.68fr 1.32fr;gap:clamp(40px,7vw,110px);align-items:start}.faq-head{position:sticky;top:120px}.faq-list{border-top:1px solid var(--line)}.faq-list details{border-bottom:1px solid var(--line);padding:0}.faq-list summary{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:24px 0;font-size:clamp(1.05rem,1rem + .25vw,1.2rem);font-weight:700;cursor:pointer;list-style:none}.faq-list summary::-webkit-details-marker{display:none}.faq-list summary::after{content:"+";display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--line);border-radius:50%;color:var(--brand);font-size:20px;flex:0 0 auto}.faq-list details[open] summary::after{content:"−"}.faq-list p{padding:0 52px 24px 0;color:var(--soft);font-size:var(--body);line-height:1.75}
+@media(max-width:980px){.hero-grid,.overview-grid,.features-head,.faq-grid{grid-template-columns:1fr}.hero-grid{padding-top:42px}.hero-media{min-height:380px}.overview-media{min-height:360px}.feature-grid{grid-template-columns:1fr 1fr}.faq-head{position:static}}
+@media(max-width:620px){.detail-hero::before{width:460px;height:460px}.breadcrumbs{padding-top:14px}.hero-grid{min-height:calc(100dvh - 176px);align-content:center;padding-block:8px 14px;gap:12px}.hero-logo{max-height:42px;margin-bottom:10px}.hero-copy h1{max-width:14ch}.hero-copy p{margin-top:10px;line-height:1.5;font-size:1rem}.hero-actions{margin-top:14px}.hero-media{min-height:0}.hero-media::before{inset:0;border-radius:18px}.hero-media img{max-height:clamp(115px,21dvh,230px)}.overview-media{min-height:280px}.feature-grid{grid-template-columns:1fr}.feature-group{min-height:0}}
+
+/* ═══ 4 · COMPOSITION SYSTEM (viewport-aware layouts) ═══ */
+:root{
+  color-scheme:light;
+  --color-brand:#F88F10;
+  --color-brand-light:#FFA83A;
+  --color-brand-dark:#D97400;
+  --color-ink:#252324;
+  --color-gray:#4F5257;
+  --color-mist:#D9D9D9;
+  --color-surface:#FFFFFF;
+  --color-surface-muted:#F5F4F2;
+  --color-surface-warm:#FBFAF8;
+  --color-on-accent:#FFFFFF;
+  --rgb-brand:248,143,16;
+  --rgb-ink:37,35,36;
+  --rgb-white:255,255,255;
+  --brand:var(--color-brand);
+  --brand-dark:var(--color-brand-dark);
+  --orange:var(--color-brand);
+  --orange-deep:var(--color-brand-dark);
+  --ink:var(--color-ink);
+  --gray:var(--color-gray);
+  --surface:var(--color-surface);
+  --muted:var(--color-surface-muted);
+  --warm:var(--color-surface-warm);
+  --line:rgba(var(--rgb-ink),.12);
+  --line-2:rgba(var(--rgb-ink),.07);
+  --soft:rgba(var(--rgb-ink),.72);
+  --faint:rgba(var(--rgb-ink),.5);
+  --orange-rgb:var(--rgb-brand);
+  --ink-rgb:var(--rgb-ink);
+  --font:"Roboto",sans-serif;
+  --font-sans:var(--font);
+  --fs-xs:.75rem;
+  --fs-sm:.875rem;
+  --fs-body:1rem;
+  --fs-lede:clamp(1rem,.96rem + .2vw,1.125rem);
+  --fs-card:clamp(1.125rem,1.03rem + .4vw,1.375rem);
+  --fs-h3:clamp(1.25rem,1.1rem + .65vw,1.5rem);
+  --fs-h2:clamp(2rem,1.5rem + 2vw,3.25rem);
+  --fs-h1:clamp(2.5rem,1.7rem + 3.5vw,4.75rem);
+  --h1:var(--fs-h1);
+  --h2:var(--fs-h2);
+  --h3:var(--fs-h3);
+  --body:var(--fs-lede);
+  --lh-tight:1.08;
+  --lh-heading:1.22;
+  --lh-body:1.6;
+  --lh-relaxed:1.7;
+  --wrap:1440px;
+  --pad:clamp(20px,4vw,64px);
+  --sec:clamp(64px,6vw,96px);
+  --section:var(--sec);
+  --r:14px;
+  --r-pill:10px;
+}
+
+html{scroll-padding-top:96px;-webkit-text-size-adjust:100%}
+body{font-family:var(--font);font-size:var(--fs-body);line-height:var(--lh-body);color:var(--ink);background:var(--surface);-webkit-font-smoothing:antialiased}
+.wrap{width:100%;max-width:var(--wrap);margin-inline:auto;padding-inline:var(--pad)}
+h1,h2,h3,h4{font-family:var(--font);font-weight:700;color:inherit}
+h1{font-size:var(--fs-h1);line-height:var(--lh-tight);letter-spacing:-.045em}
+h2{font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.035em}
+h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
+.eyebrow{display:inline-flex;align-items:center;margin:0;color:var(--brand);font-size:clamp(.875rem,.82rem + .2vw,1rem);font-weight:700;letter-spacing:.22em;text-transform:uppercase}
+.sub-page .eyebrow{margin-bottom:18px}
+
+.header-form,.topbar{height:auto;min-height:44px;background:var(--color-ink);color:var(--color-on-accent);font-size:var(--fs-sm);font-weight:500}
+.header-form .wrap,.topbar .wrap{min-height:44px;display:flex;align-items:center;justify-content:space-between;gap:12px 24px;padding-block:9px}
+.header-form a,.topbar a{display:inline-flex;align-items:center;gap:8px;color:var(--brand);font-size:var(--fs-xs);font-weight:700;letter-spacing:.08em;text-transform:uppercase;transition:color .2s,gap .2s}
+.header-form a:hover,.topbar a:hover{color:var(--color-brand-light);gap:12px}
+
+
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;min-height:52px;padding:15px 32px;border:1px solid transparent;border-radius:var(--r-pill);font-family:var(--font);font-size:var(--fs-sm);font-weight:700;line-height:1.2;white-space:nowrap;transition:transform .25s,background .2s,color .2s,border-color .2s,box-shadow .25s}
+.btn:hover{transform:translateY(-2px)}
+.btn-primary,.btn-orange{background:var(--brand);color:var(--color-on-accent);box-shadow:0 10px 30px -10px rgba(var(--rgb-brand),.6)}
+.btn-primary:hover,.btn-orange:hover{background:var(--brand-dark);color:var(--color-on-accent)}
+.btn-outline{border-color:var(--line);background:transparent;color:var(--ink)}
+.btn-outline:hover{border-color:var(--brand);color:var(--brand-dark);background:rgba(var(--rgb-brand),.06)}
+
+.sub-page .sap-panel,.sub-page .product-row,.sub-page .feature-group,.sub-page .overview-media,.sub-page .showcase-frame{border-radius:var(--r);border-color:var(--line)}
+.sub-page .product-copy p,.sub-page .sap-copy p,.sub-page .overview-copy p,.sub-page .features-head p,.sub-page .faq-list p{font-size:var(--fs-lede);line-height:var(--lh-relaxed);color:var(--soft)}
+.sub-page .text-link{color:var(--brand-dark);font-size:var(--fs-sm);font-weight:700;letter-spacing:.08em}
+
+.cta-section{padding-block:var(--sec);background:linear-gradient(180deg,var(--muted) 0%,var(--surface) 24%,var(--surface) 100%)}
+.cta-panel{position:relative;overflow:hidden;padding:clamp(48px,7vw,92px) var(--pad);border:1px solid rgba(var(--rgb-brand),.25);border-radius:16px;background:linear-gradient(90deg,var(--color-ink) 0%,var(--color-gray) 140.31%);color:var(--color-on-accent);text-align:center}
+.cta-panel::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(600px 320px at 50% -12%,rgba(var(--rgb-brand),.28),transparent 60%)}
+.cta-panel h2{position:relative;max-width:20ch;margin-inline:auto;color:var(--color-on-accent);font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.035em;text-wrap:balance}
+.cta-panel p{position:relative;max-width:54ch;margin:20px auto 0;color:rgba(var(--rgb-white),.78);font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
+.cta-panel .btn,.cta-panel .dynamiq-cta{position:relative;margin-top:28px}
+.cta-panel .btn{min-width:220px}
+
+.footer{position:relative;z-index:1;padding-block:clamp(56px,7vw,84px) 32px;background:var(--surface)}
+.footer-logo{width:190px;height:72px;object-fit:contain;object-position:left center}
+.footer-brand .name,.footer-brand p.name{margin-top:20px;font-size:var(--fs-sm);font-weight:700;letter-spacing:.02em}
+.footer-brand .addr,.footer-brand p.addr{margin-top:6px;color:var(--soft);font-size:var(--fs-sm)}
+.footer-phones{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+.footer-phone{display:inline-flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid rgba(var(--rgb-brand),.62);border-radius:6px;color:var(--ink);font-size:1.125rem;font-weight:700;line-height:1.2;transition:background .2s,border-color .2s,color .2s,transform .2s}
+.footer-phone svg{width:19px;height:19px;flex:0 0 auto;fill:var(--brand);transition:fill .2s}
+.footer-phone:hover{background:var(--brand-dark);border-color:var(--brand-dark);color:var(--color-on-accent);transform:translateY(-2px)}
+.footer-phone:hover svg{fill:var(--color-on-accent)}
+.footer h4{margin-bottom:18px;color:var(--brand);font-size:var(--fs-xs);font-weight:700;letter-spacing:.18em;text-transform:uppercase}
+.footer ul{display:grid;gap:11px;list-style:none}
+.footer ul a{color:var(--soft);font-size:var(--fs-sm);transition:color .18s,padding-left .18s}
+.footer ul a:hover{color:var(--ink);padding-left:4px}
+.footer-base{border-top:1px solid var(--line-2);padding-top:24px;color:var(--faint);font-size:var(--fs-xs);text-align:center}
+.footer-base p{color:inherit;font-size:inherit;text-align:center}
+
+.sub-page [data-reveal]{opacity:0;transform:translateY(24px);transition:opacity .75s ease,transform .75s cubic-bezier(.16,1,.3,1)}
+.sub-page [data-reveal].in,.home-page [data-reveal].in{opacity:1;transform:none}
+
+/*
+  Viewport composition
+  --------------------
+  On desktop, every focused thought fits inside one 100dvh view. Long
+  collections may continue down the page, but each product/service/card is a
+  self-contained viewport-sized chunk. Narrow layouts keep natural height so
+  copy is never clipped or reduced below the shared type scale.
+*/
+.home-page section,
+.products-page main>section,
+.product-detail-page main>section,
+.home-page .serv,
+.products-page .sap-panel,
+.products-page .product-row,
+.product-detail-page .feature-group{scroll-margin-top:84px}
+
+.product-detail-page .portal-features-layout{display:grid;gap:clamp(32px,5vw,72px);align-items:center}
+.product-detail-page .portal-features-copy h2{font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;margin-top:8px}
+.product-detail-page .portal-features-copy>p{max-width:54ch;margin-top:12px;color:var(--soft);font-size:var(--body);line-height:1.65}
+.product-detail-page .portal-features .feature-grid{grid-template-columns:1fr;gap:0;margin-top:clamp(20px,3dvh,28px);border-top:1px solid var(--line)}
+.product-detail-page .portal-features .feature-group{display:grid;grid-template-columns:1fr;gap:10px;align-items:start;min-height:0;padding:12px 0;border:0;border-bottom:1px solid var(--line);border-radius:0;background:transparent;overflow:visible}
+.product-detail-page .portal-features .feature-group::before{display:none}
+.product-detail-page .portal-features .feature-group h3{margin:0;font-size:clamp(1.15rem,1.05rem + .35vw,1.45rem)}
+.product-detail-page .portal-features .feature-group ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px;font-size:clamp(.95rem,.9rem + .15vw,1.05rem)}
+.product-detail-page .portal-features .showcase-frame{display:grid;place-items:center;min-height:0;padding:0;border:0;border-radius:0;background:transparent;overflow:visible}
+.product-detail-page .portal-features .showcase-frame img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 24px 30px rgba(var(--rgb-ink),.13))}
+.product-template-page .detail-hero::before,
+.product-template-page .hero-media::before{display:none}
+.product-template-page .product-hero-bg{position:absolute;z-index:0;inset:-9% 0;background-image:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.94) 44%,rgba(255,255,255,.7) 72%,rgba(255,255,255,.78) 100%),var(--product-hero-bg);background-position:center;background-size:cover;pointer-events:none;will-change:transform;transform:translate3d(0,var(--product-parallax-y,0px),0) scale(1.08)}
+.product-template-page .detail-hero>.wrap{position:relative;z-index:1;min-height:inherit;display:grid;grid-template-rows:auto 1fr}
+.product-detail-page.product-template-page .hero-grid{height:100%;padding-bottom:0;align-items:stretch}
+.product-detail-page.product-template-page .hero-copy{align-self:center;padding-bottom:clamp(52px,7dvh,72px)}
+.product-detail-page.product-template-page .hero-copy h1{font-size:clamp(2.55rem,7.4dvh,3.75rem)}
+.product-detail-page.product-template-page .hero-copy p{line-height:1.5}
+.product-detail-page.product-template-page .hero-actions{opacity:1;transform:none;transition:none}
+/* Hero shots are flat 16:9 screenshots, not transparent monitor renders that
+   should sit on the bottom edge. The old rules stretched the media cell,
+   pinned the image to its bottom (align-items/align-self:end) and bled it to
+   112% of the column — so on desktop it sat low, oversized and letterboxed by
+   ~86px inside a 742px-tall cell. Centred, ratio-sized, borderless now. */
+.product-detail-page.product-template-page .hero-media{min-height:0;align-self:center;align-items:center;justify-items:center}
+.product-detail-page.product-template-page .hero-media::before{display:none}
+.product-detail-page.product-template-page .hero-media img{display:block;align-self:center;width:auto;max-width:100%;height:auto;max-height:min(520px,56dvh);object-fit:contain;border:0;border-radius:14px;box-shadow:0 26px 56px -24px rgba(var(--rgb-ink),.30);filter:none}
+
+@media(min-width:981px){
+  /* Landing page: compact complete-section compositions. */
+  .home-page .iq,
+  .home-page .sap-business-one,
+  .home-page .whatsnew,
+  .home-page .we-are-accredited,
+  .home-page .our-services,
+  .home-page .hear-from-our-customer,
+  .home-page .book-free-demo,
+  .home-page .contact-us{padding-block:clamp(28px,4.5dvh,56px)}
+
+  .home-page .iq .sec-head{margin-bottom:clamp(22px,3dvh,36px)}
+
+  .home-page .sap-business-one{padding-block:clamp(24px,3.5dvh,44px)}
+  .home-page .sap-inner{grid-template-columns:.8fr 1.2fr;gap:clamp(28px,4vw,56px);align-items:start}
+  .home-page .sap-copy{top:calc(var(--nav-h,64px) + 18px);gap:14px}
+  .home-page .sap-bento{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+  .home-page .sap-bento .feat:last-of-type{grid-column:auto}
+  .home-page .feat{padding:18px 18px 17px;gap:6px}
+  .home-page .feat h3{gap:4px}
+  .home-page .feat h3 i{font-size:clamp(2rem,5dvh,3rem)}
+  /* 1.55, up from 1.42 — designer review: the tighter leading read as cramped */
+  .home-page .feat p{line-height:1.55}
+
+  .home-page .whatsnew .sec-head{margin-bottom:16px}
+  .home-page .news-layout{height:clamp(400px,57dvh,510px);min-height:0}
+  .home-page .news-side{height:100%;min-height:0}
+  .home-page .news-list{height:auto;max-height:none}
+
+  .home-page .serv-stack{margin-top:clamp(22px,3dvh,38px);gap:22px}
+  .home-page .serv{min-height:min(400px,calc(100dvh - 130px));max-height:calc(100dvh - 96px)}
+  .home-page .serv-body{padding:clamp(26px,4dvh,44px)}
+  .home-page .serv-cta{margin-top:clamp(28px,4dvh,48px)}
+
+  .home-page .hear-from-our-customer .sec-head{margin-bottom:clamp(24px,3dvh,38px)}
+  .home-page .story{min-height:min(300px,calc(100dvh - 180px));padding:24px 23px}
+  .home-page .cta-panel{padding-block:clamp(46px,8dvh,76px)}
+  .home-page .contact-panel{padding:clamp(22px,3.5dvh,36px)}
+  .home-page .contact-form-side h2{margin-bottom:12px}
+  .home-page .get-in-touch>p{margin-bottom:14px}
+  .home-page .loc-card{padding:16px 17px 18px;gap:9px}
+
+  /* Product listing: one complete product row per viewport. */
+  .products-page{--products-nav-h:88px;--suite-head-h:clamp(166px,24dvh,180px)}
+  /* The top bar measures 44px here, not the 36px this assumed — that alone put
+     the page 8px past the fold. The nav is subtracted too now that the hero no
+     longer slides underneath it. */
+  .products-page .hero{min-height:calc(100dvh - 44px - var(--products-nav-h));align-items:center}
+  .products-page .hero::after{background:linear-gradient(180deg,transparent 0%,transparent 88%,rgba(255,255,255,.98) 100%),linear-gradient(90deg,rgba(15,14,15,.94) 0%,rgba(15,14,15,.76) 48%,rgba(15,14,15,.26) 78%,rgba(15,14,15,.42) 100%)}
+  .products-page .hero .wrap{padding-block:clamp(76px,12dvh,112px) clamp(84px,13dvh,120px)}
+  .products-page .hero-actions{opacity:1;transform:none;transition:none}
+
+  .products-page .sap-feature{min-height:calc(100dvh - var(--products-nav-h));display:grid;align-items:center;padding-block:clamp(28px,4.5dvh,52px);background:linear-gradient(180deg,var(--surface) 0%,var(--warm) 50%,var(--surface) 100%)}
+  .products-page .sap-panel{grid-template-columns:minmax(0,1.04fr) minmax(420px,.96fr);gap:clamp(36px,5vw,76px);align-items:center;min-height:0;max-height:none;border:0;border-radius:0;overflow:visible;background:transparent}
+  .products-page .sap-media{display:grid;align-self:stretch;align-items:end;min-height:0;background:transparent}
+  .products-page .sap-media::after{display:none}
+  .products-page .sap-media>img{height:auto;max-height:min(520px,70dvh);object-fit:contain;object-position:center bottom;filter:drop-shadow(0 22px 30px rgba(var(--rgb-ink),.14))}
+  .products-page .sap-copy{padding:clamp(18px,3dvh,32px) 0}
+  .products-page .sap-logo{margin-bottom:18px}
+  .products-page .sap-copy h2{margin-bottom:12px}
+  .products-page .sap-copy p{margin-top:8px;line-height:1.52}
+
+  .products-page .suite{padding-block:0;background:linear-gradient(180deg,var(--surface) 0%,var(--muted) 5%,var(--muted) 95%,var(--surface) 100%)}
+  .products-page .suite-head{height:var(--suite-head-h);display:grid;align-items:center;margin:0;padding-block:24px}
+  .products-page .suite-head h2{max-width:26ch;font-size:clamp(2.25rem,6.4dvh,3.15rem)}
+  .products-page .product-list{gap:0}
+  .products-page .product-row{position:relative;grid-template-columns:minmax(0,.98fr) minmax(420px,1.02fr);gap:clamp(36px,5vw,76px);align-items:stretch;min-height:calc(100dvh - var(--products-nav-h));max-height:none;border:0;border-radius:0;overflow:visible;background:transparent}
+  .products-page .product-row:first-child{min-height:calc(100dvh - var(--products-nav-h) - var(--suite-head-h))}
+  .products-page .product-row:nth-child(odd){background:linear-gradient(100deg,rgba(var(--rgb-white),.72),rgba(var(--rgb-brand),.045) 54%,rgba(var(--rgb-white),.22))}
+  .products-page .product-row:nth-child(even){background:linear-gradient(260deg,rgba(var(--rgb-white),.72),rgba(var(--rgb-brand),.045) 54%,rgba(var(--rgb-white),.22))}
+  .products-page .product-media{display:grid;align-self:stretch;align-items:end;min-height:0;padding:clamp(18px,3dvh,32px) clamp(8px,2vw,28px) 0;overflow:visible;background:transparent}
+  .products-page .product-media::before{display:none}
+  /* Flat 16:9 screenshots: centred, not bled off the column at 112% like the
+     transparent monitor renders this rule was written for. Borderless — soft
+     shadow only, no outline and no panel behind it. */
+  .products-page .product-media img{align-self:center;justify-self:center;
+    width:auto;max-width:100%;height:auto;max-height:min(520px,62dvh);object-fit:contain;object-position:center;
+    border-radius:12px;border:0;background:none;
+    box-shadow:0 26px 56px -24px rgba(var(--rgb-ink),.30);filter:none}
+  .products-page .product-media{align-items:center}
+  .products-page .product-row:first-child .product-media{padding-top:0}
+  .products-page .product-row:first-child .product-media img{max-height:calc(100dvh - var(--products-nav-h) - var(--suite-head-h))}
+  .products-page .product-row:first-child .product-copy{padding-block:16px}
+  .products-page .product-copy{align-self:center;padding:clamp(24px,4dvh,42px) clamp(12px,2vw,30px)}
+  .products-page .product-logo{margin-bottom:16px}
+  .products-page .product-copy h3{margin-bottom:8px}
+  .products-page .product-copy p{margin-top:8px;line-height:1.52}
+  .products-page .text-link{margin-top:18px}
+  .products-page .cta-section{min-height:calc(100dvh - var(--products-nav-h));display:grid;align-items:center;padding-block:clamp(28px,4.5dvh,52px)}
+
+  /* Product detail: wide copy columns and height-aware media prevent wrapping
+     from turning one thought into multiple screens. */
+  .product-detail-page .detail-hero{min-height:calc(100dvh - 107px)}
+  .product-detail-page main>section:not(.detail-hero){min-height:calc(100dvh - 63px);display:grid;align-items:center}
+  .product-detail-page .breadcrumbs{padding-top:12px}
+  .product-detail-page .hero-grid{grid-template-columns:1.08fr .92fr;gap:clamp(28px,4vw,58px);min-height:0;padding-block:18px 24px}
+  .product-detail-page .hero-logo{margin-bottom:16px}
+  .product-detail-page .hero-copy h1{max-width:16ch;font-size:clamp(2.75rem,1.9rem + 2.25vw,4.25rem)}
+  .product-detail-page .hero-copy p{margin-top:14px;line-height:1.6}
+  .product-detail-page .hero-actions{margin-top:16px}
+  .product-detail-page .hero-media{min-height:min(400px,56dvh)}
+  .product-detail-page .hero-media img{max-height:min(460px,64dvh)}
+  .product-detail-page .overview,
+  .product-detail-page .features,
+  .product-detail-page .showcase,
+  .product-detail-page .faq,
+  .product-detail-page .cta-section{padding-block:clamp(28px,4.5dvh,52px)}
+  .product-detail-page .overview-grid{gap:clamp(34px,5vw,72px)}
+  .product-detail-page .overview-media{min-height:min(400px,58dvh);padding:clamp(18px,3dvh,32px)}
+  .product-detail-page .overview-media img{max-height:min(440px,58dvh)}
+  .product-detail-page .overview-copy p{margin-top:12px;line-height:1.6}
+  .product-detail-page .portal-features{padding-block:28px}
+  .product-detail-page .portal-features-layout{grid-template-columns:minmax(430px,.88fr) minmax(0,1.12fr);gap:clamp(38px,4.5vw,68px)}
+  .product-detail-page .portal-features .showcase-frame img{max-height:calc(100dvh - 130px)}
+  .product-detail-page .faq-grid{gap:clamp(34px,5vw,72px)}
+  .product-detail-page .faq-list summary{padding:16px 0}
+  .product-detail-page .faq-list p{padding-bottom:18px;line-height:1.6}
+}
+
+@media(min-width:981px) and (max-height:680px){
+  .product-detail-page .detail-hero{min-height:calc(100dvh - 107px)}
+  .product-detail-page .breadcrumbs{padding-top:8px;font-size:.75rem}
+  .product-detail-page .hero-grid{padding-block:12px 18px;gap:28px}
+  .product-detail-page .hero-logo{max-height:48px;margin-bottom:12px}
+  .product-detail-page .hero-copy h1{font-size:clamp(2.35rem,7.2dvh,3rem)}
+  .product-detail-page .hero-copy p{margin-top:12px;font-size:1rem;line-height:1.45}
+  .product-detail-page .hero-actions{margin-top:14px}
+  .product-detail-page .hero-actions .btn{min-height:46px;padding:12px 20px}
+  .product-detail-page .hero-media{min-height:min(320px,48dvh)}
+  .product-detail-page .hero-media img{max-height:52dvh}
+  .product-detail-page .portal-features{padding-block:24px}
+  .product-detail-page .portal-features-copy h2{font-size:clamp(2.2rem,6.2dvh,2.8rem);margin-top:8px}
+  .product-detail-page .portal-features-copy>p{margin-top:10px;line-height:1.45}
+  .product-detail-page .portal-features .feature-grid{margin-top:18px}
+  .product-detail-page .portal-features .feature-group{padding:10px 0}
+  .product-detail-page .portal-features .showcase-frame{padding:0}
+  .product-detail-page .portal-features .showcase-frame img{max-height:calc(100dvh - 92px)}
+}
+
+
+@media(max-width:980px){
+  .products-page .sap-feature{padding-block:48px;background:linear-gradient(180deg,var(--surface),var(--warm),var(--surface))}
+  /* ONE SCREEN PER PRODUCT — image, name and description together, the same
+     rule the ≥981px composition already follows. Stacked rows were running
+     654–1121px against an 844px viewport, so on half the products the
+     description sat below the fold with only the monitor visible.
+     align-content:center keeps short products (Barcode) optically centred
+     rather than stranded at the top of a tall row. */
+  /* Cards are sized to their CONTENT, not stretched to 100dvh. Forcing each
+     product to fill a screen left 274px of dead space around a 510px block —
+     129px above the image and 145px below the button — because a 16:9 shot at
+     column width simply isn't as tall as a phone. Products still fit within one
+     screen comfortably; they just no longer pad themselves out to fill it. */
+  .products-page .sap-panel,
+  .products-page .product-row{gap:0;border:0;border-radius:0;overflow:visible;background:transparent;
+    min-height:0;align-content:start;padding-block:clamp(30px,5dvh,56px)}
+  .products-page .sap-media,
+  .products-page .product-media{min-height:0;padding:0;background:transparent;overflow:visible}
+  .products-page .sap-media::after,
+  .products-page .product-media::before{display:none}
+  /* The image is the flexible part: it gives up height first so the words keep
+     theirs. A fixed 500px cap is what pushed the copy off screen. */
+  .products-page .sap-media>img,
+  .products-page .product-media img{width:100%;height:auto;max-height:clamp(140px,27dvh,320px);object-fit:contain;object-position:center bottom;filter:drop-shadow(0 20px 26px rgba(var(--rgb-ink),.13))}
+  /* Product shots are now flat 16:9 UI screenshots, not transparent monitor
+     mockups, so the bottom-anchored cut-out above doesn't suit them — they are
+     centred with the drop-shadow filter off (on a rectangular opaque image it
+     just smears the edge). NO border and NO background panel: borderless
+     imagery is the standing rule on this page. A soft shadow only, to lift the
+     screenshot off the row's tinted background. .sap-media keeps the cut-out;
+     its artwork is still a transparent monitor render. */
+  /* ⚠ width:auto + max-width:100% is the fix for LETTERBOXING. With width:100%
+     and a max-height cap, the BOX keeps full width while the picture shrinks to
+     fit the height — object-fit:contain then centres it inside, leaving up to
+     100px of dead space either side and making the shot look small and adrift.
+     Sizing by max-width AND max-height instead keeps the box on the image's own
+     16:9 ratio, so there is never empty space inside it. */
+  /* FULL COLUMN WIDTH. Height follows the 16:9 source, so the box can never
+     contain empty space. Where vertical room is tight, the image is scaled down
+     by MAX-WIDTH (below), never by max-height — a height cap on a full-width
+     element is what caused the letterboxing. */
+  .products-page .product-media img{
+    width:100%;max-width:100%;height:auto;max-height:none;margin-inline:auto;display:block;
+    object-position:center;border-radius:10px;filter:none;border:0;background:none;
+    box-shadow:0 16px 34px -18px rgba(var(--rgb-ink),.28)}
+  .products-page .sap-copy,
+  .products-page .product-copy{padding:clamp(16px,2.6dvh,26px) 0 0}
+  /* The product logo is redundant in the stacked layout — it renders the product
+     name as artwork immediately above the <h3> that says the same words. Hidden
+     rather than removed from the markup: it still carries the alt text, and the
+     ≥981px composition (where it sits in its own column) is untouched. */
+  .products-page .product-logo{display:none}
+  .products-page .suite{padding-block:0;background:linear-gradient(180deg,var(--surface),var(--muted) 4%,var(--muted) 96%,var(--surface))}
+  .products-page .suite-head{height:auto;margin:0;padding-block:48px 24px}
+  .products-page .product-list{gap:0}
+  .products-page .product-row{padding-block:20px;background:linear-gradient(180deg,rgba(var(--rgb-white),.7),rgba(var(--rgb-brand),.04),rgba(var(--rgb-white),.2))}
+  .products-page .cta-section{padding-block:48px}
+  .product-detail-page .portal-features-layout{grid-template-columns:1fr}
+  .product-detail-page .portal-features .showcase-frame{order:-1}
+  .product-detail-page .portal-features .showcase-frame img{max-height:520px}
+}
+
+@media(max-width:620px){
+  /* 42px was the old single-line top bar. It stacks on mobile now and measures
+     ~70px, so the hero was running 28px past the fold on every phone. */
+  .products-page .hero{min-height:calc(100dvh - 70px - 64px)}
+  /* 96/86 was 182px of padding inside a hero that only has ~500px to work with
+     on a 640px-tall phone — it was the content, not the min-height, pushing the
+     hero past the fold at 360x640. Scales with viewport height now. */
+  .products-page .hero .wrap{padding-block:clamp(40px,7dvh,96px) clamp(34px,6dvh,86px)}
+  .products-page .sap-feature{padding-block:38px}
+  /* These four were the real blockers for one-screen products: a 250px media
+     floor, a 380px image cap, 70px of copy padding and 32px of row padding —
+     all fixed pixels, on the screens with the least room. Every one is now
+     viewport-relative so the row can actually reach 100dvh. */
+  .products-page .sap-media,
+  .products-page .product-media{min-height:0;padding-top:0}
+  .products-page .sap-media>img{max-height:clamp(130px,25dvh,300px)}
+  /* Product shots stay full width here; only .sap-media (a transparent monitor
+     render, not a 16:9 screenshot) keeps a height cap. */
+  .products-page .product-media img{max-height:none}
+  .products-page .sap-copy,
+  .products-page .product-copy{padding:clamp(14px,2.4dvh,22px) 0 0}
+  /* Lede sizing is for reading a paragraph on a wide column; here it has to
+     share a phone screen with the product shot. 16px/1.5 keeps it above the
+     legibility floor while fitting the longest description (IQ Tax). */
+  .products-page .product-copy p,
+  .products-page .sap-copy p{font-size:1rem;line-height:1.5}
+  .products-page .suite-head{padding-block:42px 20px}
+  .products-page .product-row{padding-block:clamp(26px,4.5dvh,44px)}
+  /* ONE SCREEN PER PRODUCT · detail-page heroes. These must live HERE, not in
+     detail.css: the global `.product-detail-page.product-template-page
+     .hero-media img{max-height:min(520px,70dvh)}` is (0,3,0) and beats any
+     single-class rule in detail.css, which also loads FIRST. Matching that
+     specificity here is the only way a mobile cap takes effect. */
+  .product-detail-page.product-template-page .hero-media{min-height:0}
+  /* Product shot LEADS on mobile: order:-1 moves it above the copy so the
+     product is seen immediately and in full, with the CTAs still above the
+     fold. Sized by max-width AND max-height together so the box always keeps
+     the image's own ratio — a height cap alone would letterbox it. */
+  /* ONE SCREEN PER PRODUCT HERO. topbar (~70) + nav (64) = 134px of chrome, so
+     the hero fills exactly the rest of the viewport and the whole thing —
+     shot, name, description and CTAs — is one screen. */
+  .product-detail-page.product-template-page .detail-hero{min-height:calc(100dvh - 134px);display:flex;flex-direction:column;justify-content:center}
+  .product-detail-page.product-template-page .detail-hero>.wrap{width:100%}
+  .product-detail-page.product-template-page .hero-media{order:-1}
+  /* The hero shots are flat 16:9 screenshots now, so the decorative panel
+     behind them would read as a frame — hidden, borderless like the listing.
+     Soft shadow only, so a light screenshot still lifts off the background. */
+  .product-detail-page.product-template-page .hero-media::before{display:none}
+  .product-detail-page.product-template-page .hero-media img{width:100%;max-width:100%;height:auto;max-height:none;margin-inline:auto;display:block;border-radius:10px;border:0;box-shadow:0 16px 34px -18px rgba(var(--rgb-ink),.28)}
+  /* Hero sized to its content with an even rhythm, instead of a forced
+     min-height that stranded the shot 84-95px below the buttons. */
+  .product-detail-page.product-template-page .hero-grid{min-height:0;align-content:start;gap:clamp(16px,2.6dvh,28px);padding-block:clamp(8px,1.6dvh,16px) clamp(22px,3.6dvh,40px)}
+  .product-detail-page.product-template-page .hero-media{min-height:0;place-items:stretch}
+  /* .hero-copy carries a 7dvh (59px) bottom padding for the two-column desktop
+     composition. Stacked, it lands between the buttons and the product shot and
+     reads as a hole — the grid's own row gap is the correct spacing there. */
+  .product-detail-page.product-template-page .hero-copy{padding-bottom:0}
+  .product-detail-page.product-template-page .hero-copy p{font-size:1rem;line-height:1.5;margin-top:10px}
+  .product-detail-page.product-template-page .hero-logo{max-height:42px;margin-bottom:10px}
+  /* The headline was the real cost: 60px type inside a 14ch column wrapped to
+     SEVEN lines — 412px, over half the hero on its own. Sized for the phone and
+     allowed the full column width, it lands in three. */
+  .product-detail-page.product-template-page .hero-copy h1{font-size:clamp(1.55rem,5.9vw,2.15rem);line-height:1.1;max-width:none}
+  /* Two stacked full-width buttons cost 116px; sharing a row costs ~56px. */
+  .product-detail-page.product-template-page .hero-actions{margin-top:12px;gap:10px;flex-wrap:nowrap}
+  .product-detail-page.product-template-page .hero-actions .btn{flex:1 1 0;min-width:0;justify-content:center;white-space:nowrap;padding-inline:12px}
+  .product-detail-page .portal-features-layout{gap:28px}
+  .product-detail-page .portal-features .showcase-frame{padding:0;border-radius:0}
+  .product-detail-page .portal-features .feature-group{grid-template-columns:1fr;gap:10px;padding:18px 0}
+  .product-detail-page .portal-features .feature-group ul{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .product-template-page .product-hero-bg{transform:scale(1.08)}
+}
+
+@media(max-width:900px){
+  .footer-top{grid-template-columns:1fr 1fr}
+  .footer-brand{grid-column:1/-1}
+}
+
+@media(max-width:600px){
+  /* Top bar · was 11px copy beside a 10px link squeezed into a 190px column —
+     the smallest type on the site, on the smallest screens. Now it stacks and
+     centres, which buys the width to read at 13px/12px with a 40px tap row. */
+  .header-form,.topbar{min-height:42px}
+  .header-form .wrap,.topbar .wrap{min-height:42px;padding-block:6px;
+    flex-wrap:wrap;justify-content:center;gap:0 16px;text-align:center}
+  .header-form p,.topbar p{max-width:none;font-size:.8125rem;line-height:1.35}
+  .header-form a,.topbar a{font-size:.75rem;min-height:40px}
+  /* Type floor + touch targets for every NON-home page. The homepage got these
+     in its own stylesheet; products and the product-detail template were still
+     rendering 12px footer labels and 17px-tall link rows. */
+  :root{--fs-xs:.8125rem}
+  .footer ul{gap:4px}
+  .footer ul a{min-height:40px;display:inline-flex;align-items:center}
+  .sub-page .text-link{min-height:44px;display:inline-flex;align-items:center}
+  .footer-top{grid-template-columns:1fr}
+  .footer-brand{grid-column:auto}
+  .footer-phone{width:100%;justify-content:flex-start;font-size:1rem}
+  .cta-panel{padding:44px 22px}
+  .cta-panel .btn{width:100%;min-width:0}
+}
+
+/* Landscape phones · wide but very short, so nothing above targets them: the
+   width queries assume portrait and the ≥981px composition assumes a tall
+   screen. Declared last so it wins wherever it applies. */
+/* Second paragraph · four products (Portal, Tax, REM, Ai) carry one. It is now
+   hidden only on genuinely SHORT screens. The old flat 500px-capped monitor
+   renders left no room for it at any phone size; the new 16:9 shots render
+   ~190px at 390px wide, so a tall phone has room for the full copy again.
+   VIEW PRODUCT still opens the detail page with everything. */
+@media(max-width:980px) and (max-height:880px){
+  .products-page .product-copy p:nth-of-type(2),
+  .products-page .sap-copy p:nth-of-type(2){display:none}
+}
+/* Width matters as much as height: a narrower column makes the same paragraph
+   taller. 390×844 overflowed by 26px on height alone, so anything under 400px
+   wide hides it regardless of how tall the screen is. */
+@media(max-width:400px){
+  .products-page .product-copy p:nth-of-type(2),
+  .products-page .sap-copy p:nth-of-type(2){display:none}
+}
+
+/* Short phones · product DETAIL heroes. 390px up already fits; 360×640 needs
+   another ~120px, taken from the shot, the headline and the spacing. */
+@media(max-width:620px) and (max-height:700px){
+  .product-detail-page.product-template-page .hero-media img{max-height:none}
+  .product-detail-page.product-template-page .hero-copy h1{font-size:clamp(1.3rem,4.8vw,1.7rem);line-height:1.1}
+  .product-detail-page.product-template-page .hero-logo{max-height:32px;margin-bottom:6px}
+  .product-detail-page.product-template-page .hero-copy p{margin-top:8px;line-height:1.45}
+  .product-detail-page.product-template-page .hero-actions{margin-top:10px}
+  .product-detail-page .breadcrumbs{padding-top:8px;font-size:.75rem}
+  /* 134px chrome + ~24px breadcrumbs = 158; 164 leaves a little slack. */
+  .product-detail-page .hero-grid{min-height:0;padding-block:4px clamp(16px,2.6dvh,28px);gap:clamp(12px,2dvh,20px)}
+}
+
+/* Short phones (360×640 and similar). Everything from 390px up already fits;
+   here the longest descriptions still need ~90px, so the product SHOT and the
+   spacing give it up rather than the words. Declared after the ≤620 block so it
+   wins. */
+@media(max-width:620px) and (max-height:700px){
+  /* Full width here too. The rows are min-height driven and their content sits
+     well short of that height, so the extra ~65px the full-width shot costs is
+     absorbed by slack that was showing as empty space above and below. */
+  .products-page .product-media img{max-height:none;max-width:100%}
+  .products-page .product-media{padding-top:0}
+  .products-page .product-copy{padding:clamp(12px,2dvh,18px) 0 0}
+  .products-page .product-logo{height:26px;margin-bottom:8px}
+  .products-page .product-copy h3{margin-bottom:4px}
+  .products-page .product-copy p{line-height:1.45}
+  .products-page .product-row{padding-block:clamp(14px,2.4dvh,26px)}
+  .products-page .text-link{min-height:38px}
+}
+
+@media(max-height:560px) and (min-width:621px){
+  .products-page .hero{min-height:calc(100dvh - 44px - 64px)}
+  .products-page .hero .wrap{padding-block:clamp(16px,4dvh,40px)}
+  .products-page .sap-feature{min-height:0;padding-block:clamp(20px,5dvh,40px)}
+  /* A 375px-tall screen leaves ~266px for the hero after the chrome, and this
+     paragraph alone is taller than that — it pushed INQUIRE NOW below the fold.
+     Hidden only here, same call the landing hero makes on short viewports; the
+     words stay in the DOM and show at every normal size. */
+  .products-page .hero .wrap>p{display:none}
+}
+/* Touch targets keyed on POINTER, not width. The ≤600px block misses landscape
+   phones entirely — an 812x375 phone is a touch device with 17px link rows. */
+@media(hover:none){
+  .footer ul{gap:4px}
+  .footer ul a{min-height:40px;display:inline-flex;align-items:center}
+  .sub-page .text-link{min-height:44px;display:inline-flex;align-items:center}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .sub-page [data-reveal],.home-page [data-reveal]{opacity:1!important;transform:none!important;transition:none!important}
+}
+
+/* ═══ 5 · WORDPRESS LAYER + MODERN-UI REFINEMENTS ═══ */
+/* Logos are real <img> elements now (SEO-friendly alt text, swappable from WP) */
+.nav .logo-link::before,.footer .logo-link::before{display:none}
+.logo-nav{display:block;width:158px;height:35px;object-fit:contain;object-position:left center}
+.nav.scrolled .logo-nav{width:146px;height:32px}
+.logo-footer{display:block;width:186px;height:70px;object-fit:contain;object-position:left center}
+/* one header on every page */
+.sub-page .nav .wrap{min-height:88px}
+.sub-page .nav.scrolled .wrap{min-height:72px}
+/* accessibility */
+.skip-link{position:absolute;left:-999px;top:8px;z-index:999;padding:10px 16px;border-radius:8px;background:var(--orange);color:#fff;font-weight:700}
+.skip-link:focus{left:8px}
+.screen-reader-text{border:0;clip:rect(1px,1px,1px,1px);clip-path:inset(50%);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute!important;width:1px;word-wrap:normal!important}
+.admin-bar .nav{top:32px}
+@media(max-width:782px){.admin-bar .nav{top:46px}}
+/* eyebrow for headings that need a sub-page margin */
+.sub-page .eyebrow{display:inline-flex}
+/* services · optional photo per step (from assets/services) */
+.serv-img{width:100%;aspect-ratio:16/10;object-fit:cover;border-radius:12px;border:1px solid var(--line);margin-top:auto;transition:transform .5s cubic-bezier(.16,1,.3,1),box-shadow .5s}
+.serv-step:hover .serv-img{transform:translateY(-3px);box-shadow:0 22px 40px -24px rgba(var(--rgb-ink),.35)}
+@media(max-width:900px){.serv-img{grid-column:2;max-width:420px}}
+/* contact form feedback */
+.form-msg{margin-top:12px;padding:12px 14px;border-radius:10px;font-size:var(--fs-sm);display:none}
+.form-msg.show{display:block}
+.form-msg.ok{background:rgba(46,160,67,.1);border:1px solid rgba(46,160,67,.35);color:#1f6f31}
+.form-msg.err{background:rgba(220,38,38,.08);border:1px solid rgba(220,38,38,.3);color:#9f1d1d}
+.field.invalid input,.field.invalid select,.field.invalid textarea{border-color:#dc2626}
+.hp-field{position:absolute;left:-9999px;opacity:0;height:0;overflow:hidden}
+.btn[disabled]{opacity:.7;pointer-events:none}
+/* ── Blog / generic pages ── */
+.page-hero{position:relative;padding-block:clamp(56px,7vw,96px) clamp(40px,5vw,64px);background:linear-gradient(180deg,var(--warm),var(--surface))}
+.page-hero .eyebrow{margin-bottom:14px}
+.page-hero h1{font-size:var(--fs-h1);letter-spacing:-.04em;line-height:var(--lh-tight);max-width:18ch}
+.page-hero p{margin-top:16px;max-width:60ch;color:var(--soft);font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
+.post-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;padding-block:clamp(32px,4vw,56px) var(--sec)}
+.post-card{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--card-grad);transition:transform .45s cubic-bezier(.16,1,.3,1),border-color .4s,box-shadow .45s}
+.post-card:hover{transform:translateY(-5px);border-color:rgba(var(--rgb-brand),.45);box-shadow:0 30px 60px -30px rgba(var(--rgb-ink),.3)}
+.post-card-media{aspect-ratio:16/10;overflow:hidden;background:var(--bg-2)}
+.post-card-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.post-card:hover .post-card-media img{transform:scale(1.05)}
+.post-card-body{display:flex;flex-direction:column;gap:12px;padding:22px 22px 24px}
+.post-card-body h2,.post-card-body h3{font-size:var(--fs-card);line-height:var(--lh-heading);letter-spacing:-.01em}
+.post-card-body p{font-size:var(--fs-sm);color:var(--soft);line-height:var(--lh-body)}
+.post-card .tlink{margin-top:auto;font-size:var(--fs-xs)}
+@media(max-width:980px){.post-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.post-grid{grid-template-columns:1fr}}
+.pagination{display:flex;justify-content:center;gap:6px;padding-bottom:var(--sec)}
+.pagination .page-numbers{display:inline-grid;place-items:center;min-width:42px;height:42px;padding:0 12px;border:1px solid var(--line);border-radius:10px;font-weight:700;font-size:var(--fs-sm);color:var(--soft)}
+.pagination .page-numbers.current,.pagination .page-numbers:hover{background:var(--orange);border-color:var(--orange);color:#fff}
+.entry{padding-block:clamp(32px,4vw,56px) var(--sec)}
+.entry-hero{padding-block:clamp(48px,6vw,80px) 0}
+.entry-hero .news-meta{margin-bottom:16px}
+.entry-hero h1{font-size:var(--fs-h1);letter-spacing:-.04em;line-height:var(--lh-tight);max-width:22ch}
+.entry-media{margin-top:clamp(28px,4vw,44px);border-radius:16px;overflow:hidden;border:1px solid var(--line);aspect-ratio:16/8;background:var(--bg-2)}
+.entry-media img{width:100%;height:100%;object-fit:cover}
+.entry-content{max-width:76ch;font-size:var(--fs-lede);line-height:var(--lh-relaxed);color:var(--soft)}
+.entry-content>*+*{margin-top:1.2em}
+.entry-content h2,.entry-content h3,.entry-content h4{color:var(--text);margin-top:1.8em}
+.entry-content h2{font-size:var(--fs-subheading)}.entry-content h3{font-size:var(--fs-card)}
+.entry-content a{color:var(--orange-deep);text-decoration:underline;text-underline-offset:3px}
+.entry-content ul,.entry-content ol{padding-left:1.3em}
+.entry-content img{border-radius:12px}
+.entry-content blockquote{border-left:3px solid var(--orange);padding-left:18px;font-style:italic}
+.entry-content .wp-block-image figcaption{font-size:var(--fs-xs);color:var(--faint);text-align:center}
+.entry-content .alignwide{max-width:none}
+.entry-foot{margin-top:clamp(32px,4vw,48px);display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;border-top:1px solid var(--line);padding-top:24px}
+.not-found{text-align:center;padding-block:clamp(64px,10vw,140px)}
+.not-found h1{font-size:clamp(3rem,8vw,7rem);letter-spacing:-.05em;line-height:1;background:linear-gradient(135deg,var(--orange) 15%,var(--orange-2));-webkit-background-clip:text;background-clip:text;color:transparent}
+.not-found p{color:var(--soft);margin:16px auto 28px;max-width:46ch}
+.search-form{display:flex;gap:10px;max-width:520px;margin-inline:auto}
+.search-form input{flex:1;border:1px solid var(--line);border-radius:10px;padding:12px 16px;font:inherit;background:var(--bg-2)}
+.search-form input:focus{outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(var(--rgb-brand),.13)}
+/* news feature fallback when there is no image */
+.news-feature.no-img{background:linear-gradient(135deg,var(--color-ink),var(--color-gray))}
+/* ensure wide media never scrolls the page */
+.wrap>table,.entry-content table{display:block;overflow-x:auto}
+
+/* ── Lazy-load plugin compatibility (Smush, a3, etc.) ──
+   Those plugins add `.lazyload{opacity:0}` / `.lazyloaded{opacity:1}` to every image and
+   background element they process, which overrode the theme's own hidden hover layers on
+   the IQ Suite cards (photo + white logo showed permanently). These rules win by specificity. */
+.iq-card .iq-hover-art.lazyload,.iq-card .iq-hover-art.lazyloading,.iq-card .iq-hover-art.lazyloaded{opacity:0}
+.iq-card:not(.all):hover .iq-hover-art.lazyloaded{opacity:1;transform:scale(1)}
+.iq-card .iq-logo .lg-l.lazyload,.iq-card .iq-logo .lg-l.lazyloading,.iq-card .iq-logo .lg-l.lazyloaded{opacity:0}
+.iq-card:not(.all):hover .iq-logo .lg-l.lazyloaded,.iq-card.feature .iq-logo .lg-l.lazyloaded{opacity:1}
+.iq-card.feature .iq-logo .lg-d.lazyloaded,.iq-card:not(.all):hover .iq-logo .lg-d.lazyloaded{opacity:0}
+.iq-card:not(.all) .iq-art.lazyload,.iq-card:not(.all) .iq-art.lazyloading,.iq-card:not(.all) .iq-art.lazyloaded{opacity:1}
+.iq-card:not(.all):hover .iq-art.lazyloaded{opacity:0}
+.iq-card.feature .iq-art.lazyloaded{opacity:1}
+.banner-strip-track img.lazyload,.trust-track img.lazyload{opacity:1}
+
+/* ── SEO landing pages (page-landing.php) · dark hero like dynamiqes.com ── */
+.landing-hero{position:relative;overflow:hidden;background:linear-gradient(135deg,#1f1e1f 0%,var(--color-ink) 55%,#3a3639 100%);color:#fff;--text:#fff;--soft:rgba(255,255,255,.8);--line:rgba(255,255,255,.3)}
+.landing-hero::before{content:"";position:absolute;width:640px;height:640px;right:-200px;top:-260px;border-radius:50%;background:rgba(var(--rgb-brand),.16);filter:blur(10px);pointer-events:none}
+.landing-hero-grid{position:relative;display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(32px,5vw,72px);align-items:center;padding-block:clamp(56px,7vw,110px)}
+.landing-hero h1{font-size:clamp(2.1rem,1.4rem+2.6vw,3.9rem);line-height:1.08;letter-spacing:-.035em;color:var(--orange);max-width:16ch}
+.landing-intro{margin-top:22px;max-width:56ch;display:grid;gap:12px}
+.landing-intro p{font-size:var(--fs-lede);line-height:1.65;color:rgba(255,255,255,.86)}
+.landing-hero .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
+.landing-hero .btn-ghost{border:1.5px solid rgba(255,255,255,.4);color:#fff;background:rgba(255,255,255,.06)}
+.landing-hero .btn-ghost:hover{border-color:var(--orange);background:rgba(var(--rgb-brand),.14)}
+.landing-hero-media{border-radius:18px;overflow:hidden;border:4px solid #fff;box-shadow:0 40px 90px -40px rgba(0,0,0,.7);aspect-ratio:4/3;background:#fff}
+.landing-hero-media img{width:100%;height:100%;object-fit:cover;display:block}
+.landing-body{padding-block:clamp(48px,6vw,88px)}
+.landing-content{max-width:80ch;margin-inline:auto}
+.landing-content h2{font-size:var(--fs-h2);letter-spacing:-.03em;line-height:var(--lh-tight);margin-top:2em}
+.landing-content h2:first-child{margin-top:0}
+.landing-content h3{font-size:var(--fs-card);margin-top:1.6em}
+.landing-content h4{font-size:var(--fs-body);margin-top:1.4em}
+.landing-content figure{margin:2em 0}
+.landing-content img{border-radius:14px;border:1px solid var(--line);width:100%;max-height:520px;object-fit:cover}
+.landing-content ul li{position:relative;padding-left:1.4em;list-style:none;margin:.5em 0}
+.landing-content ul li::before{content:"✓";position:absolute;left:0;color:var(--orange);font-weight:900}
+.landing-content .faq-list{margin-top:1.2em;border-top:1px solid var(--line)}
+.landing-content .faq-list details{border-bottom:1px solid var(--line)}
+.landing-content .faq-list summary{display:flex;align-items:center;justify-content:space-between;gap:24px;padding:20px 0;font-weight:700;color:var(--text);cursor:pointer;list-style:none;font-size:var(--fs-lede)}
+.landing-content .faq-list summary::-webkit-details-marker{display:none}
+.landing-content .faq-list summary::after{content:"+";display:grid;place-items:center;width:32px;height:32px;border:1px solid var(--line);border-radius:50%;color:var(--orange);font-size:20px;flex:0 0 auto}
+.landing-content .faq-list details[open] summary::after{content:"−"}
+.landing-content .faq-list p{padding:0 52px 20px 0;margin:0}
+@media(max-width:900px){.landing-hero-grid{grid-template-columns:1fr;padding-block:48px 40px}.landing-hero-media{order:-1;aspect-ratio:16/10}.landing-hero h1{max-width:none}}

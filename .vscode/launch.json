@@ -1,0 +1,22 @@
+{
+    // Press F5: starts the local WordPress (portable PHP + SQLite) if needed, then opens the site.
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "msedge",
+            "request": "launch",
+            "name": "Run DynamIQ site (Edge)",
+            "url": "http://localhost:8787/",
+            "webRoot": "${workspaceFolder}/wp-content/themes/dynamiqes",
+            "preLaunchTask": "Start local WordPress"
+        },
+        {
+            "type": "chrome",
+            "request": "launch",
+            "name": "Run DynamIQ site (Chrome)",
+            "url": "http://localhost:8787/",
+            "webRoot": "${workspaceFolder}/wp-content/themes/dynamiqes",
+            "preLaunchTask": "Start local WordPress"
+        }
+    ]
+}

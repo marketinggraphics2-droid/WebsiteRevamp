@@ -1,0 +1,36 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Start local WordPress",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile",
+                "-ExecutionPolicy", "Bypass",
+                "-Command",
+                "if ((Test-NetConnection localhost -Port 8787 -InformationLevel Quiet -WarningAction SilentlyContinue)) { Write-Host 'WordPress already running on http://localhost:8787/' } else { & '${workspaceFolder}\\run-local.ps1' }"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": { "regexp": "^$" },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "(Development Server|already running|Press Ctrl\\+C)"
+                }
+            },
+            "presentation": { "reveal": "always", "panel": "dedicated" }
+        },
+        {
+            "label": "Lint theme PHP",
+            "type": "shell",
+            "command": "powershell",
+            "args": [
+                "-NoProfile", "-Command",
+                "Get-ChildItem -Recurse -Filter *.php '${workspaceFolder}\\wp-content\\themes\\dynamiqes' | ForEach-Object { & '${workspaceFolder}\\.local-wp\\php\\php.exe' -n -l $_.FullName }"
+            ],
+            "problemMatcher": []
+        }
+    ]
+}

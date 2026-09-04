@@ -1,0 +1,4 @@
+/* Block editor typography, roughly matching the front end */
+body { font-family: Roboto, system-ui, sans-serif; color: #252324; }
+.editor-styles-wrapper h1, .editor-styles-wrapper h2, .editor-styles-wrapper h3 { letter-spacing: -.02em; }
+.editor-styles-wrapper a { color: #d97400; }
