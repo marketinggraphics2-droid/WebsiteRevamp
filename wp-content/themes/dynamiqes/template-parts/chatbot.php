@@ -6,7 +6,7 @@
  * @package dynamiqes
  */
 
-$dq_bot_name = get_theme_mod( 'dq_chat_name', __( 'DynamIQ Assistant', 'dynamiqes' ) );
+$dq_bot_name = get_theme_mod( 'dq_chat_name', __( 'IQ Assistant', 'dynamiqes' ) );
 $dq_bot_logo = DQ_URI . '/assets/logos/IQ_Logo.svg';
 ?>
 <div class="dq-chat" id="dq-chat" data-mockup="true">
@@ -16,6 +16,7 @@ $dq_bot_logo = DQ_URI . '/assets/logos/IQ_Logo.svg';
 		<header class="dq-chat__head">
 			<span class="dq-chat__avatar"><img src="<?php echo esc_url( $dq_bot_logo ); ?>" alt="" width="22" height="22"></span>
 			<div class="dq-chat__title">
+				<span class="dq-chat__eyebrow"><?php esc_html_e( 'DynamIQ', 'dynamiqes' ); ?></span>
 				<strong><?php echo esc_html( $dq_bot_name ); ?></strong>
 				<span class="dq-chat__status"><i aria-hidden="true"></i><?php esc_html_e( 'Online · replies in minutes', 'dynamiqes' ); ?></span>
 			</div>
@@ -75,6 +76,7 @@ $dq_bot_logo = DQ_URI . '/assets/logos/IQ_Logo.svg';
 	</section>
 
 	<label for="dqChatToggle" class="dq-chat__launcher" role="button" aria-label="<?php esc_attr_e( 'Open chat', 'dynamiqes' ); ?>">
+		<span class="dq-chat__hint" aria-hidden="true"><?php esc_html_e( 'Chat with us', 'dynamiqes' ); ?></span>
 		<svg class="dq-chat__ico-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3 1.2-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" stroke-width="2.8"/></svg>
 		<svg class="dq-chat__ico-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
 		<span class="dq-chat__badge" aria-hidden="true">1</span>
