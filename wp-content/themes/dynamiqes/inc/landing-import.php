@@ -1,8 +1,8 @@
 <?php
 /**
  * Landing-page importer: pulls the SEO landing pages from the live dynamiqes.com site
- * (the "Blogs" dropdown) and recreates them as WordPress pages with the same slugs,
- * using the "Landing page" template. Content is reduced to clean blocks
+ * (the "Blogs" dropdown, plus the "Our Services" page) and recreates them as WordPress
+ * pages with the same slugs, using the "Landing page" template. Content is reduced to clean blocks
  * (headings, paragraphs, lists, images, FAQ accordions); forms and chrome are dropped.
  *
  * Runs from Appearance → DynamIQ Setup ("Import landing pages"), or via dq_import_landing_pages().
@@ -15,12 +15,22 @@ defined( 'ABSPATH' ) || exit;
 /** Slugs to import (same on dynamiqes.com). Filterable. */
 function dq_landing_slugs() {
 	return apply_filters( 'dq_landing_slugs', array(
+		'our-services', // top-level nav item on the old site: /our-services/ (H1 "Our Services", H2 per service)
 		'accounting-system-philippines',
 		'erp-solutions-philippines',
 		'it-solutions-company-philippines',
 		'sap-software-philippines',
 		'barcode-inventory-system-philippines',
 		'bir-cas-philippines',
+		/* SEM / campaign pages in the live sitemap, built on the same page builder */
+		'bir-cas-provider-philippines',
+		'sap-business-one-provider-philippines',
+		'promo/bir-cas-solution',
+		'promo/accounting-inventory-system',
+		'promo/erp-system',
+		'application-form',
+		'thank-you-ad',
+		'thank-you-accounting',
 	) );
 }
 
@@ -50,6 +60,7 @@ function dq_landing_parse( $slug, $html = '' ) {
 	if ( ! class_exists( 'DOMDocument' ) ) {
 		return new WP_Error( 'dq_dom', 'PHP DOM extension is not available.' );
 	}
+	$html = preg_replace( '#<br\s*/?>#i', ' ', $html ); // "High Success<br>Rate!" must read "High Success Rate!"
 
 	$doc = new DOMDocument();
 	libxml_use_internal_errors( true );
@@ -63,31 +74,45 @@ function dq_landing_parse( $slug, $html = '' ) {
 	};
 	$description = $meta( '//meta[@name="description"]' );
 	$og_image    = $meta( '//meta[@property="og:image"]' );
+	$title_node  = $xp->query( '//title' )->item( 0 );
+	$seo_title   = $title_node ? trim( preg_replace( '/\s+/', ' ', $title_node->textContent ) ) : '';
 
 	$h1   = $xp->query( '//h1' )->item( 0 );
 	$title = $h1 ? dq_landing_text( $h1 ) : ucwords( str_replace( '-', ' ', $slug ) );
 
-	/* Intro: first substantial paragraph(s) in the same section as the H1. */
-	$intro = '';
+	/* Intro: first substantial paragraph(s) in the same section as the H1, up to the section's
+	   first H2. Some pages open their first content block inside the hero section (the live
+	   /our-services/ puts "SAP BIR CAS Accreditation Assistance" there); from that H2 on the
+	   hero is body copy and is walked with the other sections below. */
+	$intro    = '';
+	$hero_sec = null;
+	$hero_h2  = false; // hero section holds an H2 (body copy follows it)
 	if ( $h1 ) {
 		$sec = $h1;
 		while ( $sec && ! in_array( strtolower( $sec->nodeName ), array( 'section', 'body' ), true ) ) {
 			$sec = $sec->parentNode;
 		}
 		if ( $sec ) {
-			foreach ( $xp->query( './/p', $sec ) as $p ) {
-				$t = dq_landing_text( $p );
-				if ( mb_strlen( $t ) > 40 ) {
-					$intro .= '<p>' . esc_html( $t ) . '</p>';
+			$hero_sec = $sec;
+			foreach ( $xp->query( './/h2|.//p|.//img', $sec ) as $node ) { // document order
+				$name = strtolower( $node->nodeName );
+				if ( ! dq_landing_owned( $node, $sec ) ) {
+					continue;
 				}
-			}
-			/* hero image: first real image in the hero section */
-			if ( ! $og_image ) {
-				foreach ( $xp->query( './/img', $sec ) as $img ) {
-					$src = dq_landing_img_src( $img );
+				if ( 'h2' === $name ) {
+					$hero_h2 = true;
+					break;
+				}
+				if ( 'p' === $name ) {
+					$t = dq_landing_text( $node );
+					if ( mb_strlen( $t ) > 40 ) {
+						$intro .= '<p>' . esc_html( $t ) . '</p>';
+					}
+				} elseif ( ! $og_image ) {
+					/* hero image: first real image in the hero section */
+					$src = dq_landing_img_src( $node );
 					if ( $src ) {
 						$og_image = $src;
-						break;
 					}
 				}
 			}
@@ -101,36 +126,70 @@ function dq_landing_parse( $slug, $html = '' ) {
 	$sections     = $xp->query( '//section' );
 	$hero_done    = false;
 	foreach ( $sections as $section ) {
-		$cls = strtolower( $section->getAttribute( 'class' ) . ' ' . $section->getAttribute( 'id' ) );
-		if ( $xp->query( './/h1', $section )->length ) {
-			$hero_done = true; // hero handled separately
-			continue;
+		$cls       = strtolower( $section->getAttribute( 'class' ) . ' ' . $section->getAttribute( 'id' ) );
+		$from_h2   = false; // hero remainder: emit nodes only from the first H2 on, and no images (icons)
+		if ( dq_landing_owned_nodes( $xp->query( './/h1', $section ), $section ) ) {
+			$hero_done = true; // hero intro/image handled above
+			if ( ! ( $hero_h2 && $section->isSameNode( $hero_sec ) ) ) {
+				continue;
+			}
+			$from_h2 = true;
 		}
 		if ( ! $hero_done ) {
 			continue;
 		}
-		$skip = false;
-		foreach ( $skip_classes as $s ) {
-			if ( false !== strpos( $cls, $s ) ) {
-				$skip = true;
+		if ( ! $from_h2 ) {
+			/* The in-page CTA block around the enquiry form ("Ready To Get Started?" H3, a heading and a
+			   line of copy): part of the live outline, so keep its text — never the form itself. The old
+			   site's builders name these sections differently (lp-contact-form, sectionContact,
+			   inquire-with-us, sem--form …), so the form itself is the marker. */
+			if ( dq_landing_owned_nodes( $xp->query( './/form', $section ), $section ) || preg_match( '/(lp-contact-form|contact-form|sectioncontact|lets-talk|ready-to|inquire-with-us)/', $cls ) ) {
+				$cta = '';
+				foreach ( $xp->query( './/h2|.//h3|.//p', $section ) as $node ) {
+					if ( ! dq_landing_owned( $node, $section ) ) {
+						continue;
+					}
+					/* The newer builder puts the H3 + its line inside the <form> header; keep headings anywhere,
+					   and paragraphs in the form only when they are copy, not field wrappers. */
+					if ( 'p' === strtolower( $node->nodeName ) && $xp->query( 'ancestor::form', $node )->length
+						&& ( $xp->query( './/*[contains(@class,"wpcf7-form-control")]|.//input|.//select|.//textarea|.//button', $node )->length || mb_strlen( dq_landing_text( $node ) ) < 25 ) ) {
+						continue;
+					}
+					$t = dq_landing_text( $node );
+					if ( '' !== $t ) {
+						$cta .= '<' . strtolower( $node->nodeName ) . '>' . esc_html( $t ) . '</' . strtolower( $node->nodeName ) . '>';
+					}
+				}
+				if ( $cta ) {
+					$blocks[] = '<div class="landing-cta">' . $cta . '<p class="landing-cta-btn"><a class="btn btn-orange" href="' . esc_url( dq_book_demo_url() ) . '">' . esc_html__( 'Get Your Free Business Analysis', 'dynamiqes' ) . '</a></p></div>';
+				}
+				continue;
+			}
+			$skip = false;
+			foreach ( $skip_classes as $s ) {
+				if ( false !== strpos( $cls, $s ) ) {
+					$skip = true;
+				}
+			}
+			if ( $skip || dq_landing_owned_nodes( $xp->query( './/form', $section ), $section ) ) {
+				continue;
 			}
 		}
-		if ( $skip || $xp->query( './/form', $section )->length ) {
-			continue;
-		}
 
-		/* FAQ accordion → <details> */
-		$buttons = $xp->query( './/*[contains(concat(" ",normalize-space(@class)," ")," accordion-button ")]', $section );
-		$bodies  = $xp->query( './/*[contains(concat(" ",normalize-space(@class)," ")," accordion-body ")]', $section );
-		if ( $buttons->length && $buttons->length === $bodies->length ) {
-			$heads = $xp->query( './/h2|.//h3', $section );
-			$blocks[] = '<h2>' . esc_html( $heads->length ? dq_landing_text( $heads->item( 0 ) ) : __( 'Frequently Asked Questions', 'dynamiqes' ) ) . '</h2>';
+		/* FAQ accordion → <details>. Questions marked up as H3 on the live page stay H3s (inside the
+		   summary); answers keep their paragraphs and lists. */
+		$buttons = dq_landing_owned_nodes( $xp->query( './/*[contains(concat(" ",normalize-space(@class)," ")," accordion-button ")]', $section ), $section );
+		$bodies  = dq_landing_owned_nodes( $xp->query( './/*[contains(concat(" ",normalize-space(@class)," ")," accordion-body ")]', $section ), $section );
+		if ( $buttons && count( $buttons ) === count( $bodies ) ) {
+			$heads = dq_landing_owned_nodes( $xp->query( './/h2', $section ), $section );
+			$blocks[] = '<h2>' . esc_html( $heads ? dq_landing_text( $heads[0] ) : __( 'Frequently Asked Questions', 'dynamiqes' ) ) . '</h2>';
 			$faq = '<div class="faq-list">';
-			for ( $i = 0; $i < $buttons->length; $i++ ) {
-				$q = dq_landing_text( $buttons->item( $i ) );
-				$a = dq_landing_text( $bodies->item( $i ) );
+			foreach ( $buttons as $i => $button ) {
+				$q = dq_landing_text( $button );
+				$a = dq_landing_rich( $bodies[ $i ] );
 				if ( $q && $a ) {
-					$faq .= '<details><summary>' . esc_html( $q ) . '</summary><p>' . esc_html( $a ) . '</p></details>';
+					$is_h3 = $xp->query( 'ancestor-or-self::h3', $button )->length > 0;
+					$faq  .= '<details><summary>' . ( $is_h3 ? '<h3>' . esc_html( $q ) . '</h3>' : esc_html( $q ) ) . '</summary><div class="faq-answer">' . $a . '</div></details>';
 				}
 			}
 			$blocks[] = $faq . '</div>';
@@ -138,9 +197,23 @@ function dq_landing_parse( $slug, $html = '' ) {
 		}
 
 		$section_images = 0;
+		$started        = ! $from_h2;
+		$caption_list   = array(); // icon + caption rows on the old site are bare <p>s after a "...:" lead-in; rebuild them as a list
 		foreach ( $xp->query( './/h2|.//h3|.//h4|.//p|.//ul|.//ol|.//img', $section ) as $node ) {
 			$name = strtolower( $node->nodeName );
+			if ( ! dq_landing_owned( $node, $section ) ) {
+				continue; // belongs to a later section libxml nested inside this one (unclosed tags on the old site)
+			}
+			if ( ! $started ) {
+				if ( 'h2' !== $name ) {
+					continue;
+				}
+				$started = true;
+			}
 			if ( 'img' === $name ) {
+				if ( $from_h2 ) {
+					continue;
+				}
 				$src = dq_landing_img_src( $node );
 				$w   = (int) $node->getAttribute( 'width' );
 				$h   = (int) $node->getAttribute( 'height' );
@@ -181,22 +254,102 @@ function dq_landing_parse( $slug, $html = '' ) {
 			if ( '' === $t ) {
 				continue;
 			}
-			$key = $name . '|' . $t;
+			$key = spl_object_hash( $section ) . '|' . $name . '|' . $t; // the old site repeats blocks within a section (desktop/mobile copies); the same heading in two sections is real
 			if ( isset( $seen[ $key ] ) ) {
 				continue;
 			}
 			$seen[ $key ] = true;
+			$lead_in = $blocks && ':</p>' === substr( end( $blocks ), -5 );
+			if ( 'p' === $name && mb_strlen( $t ) <= 60 && ! preg_match( '/[.!?]$/u', $t ) && ( $caption_list || $lead_in ) ) {
+				$caption_list[] = '<li>' . esc_html( $t ) . '</li>';
+				continue;
+			}
+			if ( $caption_list ) {
+				$blocks[]     = '<ul>' . implode( '', $caption_list ) . '</ul>';
+				$caption_list = array();
+			}
 			$blocks[] = '<' . $name . '>' . esc_html( $t ) . '</' . $name . '>';
+		}
+		if ( $caption_list ) {
+			$blocks[] = '<ul>' . implode( '', $caption_list ) . '</ul>';
 		}
 	}
 
 	return array(
 		'title'       => $title,
+		'seo_title'   => $seo_title,
 		'description' => $description,
 		'hero_image'  => $og_image,
 		'intro'       => $intro,
 		'content'     => implode( "\n", $blocks ),
 	);
+}
+
+/**
+ * Does $node belong to $section itself? The old site leaves tags unclosed, so libxml nests the
+ * following <section>s inside the current one; nodes whose nearest section ancestor is another
+ * section are that section's and are walked when it comes up.
+ */
+function dq_landing_owned( DOMNode $node, DOMNode $section ) {
+	$n = $node->parentNode;
+	while ( $n && XML_ELEMENT_NODE === $n->nodeType ) {
+		if ( 'section' === strtolower( $n->nodeName ) ) {
+			return $n->isSameNode( $section );
+		}
+		$n = $n->parentNode;
+	}
+	return true;
+}
+
+/** The nodes of a list that belong to $section (see dq_landing_owned()), as an array. */
+function dq_landing_owned_nodes( DOMNodeList $nodes, DOMNode $section ) {
+	$out = array();
+	foreach ( $nodes as $n ) {
+		if ( dq_landing_owned( $n, $section ) ) {
+			$out[] = $n;
+		}
+	}
+	return $out;
+}
+
+/** Paragraphs and lists inside a node as clean HTML (FAQ answers); falls back to one paragraph. */
+function dq_landing_rich( DOMNode $node ) {
+	$doc = $node->ownerDocument;
+	$xp  = new DOMXPath( $doc );
+	$out = '';
+	foreach ( $xp->query( './/p|.//ul|.//ol', $node ) as $n ) {
+		$name = strtolower( $n->nodeName );
+		if ( 'p' === $name ) {
+			if ( $xp->query( 'ancestor::li', $n )->length ) {
+				continue;
+			}
+			$t = dq_landing_text( $n );
+			if ( '' !== $t ) {
+				$out .= '<p>' . esc_html( $t ) . '</p>';
+			}
+			continue;
+		}
+		if ( $xp->query( 'ancestor::ul|ancestor::ol', $n )->length ) {
+			continue;
+		}
+		$items = '';
+		foreach ( $xp->query( './li', $n ) as $li ) {
+			$t = dq_landing_text( $li );
+			if ( '' !== $t ) {
+				$items .= '<li>' . esc_html( $t ) . '</li>';
+			}
+		}
+		if ( $items ) {
+			$out .= '<' . $name . '>' . $items . '</' . $name . '>';
+		}
+	}
+	if ( '' === $out ) {
+		$t = dq_landing_text( $node );
+		if ( '' !== $t ) {
+			$out = '<p>' . esc_html( $t ) . '</p>';
+		}
+	}
+	return $out;
 }
 
 /** Visible text of a node, whitespace-collapsed. */
@@ -239,13 +392,25 @@ function dq_import_landing_pages( $sideload = false ) {
 			continue;
 		}
 		$existing = get_page_by_path( $slug );
+		$parts    = explode( '/', $slug ); // "promo/erp-system": a child page of /promo/
 		$args     = array(
 			'post_type'    => 'page',
 			'post_status'  => 'publish',
-			'post_name'    => $slug,
+			'post_name'    => end( $parts ),
 			'post_excerpt' => $data['description'],
 			'post_content' => $data['content'],
 		);
+		if ( ! $existing && count( $parts ) > 1 ) {
+			$parent = get_page_by_path( implode( '/', array_slice( $parts, 0, -1 ) ) );
+			if ( ! $parent ) { // the live /promo/ itself is not a public page: a private parent keeps the child URLs
+				$parent_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'private', 'post_title' => ucwords( str_replace( '-', ' ', $parts[0] ) ), 'post_name' => $parts[0] ) );
+			} else {
+				$parent_id = $parent->ID;
+			}
+			if ( $parent_id && ! is_wp_error( $parent_id ) ) {
+				$args['post_parent'] = (int) $parent_id;
+			}
+		}
 		$prev_tpl = $existing ? get_post_meta( $existing->ID, '_wp_page_template', true ) : '';
 		if ( $existing ) {
 			/* An existing page keeps its own title (it feeds <title>, Yoast and the menus);
@@ -276,7 +441,13 @@ function dq_import_landing_pages( $sideload = false ) {
 		if ( $data['description'] ) {
 			update_post_meta( $id, '_dq_seo_description', $data['description'] );
 		}
-		if ( $data['hero_image'] ) {
+		/* Keep the old page's exact <title> (it ranks); an editor-set title tag is never overwritten. */
+		if ( ! empty( $data['seo_title'] ) && ! get_post_meta( $id, '_dq_seo_title', true ) ) {
+			update_post_meta( $id, '_dq_seo_title', $data['seo_title'] );
+		}
+		if ( ! $data['hero_image'] ) {
+			delete_post_meta( $id, '_dq_hero_image' ); // only the importer writes this; drop a stale value from an earlier parse
+		} else {
 			update_post_meta( $id, '_dq_hero_image', $data['hero_image'] );
 			if ( $sideload && ! has_post_thumbnail( $id ) ) {
 				require_once ABSPATH . 'wp-admin/includes/media.php';
@@ -306,6 +477,13 @@ function dq_import_landing_pages( $sideload = false ) {
  */
 add_filter( 'template_include', function ( $template ) {
 	if ( is_singular( 'page' ) && dq_is_landing_page( get_queried_object() ) ) {
+		/* A slug template (page-our-services.php) is a purpose-built layout for that import. It must win
+		   even though the importer stored page-landing.php in _wp_page_template (which WordPress
+		   resolves ahead of page-{slug}.php in the hierarchy). */
+		$by_slug = locate_template( 'page-' . get_queried_object()->post_name . '.php' );
+		if ( $by_slug ) {
+			return $by_slug;
+		}
 		$landing = locate_template( 'page-landing.php' );
 		if ( $landing ) {
 			return $landing;

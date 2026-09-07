@@ -26,6 +26,7 @@ $suite    = array_values( array_filter( $products, function ( $p ) { return 'sap
 		<div class="wrap">
 			<article class="sap-panel"<?php dq_reveal(); ?>>
 				<div class="sap-media"><img src="<?php echo esc_url( $sap['hero'] ); ?>" alt="<?php echo esc_attr( $sap['name'] . ' interface' ); ?>" loading="lazy"></div>
+				<p class="sap-caption"><?php esc_html_e( 'Make your business Run Easier with SAP Business One 10.0', 'dynamiqes' ); ?></p><?php /* caption under the SAP media, as on the live /products/ page */ ?>
 				<div class="sap-copy">
 					<img class="sap-logo" src="<?php echo esc_url( $sap['logo'] ); ?>" alt="<?php echo esc_attr( $sap['name'] ); ?>" loading="lazy">
 					<h2><?php echo esc_html( $sap['name'] ); ?></h2>
@@ -40,7 +41,7 @@ $suite    = array_values( array_filter( $products, function ( $p ) { return 'sap
 	<section class="suite">
 		<div class="wrap">
 			<div class="suite-head">
-				<div><span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'Our Products', 'dynamiqes' ); ?></span><h2<?php dq_reveal(); ?>><?php esc_html_e( 'The IQ Suite — built in-house on SAP Business One', 'dynamiqes' ); ?></h2></div>
+				<div><span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'Our Products', 'dynamiqes' ); ?></span><p class="sec-title"<?php dq_reveal(); ?>><?php esc_html_e( 'The IQ Suite — built in-house on SAP Business One', 'dynamiqes' ); ?></p><?php /* styled like an H2, but the live /products/ outline has no heading here */ ?></div>
 			</div>
 			<div class="product-list">
 				<?php foreach ( $suite as $p ) : ?>
@@ -58,7 +59,7 @@ $suite    = array_values( array_filter( $products, function ( $p ) { return 'sap
 		</div>
 	</section>
 
-	<?php dq_cta_band(); ?>
+	<?php /* live /products/ closes with the contact block: H2 "We’d Like To Hear From You", H3 "Get in Touch" */ get_template_part( 'template-parts/contact-section', null, array( 'heading' => __( 'We’d Like To Hear From You', 'dynamiqes' ), 'aside_heading' => __( 'Get in Touch', 'dynamiqes' ) ) ); ?>
 </main>
 <?php
 get_footer();

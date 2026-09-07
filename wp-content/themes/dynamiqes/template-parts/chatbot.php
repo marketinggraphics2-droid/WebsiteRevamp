@@ -77,7 +77,7 @@ $dq_bot_logo = DQ_URI . '/assets/logos/IQ_Logo.svg';
 
 	<label for="dqChatToggle" class="dq-chat__launcher" role="button" aria-label="<?php esc_attr_e( 'Open chat', 'dynamiqes' ); ?>">
 		<span class="dq-chat__hint" aria-hidden="true"><?php esc_html_e( 'Chat with us', 'dynamiqes' ); ?></span>
-		<svg class="dq-chat__ico-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12a8 8 0 0 1-8 8H8l-5 3 1.2-4.6A8 8 0 1 1 21 12z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01" stroke-width="2.8"/></svg>
+		<svg class="dq-chat__ico-open" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/><path d="M8.5 11.5h.01M12 11.5h.01M15.5 11.5h.01" stroke-width="2.6"/></svg>
 		<svg class="dq-chat__ico-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18"/></svg>
 		<span class="dq-chat__badge" aria-hidden="true">1</span>
 	</label>

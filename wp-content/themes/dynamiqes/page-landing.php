@@ -38,10 +38,6 @@ if ( ! $intro && has_excerpt() ) {
 				<div class="landing-hero-copy">
 					<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
 					<?php if ( $intro ) : ?><div class="landing-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div><?php endif; ?>
-					<div class="hero-actions"<?php dq_reveal( '', 160 ); ?>>
-						<a class="btn btn-primary" href="<?php echo esc_url( dq_home_anchor( 'contact' ) ); ?>"><?php esc_html_e( 'GET IN TOUCH', 'dynamiqes' ); ?> <span aria-hidden="true">→</span></a>
-						<a class="btn btn-ghost" href="<?php echo esc_url( dq_products_url() ); ?>"><?php esc_html_e( 'Explore the IQ Suite', 'dynamiqes' ); ?></a>
-					</div>
 				</div>
 				<?php if ( $hero_img ) : ?>
 				<div class="landing-hero-media"<?php dq_reveal( 'scale' ); ?>><img src="<?php echo esc_url( $hero_img ); ?>" alt="<?php the_title_attribute(); ?>" fetchpriority="high"></div>

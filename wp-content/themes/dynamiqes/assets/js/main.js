@@ -5,7 +5,7 @@
    - hero video fade-in, contact video lazy play/pause
    - IQ Suite logo strip clone + hover card
    - testimonial marquee clone, feature-card cursor glow, partner photo parallax
-   - product-detail hero parallax
+   - product-detail hero parallax is CSS-only (scroll-driven animation), see main.css
    - contact form (AJAX → admin-ajax.php) */
 (function () {
   'use strict';
@@ -134,16 +134,20 @@
     window.addEventListener('resize', function () { clearTimeout(wallRT); wallRT = setTimeout(wallFill, 200); });
   }
   var wallVideos = function () { return document.querySelectorAll('.video-tile video'); };
-  /* The tiles ship with no src (footer.php): the clips are tens of MB each and every
-     copy in the track is its own <video>, so with a src in the markup they would all
-     start downloading with the page and starve the images and scripts above the fold.
-     wallArm() attaches the tile's data-video to each copy the first time the wall comes
-     near the viewport; clones made before that inherit no src and are armed then too. */
+  /* The tiles ship with no src (footer.php): every copy in the track is its own <video>, so
+     with a src in the markup they would all start downloading with the page and starve the
+     images and scripts above the fold. wallArm() attaches the tile's data-preview — the small
+     240p muted rendition (make-video-previews.ps1) — to each copy the first time the wall comes
+     near the viewport (the VP9 WebM where the browser can decode it, else the H.264 MP4);
+     clones made before that inherit no src and are armed then too. The full-size data-video
+     is never loaded by the strip, only by the lightbox (5c). */
+  var probe = document.createElement('video');
+  var canWebm = !!(probe.canPlayType && probe.canPlayType('video/webm; codecs="vp9"'));
   var wallArm = function () {
     wallVideos().forEach(function (v) {
       if (v.getAttribute('src')) { return; }
-      var tile = v.closest('.video-tile');
-      var src = tile ? tile.getAttribute('data-video') : '';
+      var tile = v.closest('.video-tile'); if (!tile) { return; }
+      var src = (canWebm && tile.getAttribute('data-preview-webm')) || tile.getAttribute('data-preview') || tile.getAttribute('data-video');
       if (src) { v.preload = 'auto'; v.setAttribute('src', src); }
     });
   };
@@ -163,9 +167,11 @@
   }
 
   /* 5c · Video lightbox · click / Enter / Space on a tile opens that clip large with sound.
-     The tile's own <video> element is MOVED into the lightbox stage and moved back on close,
-     so playback simply continues from the current frame — no second download, no seeking
-     (which also sidesteps servers that ignore Range requests). Marquee holds, scroll locks. */
+     The strip only ever plays the 240p preview, so the lightbox builds its OWN <video> on the
+     full-size data-video (1080p) — nothing of the big file is fetched until a tile is clicked.
+     It picks up from the tile's current position when the server honours Range requests, and
+     simply starts from the top when it does not. Closing tears the player down (src cleared +
+     load()) so the browser aborts the rest of the download. Marquee holds, scroll locks. */
   var lb = document.querySelector('.video-lightbox');
   if (lb && wallTrack) {
     var lbStage = lb.querySelector('.video-lightbox-stage');
@@ -174,19 +180,32 @@
     var lbMarq = document.querySelector('.video-marq');
     var lbTile = null, lbVid = null, lbTimer = null;
     var lbOpen = function (tile) {
-      var vid = tile.querySelector('video'); if (!vid || lbVid) { return; }
-      wallArm();                                      // a tile opened before the wall was near view has no src yet
+      var tileVid = tile.querySelector('video');
+      var full = tile.getAttribute('data-video') || tile.getAttribute('data-preview');
+      if (!full || lbVid) { return; }
       clearTimeout(lbTimer);
-      lbTile = tile; lbVid = vid;
+      lbTile = tile;
       lbCap.textContent = tile.getAttribute('data-label') || '';
-      lbStage.appendChild(vid);                       // element moves; playback state travels with it
-      vid.controls = true; vid.muted = false; vid.volume = 1;
+      var vid = document.createElement('video');
+      vid.controls = true; vid.playsInline = true; vid.preload = 'auto';
+      vid.setAttribute('playsinline', '');
+      var poster = tile.getAttribute('data-poster'); if (poster) { vid.poster = poster; }
+      var resumeAt = tileVid && tileVid.currentTime > 1 ? tileVid.currentTime : 0;
+      if (resumeAt) {
+        vid.addEventListener('loadedmetadata', function () {
+          try { if (resumeAt < vid.duration - 1) { vid.currentTime = resumeAt; } } catch (e) {}
+        }, { once: true });
+      }
+      vid.src = full;
+      lbStage.appendChild(vid);
+      lbVid = vid;
       lb.hidden = false;
       requestAnimationFrame(function () { lb.classList.add('is-open'); });
       document.documentElement.classList.add('has-lightbox');
       if (window.dqLenis && window.dqLenis.stop) { window.dqLenis.stop(); }
       if (lbMarq) { lbMarq.classList.add('is-held'); }
-      wallVideos().forEach(function (v) { v.pause(); }); // the other tiles (the moved one no longer matches)
+      wallVideos().forEach(function (v) { v.pause(); });  // strip previews rest while the big one plays
+      vid.muted = false; vid.volume = 1;
       vid.play().catch(function () {});
       lbClose.focus();
     };
@@ -194,18 +213,18 @@
       if (lb.hidden || !lbVid) { return; }
       var vid = lbVid, tile = lbTile;
       lb.classList.remove('is-open');
-      vid.muted = true; vid.controls = false;          // sound stops at once; the frame keeps running
+      vid.pause(); vid.muted = true;                    // sound stops at once
       document.documentElement.classList.remove('has-lightbox');
       if (window.dqLenis && window.dqLenis.start) { window.dqLenis.start(); }
       if (lbMarq) { lbMarq.classList.remove('is-held'); }
-      lbTimer = setTimeout(function () {               // after the fade, hand the element back to its tile
+      lbTimer = setTimeout(function () {               // after the fade, drop the player and stop its download
         lb.hidden = true;
-        var hint = tile.querySelector('.video-tile-hint');
-        if (hint) { tile.insertBefore(vid, hint); } else { tile.appendChild(vid); }
-        if (!reduce) { wallVideos().forEach(function (v) { v.play().catch(function () {}); }); } else { vid.pause(); }
+        vid.removeAttribute('src'); vid.load();
+        if (vid.parentNode) { vid.parentNode.removeChild(vid); }
+        if (!reduce) { wallVideos().forEach(function (v) { v.play().catch(function () {}); }); }
         lbVid = null; lbTile = null;
       }, 320);
-      tile.focus();
+      if (tile) { tile.focus(); }
     };
     wallTrack.addEventListener('click', function (ev) {
       var tile = ev.target.closest('.video-tile'); if (tile) { lbOpen(tile); }
@@ -319,17 +338,9 @@
     stTrack.appendChild(frag2);
   }
 
-  /* 10 · Product-detail hero background parallax */
-  var productBg = document.querySelector('.product-hero-bg');
-  if (productBg && !reduce) {
-    var pt = false;
-    var updP = function () {
-      productBg.style.setProperty('--product-parallax-y', Math.max(0, Math.min(42, window.scrollY * 0.12)) + 'px');
-      pt = false;
-    };
-    updP();
-    window.addEventListener('scroll', function () { if (!pt) { pt = true; requestAnimationFrame(updP); } }, { passive: true });
-  }
+  /* 10 · Product-detail hero background parallax — now pure CSS (scroll-driven animation on
+     .product-hero-bg in main.css). The old scroll listener rewrote a CSS variable on every tick,
+     forcing a style recalc per frame on a full-viewport layer and stuttering the hero. */
 
   /* 11 · Click-to-play embeds */
   document.querySelectorAll('[data-video]').forEach(function (box) {
@@ -344,7 +355,93 @@
     });
   });
 
+  /* 11b · Testimonial videos · the poster button beside each client quote opens the shared
+     .video-lightbox (footer.php prints it whenever a template asked, dq_request_lightbox()).
+     Self-hosted MP4s get a <video> with sound; Vimeo / YouTube get an iframe. The player is
+     created on open and torn down on close so nothing downloads until a poster is clicked.
+     Kept separate from 5c (the footer video wall) — that one only wires up when the wall exists. */
+  var tlb = document.querySelector('.video-lightbox');
+  var testiPlays = document.querySelectorAll('.testi-play');
+  if (tlb && testiPlays.length) {
+    var tStage = tlb.querySelector('.video-lightbox-stage');
+    var tCap = tlb.querySelector('.video-lightbox-cap');
+    var tClose = tlb.querySelector('.video-lightbox-close');
+    var tPlayer = null, tFrom = null, tTimer = null;
+    var tOpen = function (btn) {
+      if (tPlayer) { return; }
+      clearTimeout(tTimer);
+      tFrom = btn;
+      tCap.textContent = btn.getAttribute('data-label') || '';
+      var clip = btn.getAttribute('data-clip'), embed = btn.getAttribute('data-embed'), el;
+      if (clip) {
+        el = document.createElement('video');
+        el.controls = true; el.playsInline = true; el.preload = 'auto';
+        el.setAttribute('playsinline', '');
+        var poster = btn.querySelector('img'); if (poster) { el.poster = poster.currentSrc || poster.src; }
+        el.src = clip;
+      } else if (embed) {
+        el = document.createElement('iframe');
+        el.src = embed;
+        el.setAttribute('allow', 'autoplay; encrypted-media; picture-in-picture; fullscreen');
+        el.setAttribute('allowfullscreen', '');
+        el.setAttribute('title', tCap.textContent || 'Video player');
+        el.style.cssText = 'display:block;width:100%;height:100%;border:0;background:#000';
+      } else { return; }
+      tStage.appendChild(el);
+      tPlayer = el;
+      tlb.hidden = false;
+      requestAnimationFrame(function () { tlb.classList.add('is-open'); });
+      document.documentElement.classList.add('has-lightbox');
+      if (window.dqLenis && window.dqLenis.stop) { window.dqLenis.stop(); }
+      if (clip) { el.muted = false; el.volume = 1; el.play().catch(function () {}); }
+      tClose.focus();
+    };
+    var tShut = function () {
+      if (tlb.hidden || !tPlayer) { return; }
+      var el = tPlayer, from = tFrom;
+      tlb.classList.remove('is-open');
+      if (el.tagName === 'VIDEO') { el.pause(); el.muted = true; }
+      document.documentElement.classList.remove('has-lightbox');
+      if (window.dqLenis && window.dqLenis.start) { window.dqLenis.start(); }
+      tTimer = setTimeout(function () {
+        tlb.hidden = true;
+        if (el.tagName === 'VIDEO') { el.removeAttribute('src'); el.load(); } else { el.src = 'about:blank'; }
+        if (el.parentNode) { el.parentNode.removeChild(el); }
+        tPlayer = null; tFrom = null;
+      }, 320);
+      if (from) { from.focus(); }
+    };
+    testiPlays.forEach(function (btn) { btn.addEventListener('click', function () { tOpen(btn); }); });
+    tlb.addEventListener('click', function (ev) { if (ev.target.closest('[data-close]')) { tShut(); } });
+    document.addEventListener('keydown', function (ev) { if (ev.key === 'Escape') { tShut(); } });
+  }
+
+  /* 11c · Testimonial single · a quote longer than the first screen scrolls inside its card;
+     .is-scrollable adds a bottom fade until the reader reaches the end. */
+  document.querySelectorAll('.testimonial-single .testi-story-quote').forEach(function (q) {
+    var mark = function () { q.classList.toggle('is-scrollable', q.scrollHeight - q.clientHeight > 4 && q.scrollTop + q.clientHeight < q.scrollHeight - 4); };
+    mark();
+    q.addEventListener('scroll', mark, { passive: true });
+    window.addEventListener('resize', mark);
+    if (window.ResizeObserver) { new ResizeObserver(mark).observe(q); }
+  });
+
   /* 12 · Contact form · conditional "Other" field + AJAX submit */
+  /* Select chevron state · native <select> has no :open, so mirror it on the wrapper:
+     mousedown toggles (a second click on an open list closes it), keyboard opens,
+     change / blur close. CSS flips .field--select::after on .is-open. */
+  document.querySelectorAll('.field--select select').forEach(function (sel) {
+    var wrap = sel.closest('.field--select');
+    var set = function (on) { wrap.classList.toggle('is-open', on); };
+    sel.addEventListener('mousedown', function () { set(!wrap.classList.contains('is-open')); });
+    sel.addEventListener('keydown', function (ev) {
+      if (ev.key === ' ' || ev.key === 'Enter' || (ev.altKey && (ev.key === 'ArrowDown' || ev.key === 'ArrowUp'))) { set(true); }
+      if (ev.key === 'Escape' || ev.key === 'Tab') { set(false); }
+    });
+    sel.addEventListener('change', function () { set(false); });
+    sel.addEventListener('blur', function () { set(false); });
+  });
+
   var howFound = document.getElementById('howFound');
   var otherField = document.getElementById('otherField');
   if (howFound && otherField) {
@@ -391,4 +488,21 @@
         });
     });
   }
+})();
+
+/* Careers listing · location filter (page-career.php). Buttons carry data-location (slug, '' = all);
+   cards carry the same slug. Pure show/hide — nothing is fetched. */
+(function () {
+  var bar = document.querySelector('.career-filter'); if (!bar) { return; }
+  var cards = [].slice.call(document.querySelectorAll('.career-card[data-location]'));
+  var empty = document.querySelector('.career-empty');
+  bar.addEventListener('click', function (ev) {
+    var b = ev.target.closest('button[data-location]'); if (!b) { return; }
+    var loc = b.getAttribute('data-location'), shown = 0;
+    [].forEach.call(bar.querySelectorAll('button'), function (x) {
+      var on = x === b; x.classList.toggle('is-active', on); x.setAttribute('aria-selected', on ? 'true' : 'false');
+    });
+    cards.forEach(function (c) { var hit = !loc || c.getAttribute('data-location') === loc; c.hidden = !hit; if (hit) { shown++; } });
+    if (empty) { empty.hidden = shown > 0; }
+  });
 })();

@@ -13,19 +13,90 @@ function dq_home_anchor( $id ) {
 	return home_url( '/' ) . '#' . ltrim( $id, '#' );
 }
 
+/**
+ * The "Contact Us" page (slug contact-us, as on dynamiqes.com/contact-us/) and its URL. The old
+ * site's nav "Contact Us" is a dedicated page (H1 "Transforming Business with SAP Excellence",
+ * H2 "Get in Touch" + the enquiry form), so the nav links there, not to the home #contact anchor.
+ */
+function dq_contact_page() {
+	$page = get_page_by_path( 'contact-us' );
+	return ( $page && 'publish' === $page->post_status ) ? $page : null;
+}
+function dq_contact_url() {
+	$page = dq_contact_page();
+	return $page ? get_permalink( $page ) : home_url( '/contact-us/' );
+}
+/** True for a saved custom menu link that points at the home "#contact" anchor. */
+function dq_is_contact_anchor( $url ) {
+	$url = untrailingslashit( (string) $url );
+	return '#contact' === $url || untrailingslashit( home_url( '/#contact' ) ) === $url || untrailingslashit( home_url( '/' ) ) . '/#contact' === $url;
+}
+
+/**
+ * The "About Us" page (slug about-us, as on dynamiqes.com/about-us/) and its URL. The old site's
+ * nav "About Us" is that page, not the home-page #about section.
+ */
+function dq_about_page() {
+	$page = get_page_by_path( 'about-us' );
+	return ( $page && 'publish' === $page->post_status ) ? $page : null;
+}
+function dq_about_url() {
+	$page = dq_about_page();
+	return $page ? get_permalink( $page ) : home_url( '/about-us/' );
+}
+/** True for a saved custom menu link that points at the home "#about" anchor. */
+function dq_is_about_anchor( $url ) {
+	$url = untrailingslashit( (string) $url );
+	return '#about' === $url || untrailingslashit( home_url( '/#about' ) ) === $url || untrailingslashit( home_url( '/' ) ) . '/#about' === $url;
+}
+
 /** URL of the products listing. */
 function dq_products_url() {
 	$url = get_post_type_archive_link( 'dq_product' );
 	return $url ? $url : home_url( '/products/' );
 }
 
-/** URL of the blog index (the WordPress posts page, "Blogs"). */
+/**
+ * The "Our Services" page (slug our-services, imported from dynamiqes.com/our-services/ by the
+ * landing importer). Null until the page exists.
+ */
+function dq_services_page() {
+	$page = get_page_by_path( 'our-services' );
+	return ( $page && 'publish' === $page->post_status ) ? $page : null;
+}
+
+/**
+ * URL of "Our Services". The old site has a dedicated page at /our-services/, so the nav
+ * must go there rather than to the home-page #services anchor (same URL as dynamiqes.com).
+ */
+function dq_services_url() {
+	$page = dq_services_page();
+	return $page ? get_permalink( $page ) : home_url( '/our-services/' );
+}
+
+/**
+ * URL of the "Book a FREE DEMO" page (slug book-free-demo, as on dynamiqes.com). The old site's
+ * "Get Your Free Business Analysis" buttons go there; page-book-free-demo.php renders the
+ * enquiry form. Falls back to the slug URL so the link is right even before the seeder runs.
+ */
+function dq_book_demo_url() {
+	$page = get_page_by_path( 'book-free-demo' );
+	return ( $page && 'publish' === $page->post_status ) ? get_permalink( $page ) : home_url( '/book-free-demo/' );
+}
+
+/** True when a saved menu link is the old home-page "#services" anchor. */
+function dq_is_services_anchor( $url ) {
+	$url = (string) $url;
+	return '' !== $url && ( '#services' === substr( $url, -9 ) || '/#services/' === substr( $url, -11 ) );
+}
+
+/** URL of the blog index (the WordPress posts page, "Blogs" — /blogs/ as on dynamiqes.com). */
 function dq_blog_url() {
 	$page = (int) get_option( 'page_for_posts' );
 	if ( $page ) {
 		return get_permalink( $page );
 	}
-	return home_url( '/blog/' );
+	return home_url( '/blogs/' );
 }
 
 /**
@@ -63,12 +134,30 @@ function dq_news_category_ids() {
 	return $ids;
 }
 
+/**
+ * Banner photo for a page hero: the page's Featured Image when set, otherwise the bundled copy of
+ * the live dynamiqes.com banner (assets/pages/<file>) for the News & Events, Careers and Contact Us pages.
+ */
+function dq_page_hero_photo( $file, $post_id = null ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	if ( $post_id && has_post_thumbnail( $post_id ) ) {
+		return get_the_post_thumbnail_url( $post_id, 'dq-wide' );
+	}
+	return dq_asset( 'assets/pages/' . ltrim( $file, '/' ) );
+}
+
 /** Echo scroll-reveal attributes. */
 function dq_reveal( $variant = '', $delay = null ) {
 	echo ' data-reveal' . ( $variant ? '="' . esc_attr( $variant ) . '"' : '' );
 	if ( null !== $delay ) {
 		echo ' style="--d:' . (int) $delay . 'ms"';
 	}
+}
+/** Same, returned (for markup built in PHP strings). */
+function dq_reveal_attr( $variant = '', $delay = null ) {
+	ob_start();
+	dq_reveal( $variant, $delay );
+	return ob_get_clean();
 }
 
 /** Brand logo <img>. $variant: nav | footer. */
@@ -127,8 +216,8 @@ function dq_blog_landing_items() {
 		array( 'Top ERP Solutions Provider in the Philippines', 'erp-solutions-philippines', dq_blog_url() ),
 		array( 'Top IT Solution Company in the Philippines', 'it-solutions-company-philippines', dq_blog_url() ),
 		array( 'Best SAP Software Provider Philippines', 'sap-software-philippines', dq_blog_url() ),
-		array( 'Top Barcode Inventory System Philippines', 'barcode-inventory-system-philippines', home_url( '/products/dynamiq-barcode/' ) ),
-		array( 'BIR CAS Provider in the Philippines', 'bir-cas-philippines', home_url( '/products/dynamiq-tax/' ) ),
+		array( 'Top Barcode Inventory System Philippines', 'barcode-inventory-system-philippines', home_url( '/products/dynamiq-barcoding/' ) ),
+		array( 'BIR CAS Provider in the Philippines', 'bir-cas-philippines', home_url( '/products/dynamiq-tax-module/' ) ),
 	);
 	$out = array();
 	foreach ( $items as $it ) {
@@ -152,12 +241,12 @@ function dq_default_menu_items() {
 	$blog = dq_blog_url();
 	return array(
 		array( 'title' => __( 'Our Products', 'dynamiqes' ), 'url' => dq_products_url(), 'children' => $products ),
-		array( 'title' => __( 'Our Services', 'dynamiqes' ), 'url' => dq_home_anchor( 'services' ) ),
-		array( 'title' => __( 'About Us', 'dynamiqes' ), 'url' => dq_home_anchor( 'about' ) ),
+		array( 'title' => __( 'Our Services', 'dynamiqes' ), 'url' => dq_services_url() ),
+		array( 'title' => __( 'About Us', 'dynamiqes' ), 'url' => dq_about_url() ),
 		array( 'title' => __( 'Blogs', 'dynamiqes' ), 'url' => $blog, 'children' => dq_blog_landing_items() ),
 		array( 'title' => __( 'News & Events', 'dynamiqes' ), 'url' => $news ),
-		array( 'title' => __( 'Careers', 'dynamiqes' ), 'url' => dq_home_anchor( 'contact' ) ),
-		array( 'title' => __( 'Contact Us', 'dynamiqes' ), 'url' => dq_home_anchor( 'contact' ) ),
+		array( 'title' => __( 'Careers', 'dynamiqes' ), 'url' => function_exists( 'dq_career_url' ) ? dq_career_url() : home_url( '/career/' ) ),
+		array( 'title' => __( 'Contact Us', 'dynamiqes' ), 'url' => dq_contact_url() ),
 	);
 }
 
@@ -168,6 +257,8 @@ function dq_default_menu_items() {
  * staging copy whose posts page differs, keeps sending visitors to the fallback. Repoint those
  * custom sub-items to the landing page at render time whenever the page exists. Items an
  * editor pointed at a specific page/post (post_type items) are left alone.
+ * The same applies to a top-level "Our Services" link saved as the home "#services" anchor
+ * by an earlier seeder: it is sent to the /our-services/ page (the old site's URL).
  */
 add_filter( 'wp_nav_menu_objects', function ( $items, $args ) {
 	if ( empty( $args->theme_location ) || 'primary' !== $args->theme_location ) {
@@ -175,6 +266,10 @@ add_filter( 'wp_nav_menu_objects', function ( $items, $args ) {
 	}
 	$landing = null;
 	foreach ( $items as $item ) {
+		if ( 'custom' === $item->type && empty( $item->menu_item_parent ) && dq_is_services_anchor( $item->url ) ) {
+			$item->url = dq_services_url();
+			continue;
+		}
 		if ( empty( $item->menu_item_parent ) || 'custom' !== $item->type ) {
 			continue;
 		}
@@ -312,14 +407,17 @@ function dq_video_wall_items( $count = 4 ) {
 		'post_type'      => 'attachment',
 		'post_mime_type' => 'video',
 		'post_status'    => 'inherit',
-		'posts_per_page' => $count,
+		'posts_per_page' => $count * 2, // headroom: -240p previews uploaded to the library are skipped below
 		'orderby'        => 'date',
 		'order'          => 'DESC',
 	) );
 	foreach ( $posts as $a ) {
 		$url = wp_get_attachment_url( $a->ID );
-		if ( ! $url ) {
-			continue;
+		if ( ! $url || preg_match( '/-240p\.[a-z0-9]+$/i', $url ) ) {
+			continue; // a preview rendition is not a wall item of its own
+		}
+		if ( count( $out ) >= $count ) {
+			break;
 		}
 		$poster   = has_post_thumbnail( $a->ID ) ? get_the_post_thumbnail_url( $a->ID, 'dq-wide' ) : '';
 		$title    = trim( get_the_title( $a ) );
@@ -345,7 +443,44 @@ function dq_video_wall_items( $count = 4 ) {
 			}
 		}
 	}
-	return apply_filters( 'dq_video_wall_items', array_slice( $out, 0, $count ) );
+	$out = array_slice( $out, 0, $count );
+	foreach ( $out as &$item ) {
+		$p = dq_video_previews( $item['video'] );          // 240p strip renditions (fall back to the full clip)
+		$item['preview']      = $p['mp4'];
+		$item['preview_webm'] = $p['webm'];
+	}
+	unset( $item );
+	return apply_filters( 'dq_video_wall_items', $out );
+}
+
+/** The small strip renditions of a clip: "<name>-240p.webm" (VP9) and "<name>-240p.mp4" (H.264)
+ *  next to the original, when they exist on disk (theme assets or the uploads folder). Build them
+ *  with make-video-previews.ps1 in the repo root. Returns array( 'webm' => url|'', 'mp4' => url );
+ *  mp4 falls back to the full clip so a missing preview never breaks the wall. */
+function dq_video_previews( $url ) {
+	$res = array( 'webm' => '', 'mp4' => $url );
+	if ( ! $url ) {
+		return $res;
+	}
+	$stem = preg_replace( '/\.([a-z0-9]+)(\?.*)?$/i', '-240p', $url );
+	if ( $stem === $url ) {
+		return $res;
+	}
+	$uploads = wp_upload_dir();
+	$maps    = array( DQ_URI => DQ_DIR, $uploads['baseurl'] => $uploads['basedir'] );
+	foreach ( $maps as $base_url => $base_dir ) {
+		if ( $base_url && 0 === strpos( $stem, $base_url ) ) {
+			$path = $base_dir . substr( $stem, strlen( $base_url ) );
+			if ( file_exists( $path . '.webm' ) ) {
+				$res['webm'] = $stem . '.webm';
+			}
+			if ( file_exists( $path . '.mp4' ) ) {
+				$res['mp4'] = $stem . '.mp4';
+			}
+			return $res;
+		}
+	}
+	return $res; // remote clip: no way to know, play the full file
 }
 
 /** Client logos for the trust marquee. */
@@ -377,18 +512,18 @@ function dq_sap_features() {
 /** Default testimonials (seeded into dq_testimonial; used as fallback). */
 function dq_default_testimonials() {
 	return array(
+		array( 'name' => 'Toyo Adtec Healthcare Products Inc.', 'role' => '', 'logo' => 'assets/trust/Toyo-Adtec-Logo.png', 'more' => 'Read Toyo Adtec\'s Story', 'quote' => 'Experience with DynamIQ team, it’s really dynamic. It has been positive and collaborative. DynamIQ team shows strong technical expertise. Also, flexibility and commitment to ensuring that SAP Business One supports are complex business structures, especially with the two industries we are into. We especially appreciate the consultative approach we’re recommendations are tailored to our long-term road and strategy.' ),
+		array( 'name' => 'Tosoh Polyvin Corporation', 'role' => '', 'logo' => 'assets/trust/Tosoh.png', 'more' => 'Read Tosoh Polyvin\'s Story', 'quote' => 'With DynamIQ introducing SAP Business One to us, it’s actually a big help. DynamIQ is also easier to transact with. We have no experience kasi with SAP Business One first time namin na encounter si SAP Business One, the struggle is we don’t know the system hindi kami familiar sa mga codes, hindi kami familiar sa mga naka involve dun sa loob ng SAP Business One. So, mostly more on sa encoding and familiarization with SAP Business One. Si DynamIQ talaga is nandyan, sila yun nag su-support and nag a-assist sa amin para at least magawa namin yung system ng tama at the same time maturuan kami on how to use the SAP Business One properly.' ),
+		array( 'name' => 'Kenstand Philippines, Inc.', 'role' => '', 'logo' => 'assets/trust/Kenstand-Philippines-Inc-min.png', 'more' => 'Read Kenstand\'s Story', 'quote' => "As a subsidiary of Kenstand Investment Limited, an international trading company based in Hong Kong, Kenstand Philippines, Inc. has had an excellent experience with DynamIQ Enterprise Solution Inc. The implementation of SAP Business One (SAP B1) has significantly streamlined our operations. Sales orders and purchase orders are now processed with ease, eliminating the cumbersome process of downloading files to Excel and manually summing up data.\n\nPreviously, all our reports were generated using Excel, which involved managing numerous rows and columns. Thanks to DynamIQ’s services and implementation, we are very satisfied with the improvements and efficiencies gained." ),
+		array( 'name' => 'Florabel', 'role' => '', 'logo' => 'assets/trust/FLORABEL.png', 'more' => 'Read Florabel\'s Story', 'quote' => 'Previously, we struggled with scheduling, which impacted the preparation of our financial reports. However, with SAP B1, our reporting process has become more efficient and customizable to meet our company’s specific needs. So far, we are very satisfied with the support from DynamIQ' ),
+		array( 'name' => 'Ms. O. Ayun', 'role' => 'Finance and Accounting Head', 'logo' => 'assets/testimonials/avatar.png', 'more' => 'Read Ms. O. Ayun\'s Story', 'quote' => 'Previously, we faced issues with inefficient manual processes, delayed financial reports, and outdated information. After implementing SAP B1, we’ve seen streamlined operations, improved data accuracy and reporting, and better financial management and compliance. The transition was smooth, thanks to the clear guidance and support from the DynamIQ Team’s consultants.' ),
+		array( 'name' => 'Intelligent Skin Care', 'role' => '', 'logo' => 'assets/trust/Intelligent-Skin-Care-Inc.png', 'more' => 'Read Intelligent Skin Care\'s Story', 'quote' => 'The highlight in implementing the SAP B1 is that we are able to simplify the previous long processes that we were practicing. We appreciate the patience of DynamIQ with us. I also think DynamIQ was able to embrace us with our demands. We also appreciate the support and inputs that DynamIQ has given with every concern we have raised. Our reports are now detailed and simplified making it useful to our managers as well as the owners.' ),
 		array( 'name' => 'Spartans 3 Trading Corporation', 'role' => '', 'logo' => 'assets/testimonials/spartans3.png', 'more' => 'Read Spartans 3\'s Story', 'quote' => 'Thank you so much DynamIQ, to the whole team na nag ca-cater sa amin ngayon dahil ok na ok yung nagiging service nyo with us.' ),
-		array( 'name' => 'Cecile\'s Pharmacy', 'role' => '', 'logo' => 'assets/testimonials/ceciles-pharmacy.png', 'more' => 'Read Cecile\'s Pharmacy\'s Story', 'quote' => 'SAP Business One became very attractive to us because it certainly provides what our business needs.' ),
+		array( 'name' => 'Cecile’s Pharmacy', 'role' => '', 'logo' => 'assets/testimonials/ceciles-pharmacy.png', 'more' => 'Read Cecile\'s Pharmacy\'s Story', 'quote' => 'SAP Business One became very attractive to us because it certainly provides what our business needs.' ),
 		array( 'name' => 'Group Finance Controller for MacroAsia Corporation', 'role' => '', 'logo' => 'assets/trust/MacroAsia-Corporation-Logo-1.png', 'more' => 'Read MacroAsia\'s Story', 'quote' => 'With the help of DynamIQ, we were able to get accreditation from BIR. They were able to come up with the consolidation process which our previous provider cannot provide.' ),
-		array( 'name' => 'Presline Steel Products Inc.', 'role' => '', 'logo' => 'assets/trust/PreslineLogo.png', 'more' => 'Read Presline Steel\'s Story', 'quote' => 'Presline Steel Products Inc. is a prominent Filipino corporation established in 1993 with a core focus on manufacturing high-quality metal parts and products tailored to the needs of the Philippine market. I am Mary Grace Reyes, with an extensive 25-year…' ),
-		array( 'name' => 'VP for Finance Philippine Allied Enterprises Corp.', 'role' => '', 'logo' => 'assets/trust/PAEC-Logo.png', 'more' => 'Read PAEC\'s Story', 'quote' => 'Philippine Allied Enterprises Corporation (PAEC) started importing Bridgestone tires to the Philippines in the year 1953 and continues to be the sole distributor in the Philippines today. Having a lean and efficient organization with roughly 160 employees in addition to…' ),
-		array( 'name' => 'Metalink Manufacturing Corp.', 'role' => '', 'logo' => 'assets/testimonials/metalink.png', 'more' => 'Read Metalink\'s Story', 'quote' => 'Being accustomed to using manual reports for years, having SAP in our Accounting Systems is a very great relief. SAP B1 assist us in centralizing data and making our work easier it also allows us to be more productive because…' ),
-		array( 'name' => 'Toyo Adtec Healthcare Products Inc.', 'role' => '', 'logo' => 'assets/trust/Toyo-Adtec-Logo.png', 'more' => 'Read Toyo Adtec\'s Story', 'quote' => 'Experience with DynamIQ team, it\'s really dynamic. It has been positive and collaborative. DynamIQ team shows strong technical expertise. Also, flexibility and commitment to ensuring that SAP Business One supports are complex business structures, especially with the two industries we…' ),
-		array( 'name' => 'Tosoh Polyvin Corporation', 'role' => '', 'logo' => 'assets/trust/Tosoh.png', 'more' => 'Read Tosoh Polyvin\'s Story', 'quote' => 'With DynamIQ introducing SAP Business One to us, it\'s actually a big help. DynamIQ is also easier to transact with. We have no experience kasi with SAP Business One first time namin na encounter si SAP Business One, the struggle…' ),
-		array( 'name' => 'Kenstand Philippines, Inc.', 'role' => '', 'logo' => 'assets/trust/Kenstand-Philippines-Inc-min.png', 'more' => 'Read Kenstand\'s Story', 'quote' => 'As a subsidiary of Kenstand Investment Limited, an international trading company based in Hong Kong, Kenstand Philippines, Inc. has had an excellent experience with DynamIQ Enterprise Solution Inc. The implementation of SAP Business One (SAP B1) has significantly streamlined our…' ),
-		array( 'name' => 'Florabel', 'role' => '', 'logo' => 'assets/trust/FLORABEL.png', 'more' => 'Read Florabel\'s Story', 'quote' => 'Previously, we struggled with scheduling, which impacted the preparation of our financial reports. However, with SAP B1, our reporting process has become more efficient and customizable to meet our company\'s specific needs. So far, we are very satisfied with the…' ),
-		array( 'name' => 'Ms. O. Ayun', 'role' => 'Finance and Accounting Head', 'logo' => 'assets/testimonials/avatar.png', 'more' => 'Read Ms. O. Ayun\'s Story', 'quote' => 'Previously, we faced issues with inefficient manual processes, delayed financial reports, and outdated information. After implementing SAP B1, we\'ve seen streamlined operations, improved data accuracy and reporting, and better financial management and compliance. The transition was smooth, thanks to the…' ),
-		array( 'name' => 'Intelligent Skin Care', 'role' => '', 'logo' => 'assets/trust/Intelligent-Skin-Care-Inc.png', 'more' => 'Read Intelligent Skin Care\'s Story', 'quote' => 'The highlight in implementing the SAP B1 is that we are able to simplify the previous long processes that we were practicing. We appreciate the patience of DynamIQ with us. I also think DynamIQ was able to embrace us with…' ),
+		array( 'name' => 'Presline Steel Products Inc.', 'role' => '', 'logo' => 'assets/trust/PreslineLogo.png', 'more' => 'Read Presline Steel\'s Story', 'quote' => "Presline Steel Products Inc. is a prominent Filipino corporation established in 1993 with a core focus on manufacturing high-quality metal parts and products tailored to the needs of the Philippine market.\n\nI am Mary Grace Reyes, with an extensive 25-year tenure as the Head of Production Planning and Inventory Control at Presline Steel Products Inc. My role involves orchestrating production schedules and materials management, ensuring the seamlessness of our operations with a strong emphasis on efficiency and cost-effectiveness.\n\nPrior to implementing SAP, our company grappled with challenges in materials, inventory, and production scheduling, which impacted our overall performance. Our decision to opt for SAP was driven by its standing as a world-renowned ERP system, coupled with its partnership with BEAS for production scheduling – an assurance of comprehensive solutions. Choosing DynamIQ as our partner was a natural progression. Their demonstration not only showcased SAP’s capabilities but also convincingly addressed our specific needs. This partnership has significantly transformed our operations, empowering us to streamline production, optimize inventory, and enhance overall efficiency." ),
+		array( 'name' => 'VP for Finance Philippine Allied Enterprises Corp.', 'role' => '', 'logo' => 'assets/trust/PAEC-Logo.png', 'more' => 'Read PAEC\'s Story', 'quote' => "Philippine Allied Enterprises Corporation (PAEC) started importing Bridgestone tires to the Philippines in the year 1953 and continues to be the sole distributor in the Philippines today. Having a lean and efficient organization with roughly 160 employees in addition to core management, we continue to inspire and strive to succeed. Our transaction in accounting, operations and reports were all manual until we decided to acquire SAP Business One as our ERP. It was not successful at first because we chose an unsuitable company to implement our SAP B1 system. We tried looking for another implementer until DynamlQ re-implemented our existing SAP B1.\n\nThe re-implementation became successful in just 4 months, compared to the failed implementation before which dragged 5 to 9 years. Our SAP B1 system was implemented in the height of the COVID-19 pandemic where there were very limited movements and DynamiQ Enterprise Solution was able to deliver ahead of time. What I like most with DynamlQ is that their people are very knowledgeable on Finance and Accounting Controls. In addition to this, the modules required were delivered on schedule. I think the competitive edge of DynamIQ is that they are very adaptive, true to their commitment and proactive. They focus on the client’s problem and provide excellent assistance. I am hoping that they will be our partner for our long-term projects." ),
+		array( 'name' => 'Metalink Manufacturing Corp.', 'role' => '', 'logo' => 'assets/testimonials/metalink.png', 'more' => 'Read Metalink\'s Story', 'quote' => "Being accustomed to using manual reports for years, having SAP in our Accounting Systems is a very great relief. SAP B1 assist us in centralizing data and making our work easier it also allows us to be more productive because the centralized data eliminates the need for manual records, the ability to access our data immediately is important for forecasting and making prompt decisions.\n\nDynamiq, our SAP B1 provider is a pleasure to deal with. They will not commit to something they are unable to complete. They inform us what and isn’t possible. For us, they are SAP B1 industry experts." ),
 	);
 }
 
@@ -419,8 +554,14 @@ function dq_source_post_type( $kind ) {
 	return $default;
 }
 
+/** The Client Testimonials hub (/client-testimonials/, as on the live site). */
+function dq_testimonials_hub_url() {
+	$page = get_page_by_path( 'client-testimonials' );
+	return $page ? get_permalink( $page ) : home_url( '/client-testimonials/' );
+}
+
 /** Testimonials from the CPT (fallback: defaults). */
-function dq_testimonials() {
+function dq_testimonials( $full = false ) {
 	$posts = get_posts( array( 'post_type' => dq_source_post_type( 'testimonial' ), 'posts_per_page' => -1, 'orderby' => array( 'menu_order' => 'ASC', 'date' => 'DESC' ), 'post_status' => 'publish' ) );
 	$out   = array();
 	foreach ( $posts as $p ) {
@@ -431,23 +572,27 @@ function dq_testimonials() {
 		}
 		$more  = get_post_meta( $p->ID, '_dq_more_label', true );
 		$link  = get_post_meta( $p->ID, '_dq_link', true );
-		if ( ! $link && 'dq_testimonial' !== $p->post_type && is_post_type_viewable( $p->post_type ) ) {
-			$link = get_permalink( $p );
-			$more = $more ? $more : sprintf( __( 'Read %s\'s Story', 'dynamiqes' ), $p->post_title );
+		if ( ! $link && is_post_type_viewable( $p->post_type ) ) {
+			$link = get_permalink( $p ); // the live site's own /testimonials/<client>/ page
+		} elseif ( ! $link ) {
+			$link = dq_testimonials_hub_url() . '#' . $p->post_name; // no single page: the client's card on Client Testimonials
 		}
 		$out[] = array(
+			'id'    => $p->ID,
+			'slug'  => $p->post_name,
 			'name'  => $p->post_title,
 			'role'  => get_post_meta( $p->ID, '_dq_role', true ),
 			'logo'  => $logo,
-			'more'  => $more,
+			'more'  => $more ? $more : sprintf( __( 'Read %s\'s Story', 'dynamiqes' ), $p->post_title ),
 			'link'  => $link,
-			'quote' => wp_trim_words( $quote, 45, '…' ),
+			'quote' => $full ? $quote : wp_trim_words( $quote, 45, '…' ),
 		);
 	}
 	if ( empty( $out ) ) {
 		foreach ( dq_default_testimonials() as $t ) {
+			$t['slug'] = sanitize_title( $t['name'] );
 			$t['logo'] = dq_asset( $t['logo'] );
-			$t['link'] = '';
+			$t['link'] = dq_testimonials_hub_url() . '#' . $t['slug'];
 			$out[]     = $t;
 		}
 	}
@@ -496,7 +641,7 @@ function dq_news_items( $count = 4 ) {
 		$out[] = array(
 			'title' => get_the_title( $p ),
 			'cat'   => $cat,
-			'date'  => get_the_date( 'M j, Y', $p ),
+			'date'  => get_the_date( 'F j, Y', $p ),
 			'image' => dq_post_thumb_url( $p->ID, 'dq-wide' ),
 			'url'   => get_permalink( $p ),
 		);
@@ -509,14 +654,36 @@ function dq_news_items( $count = 4 ) {
 	return $out;
 }
 
+/** Background-video <source> list for a clip URL: the 720p H.264 rendition built with ffmpeg
+ *  ("<name>-720p.mp4") when it sits next to the original in the theme, else the original file.
+ *  MP4 only, by decision (2026-09-07): one format every browser plays, no WebM variant to keep
+ *  in step. Muted background loops never need the 1080p master (hero: 11 MB -> 1.6 MB;
+ *  contact gradient: 41 MB -> 1.2 MB). The master stays on disk for the video wall's
+ *  lightbox, which plays it full-size after a click. */
+function dq_bg_video_sources( $url ) {
+	$out = array();
+	if ( $url && 0 === strpos( $url, DQ_URI . '/' ) ) {
+		$stem = preg_replace( '/\.[a-z0-9]+$/i', '', substr( $url, strlen( DQ_URI ) ) );
+		if ( file_exists( DQ_DIR . $stem . '-720p.mp4' ) ) {
+			$out[] = array( 'src' => DQ_URI . $stem . '-720p.mp4', 'type' => 'video/mp4' );
+		}
+	}
+	if ( ! $out && $url ) {
+		$out[] = array( 'src' => $url, 'type' => 'video/mp4' );
+	}
+	return apply_filters( 'dq_bg_video_sources', $out, $url );
+}
+
 /** Hero video sources. */
 function dq_hero_video_url() {
 	$v = get_theme_mod( 'dq_hero_video', '' );
 	if ( $v ) {
 		return $v;
 	}
-	if ( file_exists( DQ_DIR . '/assets/video/hero-banner.mp4' ) ) {
-		return DQ_URI . '/assets/video/hero-banner.mp4';
+	foreach ( array( 'hero-banner.mp4', 'hero-banner-720p.mp4' ) as $f ) { // the lite build ships only the 720p rendition
+		if ( file_exists( DQ_DIR . '/assets/video/' . $f ) ) {
+			return DQ_URI . '/assets/video/' . $f;
+		}
 	}
 	return 'https://dynamiqes.com/wp-content/themes/dynamiqes/assets/images/homepage/dynamiqes-video-banner.mp4';
 }
@@ -526,8 +693,8 @@ function dq_hero_poster_url() {
 }
 
 /** Shared "We'd like to hear from you" CTA band (products + product pages). */
-function dq_cta_band() {
-	get_template_part( 'template-parts/cta-band' );
+function dq_cta_band( $args = array() ) {
+	get_template_part( 'template-parts/cta-band', null, $args );
 }
 
 /** Phone icon path (reused). */

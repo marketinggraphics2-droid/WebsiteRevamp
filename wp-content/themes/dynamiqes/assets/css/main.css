@@ -413,15 +413,14 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   .banner-strip{ flex:1 1 100%; height:clamp(50px,7.4vh,60px); }
 }
 @media (max-width:560px){
-  /* Side by side, not stacked. Two full-width buttons cost 125px — the largest
-     block in the hero after the headline, and what forced the lede to be hidden
-     at 360px. Sharing one row costs ~57px. flex:1 1 0 + min-width:0 splits the
-     width evenly regardless of label length; nowrap stops them re-stacking. */
-  .banner-actions{ width:100%; flex-wrap:nowrap; gap:10px; }
-  .banner-actions .dynamiq-cta, .banner-secondary{ flex:1 1 0; min-width:0; }
-  .banner-actions .dynamiq-cta a, .banner-secondary{
-    width:100%; justify-content:center; padding-inline:12px; white-space:nowrap;
-  }
+  /* Side by side when both labels fit, otherwise the second drops to its own row.
+     The buttons grow to share the row but never shrink below their own label +
+     padding (flex-basis auto keeps the min-content floor), so text can't run to
+     the edges of the pill the way a forced flex:1 1 0 / min-width:0 split did. */
+  .banner-actions{ width:100%; flex-wrap:wrap; gap:10px; }
+  .banner-actions .dynamiq-cta, .banner-secondary{ flex:1 1 auto; }
+  .banner-actions .dynamiq-cta a{ width:100%; } /* fill the growing wrapper; no width on .banner-secondary — a 100% width would force it onto its own row */
+  .banner-actions .dynamiq-cta a, .banner-secondary{ justify-content:center; padding-inline:18px; white-space:nowrap; }
 }
 /* Short viewports (small laptops, landscape phones) — reclaim vertical space so the
    hero still resolves to one screen. Declared last so it wins over the width queries
@@ -901,21 +900,25 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
      than --section-blend (48-88px) — so without the bleed the panel's top and
      bottom sit inside the fade and appear to touch the white page. */
   --contact-bleed:clamp(70px,8vh,130px);
+  /* Top edge is tunable separately: /contact-us/ below bleeds the video much
+     further up behind its dissolving photo hero. Defaults = the symmetric bleed. */
+  --contact-bleed-top:var(--contact-bleed);
+  --contact-blend-top:var(--section-blend);
 }
 /* place-items:center above makes this a content-sized grid item rather than a
    stretched one, so at 320px it sized to ~322px and pushed the whole document
    into horizontal scroll. width:100% + min-width:0 pins it to the grid area. */
 .contact-us > .wrap{ width:100%; min-width:0; }
 .contact-media{
-  position:absolute; inset:calc(-1 * var(--contact-bleed)) 0; z-index:-2; pointer-events:none; background:transparent;
+  position:absolute; inset:calc(-1 * var(--contact-bleed-top)) 0 calc(-1 * var(--contact-bleed)); z-index:-2; pointer-events:none; background:transparent;
   /* Bottom feather ends AT the section edge (not in the bleed): the opaque
      .video-wall that follows paints over the bleed, so a fade placed there was
      hidden and read as a hard line. The fade now runs up into the section, behind
      the panel's lower edge and across the margins beside it. */
   --contact-feather:clamp(110px,14vh,190px);
-  -webkit-mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--contact-blend-top),
     var(--color-black) calc(100% - var(--contact-bleed) - var(--contact-feather)),transparent calc(100% - var(--contact-bleed)));
-  mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--section-blend),
+  mask-image:linear-gradient(180deg,transparent 0,var(--color-black) var(--contact-blend-top),
     var(--color-black) calc(100% - var(--contact-bleed) - var(--contact-feather)),transparent calc(100% - var(--contact-bleed)));
 }
 .contact-media video{
@@ -954,12 +957,24 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 }
 .field textarea{ min-height:92px; resize:vertical; }
 .field input::placeholder, .field textarea::placeholder{ color:var(--faint); }
-.field select{ appearance:none; cursor:pointer; color:var(--soft);
-  background-image:linear-gradient(45deg,transparent 50%,var(--soft) 50%),linear-gradient(135deg,var(--soft) 50%,transparent 50%);
-  background-position:calc(100% - 22px) 55%, calc(100% - 16px) 55%; background-size:6px 6px; background-repeat:no-repeat; }
+.field select{ appearance:none; cursor:pointer; color:var(--soft); padding-right:44px; }
 .field select:valid{ color:var(--text); }
 .field select option{ background:var(--panel); color:var(--text); }
-.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--orange); background:var(--panel); box-shadow:0 0 0 3px rgba(var(--rgb-brand),.13); }
+/* background-COLOR, not the shorthand: the shorthand reset background-image and that is
+   why the old chevron (a background gradient on the select) vanished on focus */
+.field input:focus, .field select:focus, .field textarea:focus{ outline:none; border-color:var(--orange); background-color:var(--panel); box-shadow:0 0 0 3px rgba(var(--rgb-brand),.13); }
+/* select chevron · drawn on the wrapper so it survives focus, and can animate:
+   rests as a soft "v", dips on hover, turns orange on focus, flips to "^" while the
+   list is open (.is-open is toggled in main.js since native selects expose no open state) */
+.field--select{ position:relative; }
+.field--select::after{ content:""; position:absolute; right:19px; top:50%; width:8px; height:8px; pointer-events:none;
+  border-right:2px solid var(--soft); border-bottom:2px solid var(--soft); border-radius:0 0 2px 0;
+  transform:translateY(-6px) rotate(45deg); transform-origin:center;
+  transition:transform .4s cubic-bezier(.16,1,.3,1), border-color .2s; }
+.field--select:hover::after{ transform:translateY(-4px) rotate(45deg); }
+.field--select:focus-within::after{ border-color:var(--orange); }
+.field--select.is-open::after{ transform:translateY(-1px) rotate(225deg); }
+@media (prefers-reduced-motion:reduce){ .field--select::after{ transition:none; } }
 #otherField{ display:none; }
 #otherField.show{ display:block; }
 .submit-row{ margin-top:4px; }
@@ -989,6 +1004,30 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 @media (max-width:900px){ .contact-grid{ grid-template-columns:1fr; } .contact-us{ min-height:0; } }
 @media (max-width:540px){ .contact--us .row{ grid-template-columns:1fr; } }
 @media (prefers-reduced-motion:reduce){ .contact-media{ display:none; } }
+
+/* /contact-us/: photo hero → gradient video. Before, the section's video bled
+   ~72px up over the hero and had finished fading in while still on top of it,
+   so the hero's bottom read as a hard line with the gradient already showing
+   beneath. Now the hero paints ABOVE the section (article z-index over the
+   isolated .contact-us) and dissolves out across its last --hero-dissolve px,
+   while the video bleeds up behind the whole dissolve and is already opaque
+   there — a cross-fade from photo to gradient instead of an edge. The hero's
+   bottom padding grows to the dissolve height so the intro copy sits above
+   the fade at every width (the old 56-96px would put it inside the fade). */
+.contact-page, .contact-page + .contact-us{ --hero-dissolve:clamp(112px,14vh,200px); }
+.contact-page{ position:relative; z-index:1; }
+.contact-page .page-hero--photo{
+  padding-bottom:calc(var(--hero-dissolve) + 12px);
+  -webkit-mask-image:linear-gradient(180deg,var(--color-black) calc(100% - var(--hero-dissolve)),rgba(0,0,0,.55) calc(100% - var(--hero-dissolve) * .5),transparent 100%);
+  mask-image:linear-gradient(180deg,var(--color-black) calc(100% - var(--hero-dissolve)),rgba(0,0,0,.55) calc(100% - var(--hero-dissolve) * .5),transparent 100%);
+}
+.contact-page + .contact-us{
+  --contact-bleed-top:calc(var(--hero-dissolve) + 40px); /* video starts 40px above the fade… */
+  --contact-blend-top:24px;                              /* …and is opaque before the fade begins */
+}
+@media (prefers-reduced-motion:reduce){ /* no video → nothing to dissolve into; keep the hero solid */
+  .contact-page .page-hero--photo{ padding-bottom:clamp(56px,7vw,96px); -webkit-mask-image:none; mask-image:none; }
+}
 
 /* ═══════════════════════════════════════════════════════════════
    FOOTER
@@ -1394,7 +1433,16 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .product-detail-page .portal-features .showcase-frame img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 24px 30px rgba(var(--rgb-ink),.13))}
 .product-template-page .detail-hero::before,
 .product-template-page .hero-media::before{display:none}
-.product-template-page .product-hero-bg{position:absolute;z-index:0;inset:-9% 0;background-image:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.94) 44%,rgba(255,255,255,.7) 72%,rgba(255,255,255,.78) 100%),var(--product-hero-bg);background-position:center;background-size:cover;pointer-events:none;will-change:transform;transform:translate3d(0,var(--product-parallax-y,0px),0) scale(1.08)}
+/* Hero photo layer. The parallax used to be a JS scroll listener rewriting a CSS variable every frame,
+   which forced a style recalc + layer update on each scroll tick and made the hero stutter. It is now a
+   scroll-driven CSS animation: the compositor moves the layer with no main-thread work. Browsers without
+   animation-timeline (older Safari / Firefox) simply get the static, slightly enlarged photo. */
+.product-template-page .product-hero-bg{position:absolute;z-index:0;inset:-9% 0;background-image:linear-gradient(90deg,rgba(255,255,255,.97) 0%,rgba(255,255,255,.94) 44%,rgba(255,255,255,.7) 72%,rgba(255,255,255,.78) 100%),var(--product-hero-bg);background-position:center;background-size:cover;pointer-events:none;transform:scale(1.08);contain:paint}
+@supports (animation-timeline:scroll()){
+  .product-template-page .product-hero-bg{animation:productHeroParallax linear both;animation-timeline:scroll(root);animation-range:0 350px}
+  @keyframes productHeroParallax{from{transform:translate3d(0,0,0) scale(1.08)}to{transform:translate3d(0,42px,0) scale(1.08)}}
+}
+@media (prefers-reduced-motion:reduce){.product-template-page .product-hero-bg{animation:none}}
 .product-template-page .detail-hero>.wrap{position:relative;z-index:1;min-height:inherit;display:grid;grid-template-rows:auto 1fr}
 .product-detail-page.product-template-page .hero-grid{height:100%;padding-bottom:0;align-items:stretch}
 .product-detail-page.product-template-page .hero-copy{align-self:center;padding-bottom:clamp(52px,7dvh,72px)}
@@ -1707,8 +1755,8 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
      allowed the full column width, it lands in three. */
   .product-detail-page.product-template-page .hero-copy h1{font-size:clamp(1.55rem,5.9vw,2.15rem);line-height:1.1;max-width:none}
   /* Two stacked full-width buttons cost 116px; sharing a row costs ~56px. */
-  .product-detail-page.product-template-page .hero-actions{margin-top:12px;gap:10px;flex-wrap:nowrap}
-  .product-detail-page.product-template-page .hero-actions .btn{flex:1 1 0;min-width:0;justify-content:center;white-space:nowrap;padding-inline:12px}
+  .product-detail-page.product-template-page .hero-actions{margin-top:12px;gap:10px;flex-wrap:wrap}
+  .product-detail-page.product-template-page .hero-actions .btn{flex:1 1 auto;justify-content:center;white-space:nowrap;padding-inline:18px}
   .product-detail-page .portal-features-layout{gap:28px}
   .product-detail-page .portal-features .showcase-frame{padding:0;border-radius:0}
   .product-detail-page .portal-features .feature-group{grid-template-columns:1fr;gap:10px;padding:18px 0}
@@ -1733,7 +1781,13 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
     flex-wrap:wrap;justify-content:center;gap:0 16px;text-align:center}
   .header-form p,.topbar p{max-width:none;font-size:.8125rem;line-height:1.35}
   .header-form a,.topbar a{font-size:.75rem;min-height:40px}
-  .header-form__cta{flex:1 0 100%;justify-content:center;gap:0 16px}
+  /* question + link on ONE line: no wrapping, type scales with the viewport so both fit
+     from ~400px up; below that the question truncates with an ellipsis rather than
+     dropping the link to a second row */
+  .header-form .wrap{padding-inline:14px}
+  .header-form__cta{flex:1 0 100%;flex-wrap:nowrap;justify-content:space-between;gap:0 8px}
+  .header-form__cta p{flex:1 1 auto;min-width:0;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(.625rem,2.9vw,.8125rem)}
+  .header-form__cta a{flex:none;white-space:nowrap;font-size:clamp(.625rem,2.6vw,.75rem);letter-spacing:.02em}
   .topbar-search{margin:2px auto 4px;flex:1 1 100%;max-width:320px;height:36px}
   /* Type floor + touch targets for every NON-home page. The homepage got these
      in its own stylesheet; products and the product-detail template were still
@@ -2014,9 +2068,9 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .dq-chat__chips button:hover{border-color:var(--orange);background:rgba(var(--rgb-brand),.08);color:var(--orange-deep);transform:translateY(-2px)}
 .dq-chat__chips button:hover::after{transform:translateX(4px)}
 .dq-chat__msg.is-typing .dq-chat__bubble{display:flex;gap:5px;padding:13px 15px}
-.dq-chat__msg.is-typing span{width:7px;height:7px;border-radius:50%;background:rgba(var(--rgb-brand),.7);animation:dqChatDot 1.2s infinite ease-in-out}
-.dq-chat__msg.is-typing span:nth-child(2){animation-delay:.15s}
-.dq-chat__msg.is-typing span:nth-child(3){animation-delay:.3s}
+.dq-chat__msg.is-typing .dq-chat__bubble span{width:7px;height:7px;border-radius:50%;background:rgba(var(--rgb-brand),.7);animation:dqChatDot 1.2s infinite ease-in-out}
+.dq-chat__msg.is-typing .dq-chat__bubble span:nth-child(2){animation-delay:.15s}
+.dq-chat__msg.is-typing .dq-chat__bubble span:nth-child(3){animation-delay:.3s}
 @keyframes dqChatDot{0%,80%,100%{transform:translateY(0);opacity:.45}40%{transform:translateY(-4px);opacity:1}}
 
 /* composer · the contact-form .field + .btn-orange */
@@ -2037,7 +2091,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 }
 @media(prefers-reduced-motion:reduce){
   .dq-chat__panel,.dq-chat__launcher,.dq-chat__launcher svg,.dq-chat__hint,.dq-chat__chips button{transition:none}
-  .dq-chat__msg.is-typing span{animation:none}
+  .dq-chat__msg.is-typing .dq-chat__bubble span{animation:none}
 }
 
 /* ═══ 6 · SMALL-VIEWPORT AUDIT FIXES (2026-09-04) ═══
@@ -2091,12 +2145,6 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   .product-detail-page.product-template-page .hero-media img{width:auto;max-width:100%;height:auto;max-height:calc(100dvh - 150px)}
 }
 
-/* 6c · Home hero buttons under 400px: "EXPLORE THE IQ SUITE →" measured 160px inside a
-   148px pill at 375 and clipped both ends. Same two-up row, tighter label. */
-@media(max-width:400px){
-  .banner-actions .dynamiq-cta a, .banner-secondary{font-size:var(--fs-xs);letter-spacing:0;padding-inline:8px;gap:6px}
-}
-
 /* 6d · SEO landing hero (page-landing.php). The orange H1 at 3.9rem/16ch wrapped to five
    lines on laptops and, with two intro paragraphs and two stacked buttons under a
    234px photo, the CTA sat 200–540px below the fold at every size tested. Content and
@@ -2112,8 +2160,8 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   .landing-hero h1{font-size:clamp(1.75rem,1.2rem + 2.6vw,2.6rem)}
   .landing-intro{margin-top:14px;gap:8px}
   .landing-intro p{font-size:1rem;line-height:1.5}
-  .landing-hero .hero-actions{margin-top:20px;gap:10px;flex-wrap:nowrap}
-  .landing-hero .hero-actions .btn{flex:1 1 0;min-width:0;justify-content:center;padding-inline:14px;white-space:nowrap}
+  .landing-hero .hero-actions{margin-top:20px;gap:10px;flex-wrap:wrap}
+  .landing-hero .hero-actions .btn{flex:1 1 auto;justify-content:center;padding-inline:18px;white-space:nowrap}
 }
 
 /* 6e · Touch layer keyed on POINTER, not width. The ≤600px floors (12/13px type, 40px+
@@ -2128,3 +2176,488 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   .post-card-body h2 a,.post-card-body h3 a{display:block;padding-block:6px;margin-block:-6px}
   .entry-foot .tlink{min-height:44px}
 }
+
+/* ═══ 7 · BLOG TEMPLATE (single.php · index.php · post-feature) ═══
+   One layout every post follows. Same bones as the live dynamiqes.com post (photo banner
+   with H1 + date, article, CTA, "You May Also Like") on the homepage design system. */
+
+/* ── banner: featured photo behind an ink scrim, copy bottom-left like the home hero ── */
+.post-hero{position:relative;overflow:hidden;background:var(--color-ink);color:var(--color-white);--text:var(--color-white);--soft:rgba(var(--rgb-white),.82);--faint:rgba(var(--rgb-white),.7);
+  min-height:clamp(380px,56dvh,600px);display:flex;flex-direction:column}
+.post-hero>.wrap{flex:1 1 auto;display:flex;flex-direction:column;justify-content:space-between;gap:clamp(28px,5dvh,56px);padding-block:22px clamp(32px,5dvh,52px)}
+.post-hero-media{position:absolute;inset:0;z-index:0}
+.post-hero-media img{width:100%;height:100%;object-fit:cover;object-position:center}
+.post-hero-media::after{content:"";position:absolute;inset:0;
+  background:linear-gradient(90deg,rgba(var(--rgb-scrim),.88) 0%,rgba(var(--rgb-scrim),.72) 42%,rgba(var(--rgb-scrim),.28) 100%),
+             linear-gradient(180deg,rgba(var(--rgb-scrim),.35) 0%,transparent 35%,rgba(var(--rgb-scrim),.55) 100%)}
+.post-hero.no-img{background:linear-gradient(135deg,#1f1e1f 0%,var(--color-ink) 55%,#3a3639 100%)}
+.post-hero.no-img::before{content:"";position:absolute;width:640px;height:640px;right:-200px;top:-260px;border-radius:50%;background:rgba(var(--rgb-brand),.16);filter:blur(10px);pointer-events:none}
+.post-hero .breadcrumbs{position:relative;z-index:1;padding-top:0;color:rgba(var(--rgb-white),.7)}
+.post-hero .breadcrumbs a{color:var(--orange-2)}
+.post-hero-body{position:relative;z-index:1;max-width:60rem}
+.post-hero .news-meta{margin-bottom:16px;gap:12px}
+.post-hero .news-tag{background:rgba(var(--rgb-brand),.22);border-color:rgba(var(--rgb-brand),.5);color:var(--orange-2)}
+.post-hero .news-date{color:rgba(var(--rgb-white),.78)}
+.post-hero .post-read::before{content:"·";margin-right:12px;color:rgba(var(--rgb-white),.45)}
+.post-hero h1{font-size:clamp(1.9rem,1.2rem + 2.6vw,3.6rem);line-height:1.08;letter-spacing:-.035em;max-width:24ch;color:var(--color-white);text-wrap:balance}
+.post-hero .lede{margin-top:16px;max-width:62ch;color:rgba(var(--rgb-white),.86)}
+
+/* ── body: reading column + sticky rail ── */
+.post-body{padding-block:clamp(36px,5vw,72px) clamp(40px,5vw,72px)}
+.post-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(28px,4vw,56px);align-items:start}
+.post-main{min-width:0}
+.post-main .entry-content{max-width:76ch}
+.post-rail{display:grid;gap:22px}
+@media(min-width:1024px){
+  .post-layout{grid-template-columns:minmax(0,1fr) 280px}
+  .post-rail{order:2;position:sticky;top:calc(var(--nav-h,88px) + 24px)}
+  .post-main{order:1}
+}
+/* "On this page" */
+.post-toc{border:1px solid var(--line);border-radius:14px;background:var(--card-grad);padding:6px 18px 14px}
+.post-toc[hidden]{display:none}
+.post-toc summary{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;
+  font-weight:700;font-size:var(--fs-xs);letter-spacing:.18em;text-transform:uppercase;color:var(--orange)}
+.post-toc summary::-webkit-details-marker{display:none}
+.post-toc summary::after{content:"+";font-size:18px;line-height:1;color:var(--orange);transition:transform .25s}
+.post-toc[open] summary::after{content:"−"}
+.post-toc ol{list-style:none;margin:0;padding:4px 0 0;display:grid;gap:2px;border-top:1px solid var(--line-2)}
+.post-toc a{display:block;padding:8px 10px 8px 14px;border-left:2px solid transparent;border-radius:0 8px 8px 0;font-size:var(--fs-sm);line-height:1.4;color:var(--soft);transition:color .2s,border-color .2s,background .2s}
+.post-toc a:hover{color:var(--text);background:rgba(var(--rgb-ink),.04)}
+.post-toc a.is-active{color:var(--text);border-left-color:var(--orange);background:rgba(var(--rgb-brand),.07);font-weight:700}
+/* share row · hairline tiles like the footer socials */
+.post-share{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.post-share-label{flex:0 0 100%;font-weight:700;font-size:var(--fs-xs);letter-spacing:.18em;text-transform:uppercase;color:var(--faint);margin-bottom:2px}
+.post-share a,.post-copy{position:relative;width:42px;height:42px;border:1px solid var(--line);border-radius:10px;display:grid;place-items:center;color:var(--soft);background:var(--ghost-bg);cursor:pointer;
+  transition:color .2s,border-color .2s,background .2s,transform .2s}
+.post-share a:hover,.post-copy:hover{color:var(--orange-deep);border-color:var(--orange);background:rgba(var(--rgb-brand),.08);transform:translateY(-2px)}
+.post-share svg{width:18px;height:18px;fill:currentColor}
+.post-copy.is-done{color:var(--color-on-accent);background:var(--orange);border-color:var(--orange)}
+.post-copy-done{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%);white-space:nowrap;font-size:var(--fs-2xs);font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text);background:var(--panel-glass);border:1px solid var(--line);border-radius:6px;padding:4px 8px;box-shadow:var(--shadow)}
+.post-copy-done:empty{display:none}
+@media(min-width:1024px){.post-share-label{flex-basis:auto;margin:0 6px 0 0}}
+
+/* ── article typography (adds to the shared .entry-content rules) ── */
+.blog-post .entry-content{font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
+.blog-post .entry-content>p:first-child{font-size:clamp(1.1rem,1rem + .4vw,1.25rem);color:var(--text)}
+.blog-post .entry-content h2{font-size:var(--fs-subheading);letter-spacing:-.03em;line-height:var(--lh-heading);scroll-margin-top:calc(var(--nav-h,88px) + 20px)}
+.blog-post .entry-content h3{font-size:var(--fs-card);scroll-margin-top:calc(var(--nav-h,88px) + 20px)}
+.blog-post .entry-content h4{font-size:var(--fs-body);text-transform:uppercase;letter-spacing:.08em}
+.blog-post .entry-content ul li,.blog-post .entry-content ol li{margin:.45em 0}
+.blog-post .entry-content ul{list-style:none;padding-left:0}
+.blog-post .entry-content ul li{position:relative;padding-left:1.5em}
+.blog-post .entry-content ul li::before{content:"";position:absolute;left:.15em;top:.62em;width:.55em;height:.55em;border-radius:50%;background:var(--orange);opacity:.85}
+.blog-post .entry-content ul ul li::before{background:transparent;border:2px solid var(--orange)}
+.blog-post .entry-content img,.blog-post .entry-content figure img{border-radius:14px;border:1px solid var(--line);width:100%;height:auto}
+.blog-post .entry-content figure{margin:1.6em 0}
+.blog-post .entry-content strong{color:var(--text)}
+.blog-post .entry-content a{color:var(--orange-deep);text-decoration-thickness:1.5px;text-underline-offset:3px}
+.blog-post .entry-content a:hover{color:var(--orange)}
+.blog-post .entry-content table{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+.blog-post .entry-content th,.blog-post .entry-content td{padding:12px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
+.blog-post .entry-content th{background:var(--bg-2);color:var(--text);font-weight:700}
+.blog-post .entry-content hr{border:0;border-top:1px solid var(--line);margin:2em 0}
+/* the live posts open with <blockquote><h2>Overview</h2><ul>…</ul></blockquote>: keep that
+   markup (SEO) but render it as the theme's key-points callout */
+.blog-post .entry-content blockquote{margin:0 0 1.6em;padding:22px 26px 22px 28px;border-left:3px solid var(--orange);border-radius:0 14px 14px 0;
+  background:linear-gradient(135deg,rgba(var(--rgb-brand),.10),rgba(var(--rgb-brand),.03)),var(--card-grad);font-style:normal}
+.blog-post .entry-content blockquote>*+*{margin-top:.8em}
+.blog-post .entry-content blockquote h2{margin-top:0;font-size:var(--fs-h3);color:var(--orange-deep)}
+.blog-post .entry-content blockquote p{color:var(--soft)}
+.blog-post .entry-content blockquote li{font-size:var(--fs-body);color:var(--soft)}
+.blog-post .entry-content blockquote:not(:has(h2,h3,ul,ol)){font-style:italic;font-size:var(--fs-card);color:var(--text);line-height:var(--lh-heading)}
+/* foot */
+.blog-post .entry-foot{max-width:76ch;margin-top:clamp(28px,4vw,44px)}
+.post-tags{display:flex;flex-wrap:wrap;gap:8px}
+.post-tags a{font-size:var(--fs-2xs);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--soft);border:1px solid var(--line);border-radius:6px;padding:6px 10px;transition:color .2s,border-color .2s}
+.post-tags a:hover{color:var(--orange-deep);border-color:var(--orange)}
+
+/* ── related ── */
+.post-related{padding-block:clamp(48px,6vw,80px);background:linear-gradient(180deg,transparent 0,var(--bg-2) var(--section-blend),var(--bg-2) calc(100% - var(--section-blend)),transparent 100%)}
+.post-related .sec-head{margin-bottom:clamp(20px,3vw,34px)}
+.post-related .post-grid{padding-block:0}
+
+/* ── blog index: featured newest story ── */
+.post-feature{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(24px,4vw,56px);align-items:center;
+  margin-top:clamp(28px,4vw,48px);padding:clamp(22px,3vw,36px);border:1px solid var(--line);border-radius:16px;background:var(--card-grad);box-shadow:0 30px 60px -40px rgba(var(--rgb-ink),.25)}
+.post-feature-body{display:grid;gap:16px;justify-items:start}
+.post-feature-body .news-meta{order:-1}
+.post-feature-body h2{font-size:clamp(1.6rem,1.2rem + 1.4vw,2.5rem);line-height:1.1;letter-spacing:-.03em;text-wrap:balance}
+.post-feature-body h2 a{color:var(--text);transition:color .2s}
+.post-feature-body h2 a:hover{color:var(--orange-deep)}
+.post-feature-body p{color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body);max-width:56ch}
+.post-feature-media{display:block;aspect-ratio:16/10;border-radius:14px;overflow:hidden;border:1px solid var(--line);background:linear-gradient(135deg,var(--color-ink),var(--color-gray))}
+.post-feature-media img{width:100%;height:100%;object-fit:cover;transition:transform .6s cubic-bezier(.16,1,.3,1)}
+.post-feature:hover .post-feature-media img{transform:scale(1.04)}
+.post-feature+.post-grid{padding-top:clamp(24px,3vw,40px)}
+@media(max-width:900px){.post-feature{grid-template-columns:1fr}.post-feature-media{order:-1}}
+@media(max-width:600px){.post-feature{padding:16px}.post-feature-body .btn{width:100%;justify-content:center}}
+
+/* ── small screens ── */
+@media(max-width:620px){
+  .post-hero{min-height:clamp(320px,52dvh,460px)}
+  .post-hero>.wrap{padding-block:14px 24px;gap:22px}
+  .post-hero h1{font-size:clamp(1.55rem,5.6vw,2.1rem);max-width:none}
+  .post-hero .news-meta{margin-bottom:12px}
+  .post-body{padding-block:24px 40px}
+  .post-toc{padding:2px 14px 10px}
+  .blog-post .entry-content{font-size:1rem;line-height:1.65}
+  .blog-post .entry-content blockquote{padding:16px 16px 16px 18px}
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   OUR SERVICES page (page-our-services.php) · home-page design language
+   Video hero (home-banner idiom) → one band per service, alternating light /
+   dark, copy beside the section's photo composite → CTA band → contact.
+   Composition: on desktop every chunk is one viewport (hero = 100dvh minus the
+   top chrome; every later section = 100dvh minus the sticky nav). Narrow
+   layouts keep their natural height.
+   ═══════════════════════════════════════════════════════════════ */
+/* ── hero ── */
+/* Live structure kept: centred H1 + the three intro paragraphs. Home-banner presentation: the
+   live page's hero photo full-bleed behind the copy, one screen (100dvh minus the top chrome). */
+.svc-hero{ position:relative; isolation:isolate; overflow:hidden; z-index:1; background:var(--color-ink); color:var(--color-white);
+  --text:var(--color-white); --soft:rgba(var(--rgb-white),.8); --line:rgba(var(--rgb-white),.34);
+  min-height:calc(100vh - var(--nav-h,88px) - var(--hf-h,44px)); min-height:calc(100dvh - var(--nav-h,88px) - var(--hf-h,44px));
+  display:grid; align-items:center; padding-block:clamp(40px,7vh,96px); }
+/* the JPEG already carries a dark tint, so it is NOT dimmed with the video's brightness filter; the
+   copy is centred, so the scrim is a bottom→top ramp plus a light overall tint instead of a left ramp */
+.svc-hero-media img{ position:relative; z-index:0; width:100%; height:100%; object-fit:cover; object-position:center; display:block;
+  animation:bannerDrift 30s ease-in-out infinite alternate; }
+.svc-hero-media::after{ background:
+  linear-gradient(0deg,rgba(var(--rgb-night),.5),rgba(var(--rgb-night),.16) 40%,rgba(var(--rgb-night),0) 75%),
+  rgba(var(--rgb-night),.22); }
+.svc-hero .wrap{ position:relative; z-index:1; }
+/* like the live .services-top-content: centred title, paragraphs in a reading column beneath it */
+.svc-hero-copy{ max-width:min(100%,920px); margin-inline:auto; display:grid; gap:clamp(12px,2.2vh,22px); }
+.svc-hero h1{ text-align:center; font-size:var(--fs-hero); line-height:var(--lh-tight); color:var(--color-white); text-wrap:balance;
+  text-shadow:0 2px 34px rgba(var(--rgb-night),.45); margin-bottom:clamp(4px,1.2vh,12px); }
+.svc-hero-copy p{ font-size:var(--fs-lede); line-height:var(--lh-relaxed); color:rgba(var(--rgb-white),.88); }
+
+/* ── bands ── */
+.svc-band{ position:relative; overflow:hidden; display:grid; align-items:center; padding-block:clamp(28px,4.5dvh,56px); scroll-margin-top:var(--nav-h,88px); }
+.svc-light{ background:linear-gradient(180deg,transparent 0,var(--bg-2) var(--section-blend),var(--bg-2) calc(100% - var(--section-blend)),transparent 100%); }
+.svc-dark{ --text:var(--color-white); --soft:rgba(var(--rgb-white),.8); --line:rgba(var(--rgb-white),.18);
+  color:var(--color-white); background:linear-gradient(90deg,var(--color-ink) 0%,var(--color-gray) 140%); }
+.svc-dark::before{ content:""; position:absolute; inset:0; pointer-events:none;
+  background:radial-gradient(720px 360px at 82% -10%,rgba(var(--rgb-brand),.26),transparent 62%); }
+.svc-grid{ position:relative; display:grid; grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr); gap:clamp(36px,5vw,84px); align-items:center; }
+.svc-flip .svc-media{ order:-1; }
+.svc-copy{ display:grid; gap:clamp(10px,1.6dvh,16px); align-content:center; }
+.svc-copy .eyebrow{ margin-bottom:2px; }
+/* height-aware H2 so the longest titles (three lines) still leave room for the copy + captions in one view */
+.svc-copy h2{ font-size:clamp(1.75rem,1.1rem + 1.5vw + .5vh,3rem); line-height:var(--lh-tight); letter-spacing:-.03em; color:var(--text); max-width:20ch; text-wrap:balance; }
+.svc-copy p{ color:var(--soft); font-size:var(--fs-body); line-height:var(--lh-body); max-width:56ch; }
+.svc-cta{ margin-top:10px; }
+
+/* photo composite: the old page's cut-out compositions carry their own frames — no card box around them */
+.svc-media{ position:relative; margin:0; display:grid; place-items:center; }
+.svc-media img{ position:relative; width:100%; height:auto; max-height:min(62dvh,560px); object-fit:contain; display:block;
+  transition:transform .6s cubic-bezier(.16,1,.3,1); }
+.svc-band:hover .svc-media img{ transform:translateY(-4px); }
+
+/* icon + caption rows */
+.svc-features{ list-style:none; margin:4px 0 0; padding:0; display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px 18px; }
+.svc-features li{ display:flex; align-items:center; gap:12px; font-size:var(--fs-sm); font-weight:500; line-height:var(--lh-heading); color:var(--text); }
+.svc-ic{ flex:0 0 auto; width:42px; height:42px; border-radius:12px; display:grid; place-items:center;
+  background:rgba(var(--rgb-brand),.12); border:1px solid rgba(var(--rgb-brand),.32); }
+.svc-ic img, .svc-ic svg{ width:22px; height:22px; object-fit:contain; }
+.svc-ic svg{ fill:none; stroke:var(--orange); stroke-width:2.2; stroke-linecap:round; stroke-linejoin:round; }
+.svc-dark .svc-ic{ background:rgba(var(--rgb-brand),.18); border-color:rgba(var(--rgb-brand),.45); }
+/* the old caption icons are already brand orange; shown as-is */
+
+/* SAP five-phase methodology: same numbered-node idiom as the home services timeline */
+.svc-phases{ list-style:none; margin:8px 0 0; padding:0; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:10px; counter-reset:phase; }
+.svc-phases li{ position:relative; display:grid; justify-items:center; text-align:center; gap:10px; padding:16px 8px 14px; border-radius:var(--r);
+  background:var(--card-grad); border:1px solid var(--line); transition:transform .4s cubic-bezier(.16,1,.3,1), border-color .4s, box-shadow .4s; }
+.svc-phases li:hover{ transform:translateY(-4px); border-color:rgba(var(--rgb-brand),.45); box-shadow:0 20px 44px -22px rgba(var(--rgb-ink),.22); }
+.svc-phases li:not(:last-child)::after{ content:""; position:absolute; top:50%; right:-10px; width:10px; height:2px; background:rgba(var(--rgb-brand),.45); }
+.svc-phase-num{ width:40px; height:40px; border-radius:50%; display:grid; place-items:center; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-sm);
+  color:var(--orange); background:rgba(var(--rgb-brand),.12); border:1px solid rgba(var(--rgb-brand),.35); }
+.svc-phases li:hover .svc-phase-num{ background:linear-gradient(135deg,var(--orange) 12%,var(--orange-2)); color:var(--color-on-accent); border-color:var(--orange); }
+.svc-phase-label{ font-size:var(--fs-xs); font-weight:700; line-height:1.3; color:var(--text); }
+
+/* Why Trust: photo left, tighter copy measure */
+.svc-trust .svc-grid{ grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr); }
+.svc-trust .svc-media{ order:-1; }
+.svc-trust .svc-media img{ max-height:min(66dvh,600px); }
+.svc-trust .svc-copy p{ font-size:var(--fs-lede); }
+.svc-cta-band{ padding-block:var(--sec); }
+
+/* ONE SCREEN (desktop): every band, the CTA and the contact section each take the
+   viewport left under the sticky nav; min-height (not height) so a long band grows
+   instead of clipping copy. */
+@media (min-width:901px){
+  .svc-band{ min-height:calc(100dvh - var(--nav-h,88px)); }
+  .services-page .svc-cta-band{ min-height:calc(100dvh - var(--nav-h,88px)); display:grid; align-items:center; padding-block:clamp(28px,4.5dvh,56px); }
+  .services-page .contact-us{ min-height:calc(100dvh - var(--nav-h,88px)); padding-block:clamp(28px,4.5dvh,56px); }
+}
+/* short laptops: tighter hero rhythm so the three paragraphs stay inside the one screen */
+@media (min-width:901px) and (max-height:760px){
+  .svc-hero-copy{ gap:10px; }
+  .svc-hero-copy p{ font-size:var(--fs-body); line-height:var(--lh-body); }
+}
+@media (max-width:1100px){
+  .svc-phases{ grid-template-columns:repeat(3,minmax(0,1fr)); }
+  .svc-phases li:not(:last-child)::after{ display:none; }
+}
+@media (max-width:900px){
+  .svc-hero{ min-height:0; padding-block:clamp(48px,8vw,72px); }
+  .svc-grid, .svc-trust .svc-grid{ grid-template-columns:1fr; }
+  .svc-flip .svc-media, .svc-trust .svc-media{ order:0; }
+  .svc-media img, .svc-trust .svc-media img{ max-height:none; }
+  .svc-features{ grid-template-columns:1fr; }
+}
+@media (max-width:560px){
+  .svc-phases{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .svc-features li{ font-size:var(--fs-sm); }
+}
+@media (prefers-reduced-motion:reduce){
+  .svc-media img, .svc-phases li{ transition:none; }
+  .svc-hero-media img{ animation:none; }
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   CAREERS · /career/ listing (page-career.php) + /careers/<job>/ (single-dq_career.php)
+   ═══════════════════════════════════════════════════════════════ */
+.career-jobs,.career-join,.career-culture,.career-hr,.career-body,.career-others{padding-block:var(--sec)}
+.career-page .page-hero .hero-actions,.career-single .page-hero .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.career-jobs .sec-head{max-width:680px;margin-bottom:clamp(20px,3vw,32px)}
+.career-filter{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:clamp(20px,3vw,32px)}
+.career-filter button{font-family:var(--font-sans);font-weight:700;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;padding:10px 18px;border-radius:999px;border:1px solid var(--line);background:var(--bg);color:var(--soft);cursor:pointer;transition:border-color .25s,color .25s,background .25s}
+.career-filter button:hover,.career-filter button.is-active{border-color:var(--orange);color:var(--orange);background:rgba(var(--rgb-brand),.08)}
+.career-filter button:focus-visible{outline:3px solid var(--orange);outline-offset:2px}
+.career-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:clamp(14px,1.6vw,22px)}
+.career-card{display:flex;flex-direction:column;gap:10px;padding:26px 24px;border-radius:14px;border:1px solid var(--line);background:var(--card-grad);transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .4s,box-shadow .4s}
+.career-card:hover{transform:translateY(-4px);border-color:rgba(var(--rgb-brand),.4);box-shadow:0 20px 44px -22px rgba(var(--rgb-ink),.22)}
+.career-card[hidden]{display:none}
+.career-card h3{font-size:var(--fs-card);line-height:var(--lh-heading);letter-spacing:-.015em}
+.career-loc{display:inline-flex;align-items:center;gap:6px;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-xs);letter-spacing:.12em;text-transform:uppercase;color:var(--orange)}
+.career-loc svg{width:14px;height:14px;fill:currentColor;flex:0 0 auto}
+.career-loc .career-type{color:var(--soft);letter-spacing:.08em}
+.career-card h4{font-size:var(--fs-sm);font-weight:700;color:var(--text);margin-top:6px}
+.career-card p{font-size:var(--fs-sm);color:var(--soft);line-height:var(--lh-body)}
+.career-card .text-link{margin-top:auto;padding-top:8px}
+.career-empty{margin-top:18px;color:var(--soft)}
+.career-join{background:var(--warm)}
+.career-join-grid{display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,5vw,72px);align-items:center}
+.career-join-grid h2{margin-top:12px;font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.03em}
+.career-join-grid p{margin-top:16px;color:var(--soft);font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
+.career-join-grid .hero-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:24px}
+.career-join-media{border-radius:16px;overflow:hidden} /* no border / fill / shadow — the artwork carries its own device frame */
+.career-join-media img{display:block;width:100%;height:auto}
+.career-culture .sec-head.center{margin-inline:auto;text-align:center;max-width:780px}
+.career-culture .sec-head.center .eyebrow{justify-content:center}
+.career-values-head{margin-top:clamp(40px,5vw,64px);max-width:640px}
+.career-values-head h2{font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.03em}
+.career-values-head p{margin-top:12px;color:var(--soft);font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
+.career-values{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,1.6vw,22px);margin-top:clamp(20px,3vw,32px)}
+.career-values .feature-group p{font-size:var(--fs-sm);color:var(--soft);line-height:var(--lh-body);margin-top:10px}
+.career-hr{background:linear-gradient(135deg,#1f1e1f 0%,var(--color-ink) 55%,#3a3639 100%);color:#fff;--text:#fff;--soft:rgba(255,255,255,.78);--line:rgba(255,255,255,.25)}
+.career-hr-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,5vw,72px);align-items:start}
+.career-hr h2{color:#fff;font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.03em;margin-top:12px}
+.career-hr p{color:var(--soft);margin-top:12px;line-height:var(--lh-relaxed)}
+.career-hr ul{list-style:none;margin-top:18px;display:grid;gap:10px;font-size:var(--fs-lede)}
+.career-hr a{color:var(--orange);font-weight:700}
+.career-hr .name{font-family:var(--font-sans);font-weight:700;letter-spacing:.08em;color:#fff;margin-top:0}
+.career-meta{margin-top:14px;font-family:var(--font-sans);font-weight:700;font-size:var(--fs-xs);letter-spacing:.14em;text-transform:uppercase;color:var(--orange)}
+.career-body .wrap{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:clamp(32px,5vw,72px);align-items:start}
+.career-content{max-width:none;margin:0}
+.career-apply{position:sticky;top:calc(var(--nav-h,64px) + 24px);padding:26px 24px;border-radius:14px;border:1px solid var(--line);background:var(--card-grad)}
+.career-apply h3{font-size:var(--fs-card);line-height:var(--lh-heading)}
+.career-apply .career-loc{margin-top:10px}
+.career-apply p{margin-top:10px;font-size:var(--fs-sm);color:var(--soft);line-height:var(--lh-body)}
+.career-apply .btn{margin-top:16px;width:100%;justify-content:center}
+.career-apply ul{list-style:none;margin-top:14px;display:grid;gap:6px;font-size:var(--fs-sm)}
+.career-apply ul a{color:var(--text);font-weight:700}
+.career-others{background:var(--warm)}
+.career-others h2{margin-bottom:clamp(20px,3vw,32px);font-size:var(--fs-h2);letter-spacing:-.03em}
+@media (max-width:980px){
+  .career-join-grid,.career-hr-grid,.career-body .wrap{grid-template-columns:1fr}
+  .career-values{grid-template-columns:1fr 1fr}
+  .career-apply{position:static}
+}
+@media (max-width:560px){ .career-values{grid-template-columns:1fr} }
+
+/* ═══ 8 · LIVE-STRUCTURE PARITY (2026-09-07) ═══
+   Sub-pages keep dynamiqes.com's heading outline (SEO). Titles the design shows as headings but the
+   old page does not mark up as headings are plain elements with these classes, styled exactly like
+   the headings they replace; plus the styles of the new live-structure templates (About Us, Client
+   Testimonials, testimonial single, Privacy Policy, News & Events, product page sections). */
+.cta-panel .cta-title{position:relative;max-width:20ch;margin-inline:auto;color:var(--color-on-accent);font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.035em;text-wrap:balance;font-weight:700}
+.cta-panel .cta-kicker{position:relative;margin:0 0 10px;font-size:var(--fs-xs);font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:var(--orange-2)}
+.cta-panel .cta-kicker-text{margin:0 auto 18px}
+.post-card-body .card-title{margin:0;font-size:var(--fs-card);line-height:var(--lh-heading);letter-spacing:-.01em;font-weight:700}
+.post-card-body .card-title a{display:block;padding-block:6px;margin-block:-6px;color:var(--text)}
+.post-feature-body .feature-title{margin:0;font-size:clamp(1.6rem,1.2rem + 1.4vw,2.5rem);line-height:1.1;letter-spacing:-.03em;text-wrap:balance;font-weight:700}
+.post-feature-body .feature-title a{color:var(--text);transition:color .2s}
+.post-feature-body .feature-title a:hover{color:var(--orange-deep)}
+.products-page .suite-head .sec-title{margin:0;font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;max-width:18ch;font-weight:700}
+.loc-card .loc-city{margin:0 0 10px;font-weight:700;font-size:var(--fs-card);line-height:var(--lh-heading)}
+.career-hr .h2{color:#fff;font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.03em;margin:12px 0 0;font-weight:700}
+.career-apply .h3{margin:0;font-size:var(--fs-card);line-height:var(--lh-heading);font-weight:700}
+.career-content .h2{font-size:var(--fs-h2);letter-spacing:-.03em;line-height:var(--lh-tight);font-weight:700;margin:0 0 .6em}
+h4.post-share-label{margin:0}
+.faq-list summary h3{display:inline;margin:0;font:inherit;letter-spacing:inherit}
+.faq-head .faq-title{margin:0;font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.035em;font-weight:700}
+.faq-answer p+p,.faq-answer ul{margin-top:.8em}
+.faq-answer ul{padding-left:1.2em;display:grid;gap:6px}
+/* product page: live section types */
+.portal-features-copy .feature-list{display:flex;flex-wrap:wrap;gap:10px;list-style:none;padding:0;margin:18px 0 26px}
+.portal-features-copy .feature-list li{padding:10px 16px;border:1px solid var(--line);border-radius:var(--r-pill);background:#fff;font-weight:700;font-size:var(--fs-sm)}
+.portal-features-copy .feature-group p{position:relative;color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body)}
+.portal-features-copy .feature-group p+ul{margin-top:14px}
+.portal-features-copy p.closing{margin-top:26px;font-weight:600}
+.product-detail-page .overview-items{margin-top:clamp(32px,4vw,56px)}
+.product-detail-page .product-cta{padding-block:clamp(40px,5vw,72px)}
+.product-detail-page .product-diagram{padding-block:var(--section)}
+.product-detail-page .features:not(.has-showcase) .portal-features-layout{grid-template-columns:1fr}
+/* landing pages: the live in-content CTA block ("Ready To Get Started?" + heading) */
+.landing-content .landing-cta{margin:2.4em 0;padding:clamp(28px,4vw,48px);border-radius:16px;background:linear-gradient(90deg,var(--color-ink) 0%,var(--color-gray) 140.31%);color:var(--color-on-accent);text-align:center}
+.landing-content .landing-cta h3{margin:0 0 8px;font-size:var(--fs-xs);letter-spacing:.22em;text-transform:uppercase;color:var(--orange-2)}
+.landing-content .landing-cta h2{margin:10px 0 0;color:#fff;font-size:var(--fs-h2);line-height:var(--lh-tight)}
+.landing-content .landing-cta p{color:rgba(var(--rgb-white),.78);max-width:54ch;margin:14px auto 0}
+.landing-content .landing-cta .landing-cta-btn{margin-top:24px}
+.landing-content .faq-list summary h3{display:inline;margin:0;font:inherit}
+.landing-content .faq-list .faq-answer{padding:0 52px 20px 0}
+.landing-content .faq-list .faq-answer p{padding:0;margin:0}
+.landing-content .faq-list .faq-answer p+p,.landing-content .faq-list .faq-answer ul{margin-top:.8em}
+/* news & events */
+.news-page .news-featured{padding-block:var(--section) 0}
+.news-page .news-list{padding-block:var(--section)}
+.news-page .sec-head{margin-bottom:clamp(20px,3vw,34px)}
+/* about us */
+.about-page .about-mv{padding-block:var(--section)}
+.about-page .about-mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
+.about-page .about-card{padding:clamp(28px,3vw,44px);border:1px solid var(--line);border-radius:16px;background:var(--card-grad)}
+.about-page .about-card h2{margin:8px 0 14px}
+.about-page .about-card p{color:var(--soft);font-size:var(--fs-lede);line-height:var(--lh-body)}
+.about-page .about-values{padding-block:var(--section);background:var(--bg-2)}
+.about-page .about-values .feature-group h4{position:relative;font-size:var(--h3);line-height:1.1;letter-spacing:-.03em;margin:0 0 16px}
+.about-page .about-values .feature-group p{position:relative;color:var(--soft);line-height:var(--lh-body)}
+.about-page .about-products{padding-block:var(--section)}
+.about-page .about-services{padding-block:var(--section);background:var(--bg-2)}
+.about-page .about-services-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(32px,5vw,80px);align-items:center}
+.about-page .about-services-grid p{color:var(--soft);font-size:var(--fs-lede);line-height:var(--lh-body);margin:14px 0 22px}
+.about-page .about-services-media{margin:0}
+.about-page .about-services-media img{width:100%;border-radius:16px;border:1px solid var(--line)}
+.about-page .about-customers{padding-block:var(--section)}
+/* about us — the live page's photos: icon chips on Mission / Vision and the core values, one screenshot per product (alternating rows, like the live layout), the "Services We Offer" monitor on a soft panel */
+.about-page .about-icon{display:inline-grid;place-items:center;width:64px;height:64px;margin-bottom:18px;border-radius:var(--r);background:rgba(var(--rgb-brand),.1)}
+.about-page .about-icon img{width:auto;height:36px;object-fit:contain}
+.about-page .about-icon--sm{width:56px;height:56px;margin-bottom:16px}
+.about-page .about-icon--sm img{height:30px}
+.about-page .about-card .about-icon{display:grid}
+.about-page .about-values .feature-group .about-icon{position:relative}
+.about-page .about-values .feature-group::before{display:none}
+.about-page .product-list{display:grid;gap:clamp(20px,2.6vw,32px)}
+.about-page .product-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);align-items:center;padding:clamp(20px,2.6vw,32px);border:1px solid var(--line);border-radius:16px;background:var(--card-grad)}
+.about-page .product-row:nth-child(even) .product-media{order:2}
+.about-page .product-media{position:relative;display:grid;place-items:center;min-height:300px;padding:clamp(8px,1.5vw,20px)}
+.about-page .product-media::before{content:"";position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(var(--rgb-brand),.09);filter:blur(24px)}
+.about-page .product-media img{position:relative;z-index:1;display:block;width:100%;height:auto;max-height:340px;object-fit:contain}
+.about-page .product-copy{display:flex;flex-direction:column;align-items:flex-start;padding:clamp(6px,1vw,14px) 0}
+.about-page .product-logo{display:block;height:36px;width:auto;max-width:220px;object-fit:contain;object-position:left;margin-bottom:16px}
+.about-page .product-copy h3{margin:0 0 12px;font-size:var(--fs-h3);line-height:var(--lh-tight);letter-spacing:-.02em}
+.about-page .product-copy p{color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body)}
+.about-page .product-copy p+p{margin-top:.8em}
+.about-page .product-copy .text-link{display:inline-flex;align-items:center;gap:10px;margin-top:20px}
+.about-page .product-copy .text-link span{transition:transform .2s}
+.about-page .product-copy .text-link:hover span{transform:translateX(4px)}
+.about-page .about-services-media{position:relative;display:grid;place-items:center;margin:0;padding:clamp(12px,2vw,24px)}
+.about-page .about-services-media::before{content:"";position:absolute;width:320px;height:320px;border-radius:50%;background:rgba(var(--rgb-brand),.1);filter:blur(24px)}
+.about-page .about-services-media img{position:relative;z-index:1;width:100%;max-width:480px;height:auto;border:0;border-radius:0}
+@media(max-width:900px){.about-page .product-row{grid-template-columns:1fr;gap:22px}.about-page .product-row:nth-child(even) .product-media{order:0}.about-page .product-media{min-height:220px}.about-page .product-media img{max-height:280px}}
+@media(max-width:600px){.about-page .about-icon{width:56px;height:56px}.about-page .about-icon img{height:30px}.about-page .product-row{padding:16px}}
+/* testimonials — Client Testimonials page + testimonial single (inc/testimonial-media.php).
+   One wide card per client, the live page's composition: copy on the left (logo, quote, name),
+   the client's video poster on the right; a quote-mark panel stands in when there is no video.
+   Logos are plain images — no box, border or background around them. */
+.testi-role{margin:0;color:var(--faint);font-size:var(--fs-xs)}
+.testimonials-page .testimonials-list{padding-block:var(--section)}
+.testimonials-page .page-hero .eyebrow{display:inline-flex;margin-bottom:14px}
+.testi-stories{display:grid;gap:clamp(20px,2.6vw,32px)}
+.testi-story{position:relative;display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(28px,4.5vw,72px);align-items:center;padding:clamp(28px,3.6vw,56px);border:1px solid var(--line);border-radius:16px;background:var(--card-grad);overflow:hidden;transition:border-color .4s,box-shadow .4s}
+.testi-story::before{content:"";position:absolute;right:-140px;top:-160px;width:420px;height:420px;border-radius:50%;background:rgba(var(--rgb-brand),.08);filter:blur(30px);pointer-events:none;transition:opacity .4s;opacity:0}
+.testi-story:hover{border-color:rgba(var(--rgb-brand),.35);box-shadow:0 30px 60px -34px rgba(var(--rgb-ink),.28)}
+.testi-story:hover::before{opacity:1}
+.testi-story-copy{position:relative;display:flex;flex-direction:column;align-items:flex-start;min-width:0}
+.testi-story-logo{display:block;height:clamp(44px,3.6vw,60px);width:auto;max-width:min(280px,70%);object-fit:contain;object-position:left center;margin-bottom:clamp(22px,2.6vw,36px);border:0;background:none;padding:0;box-shadow:none;border-radius:0}
+.testi-story-quote{position:relative;margin:0;padding-top:clamp(26px,2.4vw,34px);color:var(--text);font-size:var(--fs-lede);line-height:var(--lh-relaxed);letter-spacing:-.005em}
+.testi-story-quote::before{content:"\201C";position:absolute;left:-.06em;top:-.12em;font-family:var(--font-sans);font-size:clamp(3.5rem,3rem + 2vw,5rem);line-height:1;font-weight:900;color:var(--orange);opacity:.32}
+.testi-story-quote p{position:relative}
+.testi-story-quote p+p{margin-top:.9em}
+.testi-story-who{display:grid;gap:4px;margin-top:clamp(22px,2.4vw,32px);padding-top:18px;border-top:1px solid var(--line-2);width:100%}
+.testi-story-name{margin:0;font-family:var(--font-sans);font-size:var(--fs-card);line-height:var(--lh-heading);font-weight:700;letter-spacing:-.01em;color:var(--text)}
+.testi-story-who .testi-role{font-size:var(--fs-sm)}
+.testi-story-link{margin-top:20px;font-size:var(--fs-xs)}
+.testi-story-media{position:relative;min-width:0}
+.testi-play{position:relative;display:block;width:100%;aspect-ratio:16/9;padding:0;border:0;border-radius:var(--r);overflow:hidden;background:var(--color-ink);cursor:pointer;box-shadow:0 28px 60px -30px rgba(var(--rgb-ink),.45);isolation:isolate}
+.testi-play img{display:block;width:100%;height:100%;object-fit:cover;transition:transform .7s cubic-bezier(.16,1,.3,1)}
+.testi-play::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(var(--rgb-ink),0) 45%,rgba(var(--rgb-ink),.55) 100%);opacity:.9;pointer-events:none}
+.testi-play-badge{position:absolute;left:50%;top:50%;width:clamp(64px,6vw,84px);height:clamp(64px,6vw,84px);transform:translate(-50%,-50%);display:grid;place-items:center;border-radius:50%;background:var(--orange);color:var(--color-on-accent);box-shadow:0 18px 40px -12px rgba(var(--rgb-brand),.7);transition:transform .35s cubic-bezier(.16,1,.3,1),background .25s}
+.testi-play-badge::before{content:"";position:absolute;inset:-9px;border-radius:50%;border:2px solid rgba(var(--rgb-white),.55);opacity:.8;transition:inset .35s cubic-bezier(.16,1,.3,1),opacity .35s}
+.testi-play-badge svg{width:42%;height:42%;fill:currentColor;transform:translateX(6%)}
+.testi-play-cap{position:absolute;left:clamp(16px,2vw,24px);bottom:clamp(14px,1.8vw,22px);font-family:var(--font-sans);font-size:var(--fs-2xs);font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(var(--rgb-white),.9);opacity:0;transform:translateY(6px);transition:opacity .35s,transform .45s cubic-bezier(.16,1,.3,1)}
+.testi-play:hover img,.testi-play:focus-visible img{transform:scale(1.04)}
+.testi-play:hover .testi-play-badge,.testi-play:focus-visible .testi-play-badge{transform:translate(-50%,-50%) scale(1.08);background:var(--orange-2,var(--orange))}
+.testi-play:hover .testi-play-badge::before{inset:-16px;opacity:0}
+.testi-play:hover .testi-play-cap,.testi-play:focus-visible .testi-play-cap{opacity:1;transform:none}
+.testi-play:focus-visible{outline:3px solid var(--orange);outline-offset:4px}
+.testi-story-mark{position:relative;display:grid;place-items:center;aspect-ratio:16/10;border-radius:var(--r);overflow:hidden;background:linear-gradient(135deg,var(--color-ink) 0%,var(--color-gray) 140%);box-shadow:0 28px 60px -30px rgba(var(--rgb-ink),.4)}
+.testi-story-mark::before{content:"";position:absolute;width:70%;aspect-ratio:1;border-radius:50%;right:-20%;top:-30%;background:rgba(var(--rgb-brand),.4);filter:blur(60px)}
+.testi-story-glyph{position:relative;font-family:var(--font-sans);font-size:clamp(9rem,7rem + 6vw,14rem);line-height:.7;font-weight:900;color:var(--orange);transform:translateY(.18em)}
+.testi-story-tag{position:absolute;left:clamp(16px,2vw,24px);bottom:clamp(14px,1.8vw,22px);font-family:var(--font-sans);font-size:var(--fs-2xs);font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:rgba(var(--rgb-white),.7)}
+/* single: everything (compact hero, arrows, card) fits the first screen so the quote and the
+   video are readable the moment a visitor lands or steps Prev / Next; sizes are height-aware */
+.testimonial-single .page-hero{padding-block:clamp(18px,3.2vh,40px) clamp(14px,2.4vh,28px)}
+.testimonial-single .page-hero .breadcrumbs{padding-top:0;margin-bottom:clamp(8px,1.4vh,14px)}
+.testimonial-single .page-hero h1{font-size:clamp(1.75rem,1.1rem + 2.4vh,2.875rem);max-width:none;letter-spacing:-.035em}
+.testimonial-single .testimonial-body{padding-block:clamp(10px,1.8vh,20px) clamp(28px,4vh,48px)}
+.testimonial-single .testi-nav{margin-bottom:clamp(10px,1.6vh,18px)}
+.testimonial-single .testi-story{padding:clamp(20px,3vh,44px) clamp(24px,3.2vw,52px);gap:clamp(24px,3.5vw,56px);align-items:center}
+.testimonial-single .testi-story-logo{height:clamp(40px,5vh,56px);margin-bottom:clamp(14px,2.2vh,26px)}
+.testimonial-single .testi-story-quote{padding-top:clamp(20px,2.6vh,30px)}
+.testimonial-single .testi-story-quote::before{font-size:clamp(3rem,2.4rem + 1.4vh,4.25rem)}
+.testimonial-single .testi-story-who{margin-top:clamp(14px,2.2vh,26px);padding-top:14px}
+/* long quotes scroll inside the card instead of pushing the video and the arrows off-screen */
+.testimonial-single .testi-story-quote{max-height:max(200px,calc(100dvh - var(--hf-h,44px) - var(--nav-h,64px) - 350px));overflow-y:auto;padding-right:10px;scrollbar-width:thin;scrollbar-color:rgba(var(--rgb-ink),.2) transparent}
+.testimonial-single .testi-story-quote.is-scrollable{-webkit-mask-image:linear-gradient(#000 calc(100% - 36px),transparent);mask-image:linear-gradient(#000 calc(100% - 36px),transparent)}
+.testimonial-single .testi-story-quote::-webkit-scrollbar{width:6px}
+.testimonial-single .testi-story-quote::-webkit-scrollbar-thumb{background:rgba(var(--rgb-ink),.2);border-radius:3px}
+.testimonial-single .testi-story-media{max-width:min(100%,calc((100dvh - var(--hf-h,44px) - var(--nav-h,64px) - 300px) * 16 / 9));margin-inline:auto;width:100%}
+.testi-nav{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:0 0 clamp(20px,2.6vw,32px)}
+.testi-nav .tlink{font-size:var(--fs-xs)}
+.testi-nav .is-disabled{opacity:.4}
+.testi-nav-all{color:var(--faint)}
+.testi-nav .arr-back{display:inline-block}
+.testi-nav .tlink:hover .arr-back{transform:translateX(-5px)}
+.testimonial-single .testi-story-quote{font-size:clamp(1rem,.9rem + .5vh,1.1875rem);line-height:1.65}
+@media(max-width:1100px){.testi-story{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(24px,3.5vw,40px)}}
+@media(max-width:900px){.testi-story{grid-template-columns:1fr;gap:26px;padding:clamp(20px,4vw,32px)}.testi-story-media{order:-1}.testi-story-mark{aspect-ratio:16/9}.testi-story-mark .testi-story-glyph{font-size:8rem}.testi-story-logo{height:44px}.testi-nav{flex-wrap:wrap}.testi-nav-all{order:3;width:100%;justify-content:center}.testimonial-single .testi-story-quote{max-height:none;overflow:visible;padding-right:0}.testimonial-single .testi-story-media{max-width:none}}
+@media(max-width:600px){.testi-story{padding:18px;border-radius:14px}.testi-play,.testi-story-mark{border-radius:10px}.testi-story-quote::before{font-size:3rem}}
+/* privacy policy */
+.privacy-page .privacy-content h5{margin-top:2em;font-size:var(--fs-card);letter-spacing:.02em}
+.privacy-page .privacy-content p+p{margin-top:1em}
+@media(max-width:900px){.about-page .about-mv-grid,.about-page .about-services-grid{grid-template-columns:1fr}}
+
+
+/* page heroes with the live banner photo (News & Events, Careers, Contact Us): ink scrim over the photo, light type */
+.page-hero--photo{color:#fff;background:linear-gradient(90deg,rgba(var(--rgb-ink),.9) 0%,rgba(var(--rgb-ink),.62) 55%,rgba(var(--rgb-ink),.35) 100%),var(--hero-photo) center/cover no-repeat;padding-block:clamp(72px,9vw,128px) clamp(56px,7vw,96px)}
+.page-hero--photo h1{color:#fff}
+.page-hero--photo p,.page-hero--photo .page-hero-intro p{color:rgba(var(--rgb-white),.82)}
+.page-hero--photo .eyebrow{color:var(--orange-2)}
+.page-hero--photo .breadcrumbs,.page-hero--photo .breadcrumbs a{color:rgba(var(--rgb-white),.75)}
+.page-hero--photo .career-meta{color:rgba(var(--rgb-white),.85)}
+
+/* News & Events + Careers: full-height photo hero. main.js measures the top bar and the nav into
+   --hf-h / --nav-h (see "6a · Hero chrome math"), so the hero ends exactly at the fold; the copy
+   is centred in the remaining height. Scoped to these two pages — the Contact hero keeps its mask. */
+.news-page .page-hero--photo,.career-page .page-hero--photo{min-height:calc(100dvh - var(--hf-h,44px) - var(--nav-h,88px));display:flex;flex-direction:column;justify-content:center;padding-block:clamp(40px,6dvh,96px)}
+.news-page .page-hero--photo>.wrap,.career-page .page-hero--photo>.wrap{width:100%}
+@media(max-width:620px){
+  .news-page .page-hero--photo,.career-page .page-hero--photo{min-height:calc(100dvh - var(--hf-h,113px) - var(--nav-h,88px))}
+}
+
+/* /products/ SAP feature: the live page's caption line under the media */
+.products-page .sap-caption{margin-top:12px;text-align:center;font-size:var(--fs-sm);font-weight:600;color:var(--soft)}

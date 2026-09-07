@@ -27,6 +27,13 @@ add_action( 'init', function () {
 		'hierarchical'    => false,
 	) );
 
+	/* Viewable at /testimonials/<client>/ like the live site's customer_testimonial posts
+	 * (single-dq_testimonial.php → the shared single template with prev / next arrows).
+	 * On a copy of the live database the live type owns that URL space (inc/live-post-types.php)
+	 * and is the content source, so the theme's type steps back to an admin-only store: no
+	 * rewrite, not queryable, not public (Yoast and the core sitemap skip it) — otherwise both
+	 * types would claim /testimonials/<slug>/ and the live testimonial URLs would 404. */
+	$live_testimonials = function_exists( 'dq_live_post_type_active' ) && dq_live_post_type_active( 'customer_testimonial' );
 	register_post_type( 'dq_testimonial', array(
 		'labels'        => array(
 			'name'          => __( 'Testimonials', 'dynamiqes' ),
@@ -34,12 +41,16 @@ add_action( 'init', function () {
 			'add_new_item'  => __( 'Add New Testimonial', 'dynamiqes' ),
 			'edit_item'     => __( 'Edit Testimonial', 'dynamiqes' ),
 		),
-		'public'        => false,
-		'show_ui'       => true,
-		'show_in_rest'  => true,
-		'menu_icon'     => 'dashicons-format-quote',
-		'menu_position' => 6,
-		'supports'      => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
+		'public'              => ! $live_testimonials,
+		'publicly_queryable'  => ! $live_testimonials,
+		'exclude_from_search' => $live_testimonials,
+		'has_archive'         => false,
+		'rewrite'             => $live_testimonials ? false : array( 'slug' => 'testimonials', 'with_front' => false ),
+		'show_ui'             => true,
+		'show_in_rest'        => true,
+		'menu_icon'           => 'dashicons-format-quote',
+		'menu_position'       => 6,
+		'supports'            => array( 'title', 'editor', 'thumbnail', 'page-attributes' ),
 	) );
 
 	register_post_type( 'dq_inquiry', array(
@@ -108,6 +119,8 @@ function dq_product_meta_box( $post ) {
 				$value = dq_features_to_text( $d );
 			} elseif ( 'faqs' === $def[0] ) {
 				$value = dq_faqs_to_text( $d );
+			} elseif ( 'blocks' === $def[0] ) {
+				$value = dq_sections_to_text( $d );
 			} else {
 				$value = $d;
 			}
@@ -147,6 +160,7 @@ function dq_testimonial_meta_box( $post ) {
 	dq_render_field( '_dq_role', array( 'text', __( 'Role / designation', 'dynamiqes' ), __( 'Optional, e.g. Finance and Accounting Head', 'dynamiqes' ) ), get_post_meta( $post->ID, '_dq_role', true ) );
 	dq_render_field( '_dq_more_label', array( 'text', __( '"Read more" label', 'dynamiqes' ), __( 'e.g. Read MacroAsia\'s Story', 'dynamiqes' ) ), get_post_meta( $post->ID, '_dq_more_label', true ) );
 	dq_render_field( '_dq_link', array( 'text', __( '"Read more" link', 'dynamiqes' ), __( 'Full URL of the case study. Empty = link to the testimonials section.', 'dynamiqes' ) ), get_post_meta( $post->ID, '_dq_link', true ) );
+	dq_testimonial_media_fields( $post );
 	echo '<p class="desc">' . esc_html__( 'The quote is the post content; the client name is the post title.', 'dynamiqes' ) . '</p></div>';
 }
 
@@ -162,6 +176,7 @@ add_action( 'save_post_dq_testimonial', function ( $post_id ) {
 			update_post_meta( $post_id, $name, $val );
 		}
 	}
+	dq_testimonial_media_save( $post_id );
 } );
 
 function dq_thumb_url_meta_box( $post ) {

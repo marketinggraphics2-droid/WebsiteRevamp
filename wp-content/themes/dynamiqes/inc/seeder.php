@@ -64,8 +64,23 @@ function dq_repair_blog_menu_links() {
 			$landing[ $b['title'] ] = $b;
 		}
 	}
-	$n = 0;
+	$n        = 0;
+	$services = dq_services_page();
 	foreach ( wp_get_nav_menu_items( $menu->term_id ) as $mi ) {
+		/* Top-level "Our Services" still on the home anchor → the imported /our-services/ page. */
+		if ( $services && ! $mi->menu_item_parent && 'custom' === $mi->type && dq_is_services_anchor( $mi->url ) ) {
+			wp_update_nav_menu_item( $menu->term_id, $mi->ID, array(
+				'menu-item-title'     => $mi->title,
+				'menu-item-status'    => 'publish',
+				'menu-item-parent-id' => 0,
+				'menu-item-position'  => (int) $mi->menu_order,
+				'menu-item-type'      => 'post_type',
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => $services->ID,
+			) );
+			$n++;
+			continue;
+		}
 		if ( ! $mi->menu_item_parent || 'custom' !== $mi->type || ! isset( $landing[ $mi->title ] ) ) {
 			continue;
 		}
@@ -87,18 +102,183 @@ function dq_repair_blog_menu_links() {
 	return $n;
 }
 
+/**
+ * Create the Contact Us page (/contact-us/) if missing and give it the old site's title tag /
+ * meta description. Returns the page ID. Safe to call repeatedly.
+ */
+function dq_ensure_contact_page() {
+	$page = get_page_by_path( 'contact-us' );
+	if ( $page ) {
+		$id = (int) $page->ID;
+		if ( 'publish' !== $page->post_status ) {
+			wp_update_post( array( 'ID' => $id, 'post_status' => 'publish' ) );
+		}
+	} else {
+		$id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Contact Us', 'post_name' => 'contact-us' ) );
+	}
+	if ( ! $id || is_wp_error( $id ) ) {
+		return 0;
+	}
+	if ( ! get_post_meta( $id, '_dq_seo_title', true ) ) {
+		update_post_meta( $id, '_dq_seo_title', 'Contact Us - DynamIQes' );
+	}
+	if ( ! get_post_meta( $id, '_dq_seo_description', true ) ) {
+		update_post_meta( $id, '_dq_seo_description', 'Get in touch with DynamIQ Enterprise Solution. Reach our team for free business analysis, SAP B1 consulting, or IT support — we\'re here to help.' );
+	}
+	return $id;
+}
+
+/**
+ * Create the About Us page (/about-us/) if missing, with the old site's title tag / meta description
+ * (page-about-us.php renders the live copy). Returns the page ID. Safe to call repeatedly.
+ */
+function dq_ensure_about_page() {
+	$page = get_page_by_path( 'about-us' );
+	if ( $page ) {
+		$id = (int) $page->ID;
+		if ( 'publish' !== $page->post_status ) {
+			wp_update_post( array( 'ID' => $id, 'post_status' => 'publish' ) );
+		}
+	} else {
+		$id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'About Us', 'post_name' => 'about-us' ) );
+	}
+	if ( ! $id || is_wp_error( $id ) ) {
+		return 0;
+	}
+	if ( ! get_post_meta( $id, '_dq_seo_title', true ) ) {
+		update_post_meta( $id, '_dq_seo_title', 'About DynamiQ — Filipino SAP Partner Since 2019' );
+	}
+	if ( ! get_post_meta( $id, '_dq_seo_description', true ) ) {
+		update_post_meta( $id, '_dq_seo_description', 'Learn about DynamIQ Enterprise Solution – a Filipino IT consultancy and SAP Gold Partner committed to driving business efficiency and growth.' );
+	}
+	return (int) $id;
+}
+
+/**
+ * Re-point a saved Primary Menu's top-level "About Us" from the home #about anchor to the /about-us/
+ * page (the old site's nav target). Returns 1 when an item was changed.
+ */
+function dq_repair_about_menu_link() {
+	$page = dq_about_page();
+	if ( ! $page ) {
+		return 0;
+	}
+	$locations = get_theme_mod( 'nav_menu_locations', array() );
+	$menu      = empty( $locations['primary'] ) ? null : wp_get_nav_menu_object( (int) $locations['primary'] );
+	if ( ! $menu ) {
+		$menu = wp_get_nav_menu_object( 'Primary Menu' );
+	}
+	if ( ! $menu ) {
+		return 0;
+	}
+	foreach ( wp_get_nav_menu_items( $menu->term_id ) as $mi ) {
+		if ( ! $mi->menu_item_parent && 'custom' === $mi->type && 'About Us' === $mi->title && dq_is_about_anchor( $mi->url ) ) {
+			wp_update_nav_menu_item( $menu->term_id, $mi->ID, array(
+				'menu-item-title'     => 'About Us',
+				'menu-item-status'    => 'publish',
+				'menu-item-parent-id' => 0,
+				'menu-item-position'  => (int) $mi->menu_order,
+				'menu-item-type'      => 'post_type',
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => (int) $page->ID,
+			) );
+			return 1;
+		}
+	}
+	return 0;
+}
+
+/* Sites seeded before the About Us page existed: create it and fix the menu once. */
+add_action( 'init', function () {
+	if ( ! is_admin() || get_option( 'dq_about_page_v1' ) || ! current_user_can( 'manage_options' ) || ! get_option( 'dq_seeded' ) ) {
+		return;
+	}
+	dq_ensure_about_page();
+	dq_repair_about_menu_link();
+	update_option( 'dq_about_page_v1', time() );
+}, 21 );
+
+/**
+ * Re-point a saved Primary Menu's top-level "Contact Us" from the home #contact anchor to the
+ * /contact-us/ page. Returns 1 when an item was changed.
+ */
+function dq_repair_contact_menu_link() {
+	$page = function_exists( 'dq_contact_page' ) ? dq_contact_page() : null;
+	if ( ! $page ) {
+		return 0;
+	}
+	$locations = get_theme_mod( 'nav_menu_locations', array() );
+	$menu      = empty( $locations['primary'] ) ? null : wp_get_nav_menu_object( (int) $locations['primary'] );
+	if ( ! $menu ) {
+		$menu = wp_get_nav_menu_object( 'Primary Menu' );
+	}
+	if ( ! $menu ) {
+		return 0;
+	}
+	$n = 0;
+	foreach ( wp_get_nav_menu_items( $menu->term_id ) as $mi ) {
+		if ( ! $mi->menu_item_parent && 'custom' === $mi->type && 'Contact Us' === $mi->title && dq_is_contact_anchor( $mi->url ) ) {
+			wp_update_nav_menu_item( $menu->term_id, $mi->ID, array(
+				'menu-item-title'     => 'Contact Us',
+				'menu-item-status'    => 'publish',
+				'menu-item-parent-id' => 0,
+				'menu-item-position'  => (int) $mi->menu_order,
+				'menu-item-type'      => 'post_type',
+				'menu-item-object'    => 'page',
+				'menu-item-object-id' => (int) $page->ID,
+			) );
+			$n++;
+		}
+	}
+	return $n;
+}
+
+/* Sites seeded before the Contact Us page existed: create it and fix the menu once, on the
+   next admin request (no re-seed needed). */
+add_action( 'init', function () {
+	if ( ! is_admin() || get_option( 'dq_contact_page_v1' ) || ! current_user_can( 'manage_options' ) || ! get_option( 'dq_seeded' ) ) {
+		return;
+	}
+	dq_ensure_contact_page();
+	dq_repair_contact_menu_link();
+	update_option( 'dq_contact_page_v1', time() );
+}, 21 );
+
 /** Find a post by meta key/value. */
 function dq_find_post_by_meta( $type, $key, $value ) {
 	$found = get_posts( array( 'post_type' => $type, 'post_status' => 'any', 'posts_per_page' => 1, 'meta_key' => $key, 'meta_value' => $value, 'fields' => 'ids' ) );
 	return $found ? (int) $found[0] : 0;
 }
 
+/** Give seeded news posts that still show the title-only placeholder their real article
+ *  body (see inc/news-content.php). Returns how many posts were updated. */
+function dq_backfill_news_bodies() {
+	$filled = 0;
+	foreach ( dq_default_news() as $i => $n ) {
+		$id = dq_find_post_by_meta( 'post', '_dq_seed_id', 'n' . $i );
+		if ( ! $id ) {
+			$found = get_posts( array( 'post_type' => 'post', 'post_status' => 'any', 'name' => $n['slug'], 'posts_per_page' => 1, 'fields' => 'ids' ) );
+			$id    = $found ? (int) $found[0] : 0;
+		}
+		if ( ! $id || ! dq_news_body_is_placeholder( $id ) ) {
+			continue;
+		}
+		$body = dq_default_news_body( $n['slug'] );
+		if ( $body ) {
+			wp_update_post( array( 'ID' => $id, 'post_content' => $body ) );
+			$filled++;
+		}
+	}
+	return $filled;
+}
+
 /** Create/refresh everything. Idempotent. */
 function dq_seed_content() {
 	$report = array();
 
-	/* Site identity + permalinks */
-	if ( 'WordPress' === get_option( 'blogname' ) || ! get_option( 'dq_seeded' ) ) {
+	/* Site identity + permalinks. Only a fresh install is renamed: a copy of the live site keeps its
+	   Site Title, which every Yoast title template ends in ("… - DynamIQes"). */
+	if ( in_array( get_option( 'blogname' ), array( '', 'WordPress', 'My WordPress' ), true ) ) {
 		update_option( 'blogname', 'DynamIQ Enterprise Solution' );
 		update_option( 'blogdescription', 'SAP Premier Partner Philippines' );
 	}
@@ -124,6 +304,13 @@ function dq_seed_content() {
 		) );
 		if ( $id && ! is_wp_error( $id ) ) {
 			update_post_meta( $id, '_dq_product_key', $key );
+			/* The live page's title tag / meta description (inc/product-content.php) — kept verbatim, it ranks. */
+			if ( ! empty( $p['seo_title'] ) ) {
+				update_post_meta( $id, '_dq_seo_title', $p['seo_title'] );
+			}
+			if ( ! empty( $p['seo_description'] ) ) {
+				update_post_meta( $id, '_dq_seo_description', $p['seo_description'] );
+			}
 			foreach ( dq_product_field_map() as $field => $def ) {
 				$v = $p[ $field ] ?? '';
 				if ( 'lines' === $def[0] ) {
@@ -132,6 +319,8 @@ function dq_seed_content() {
 					$v = dq_features_to_text( $v );
 				} elseif ( 'faqs' === $def[0] ) {
 					$v = dq_faqs_to_text( $v );
+				} elseif ( 'blocks' === $def[0] ) {
+					$v = dq_sections_to_text( $v );
 				}
 				if ( '' !== $v ) {
 					update_post_meta( $id, '_dq_' . $field, $v );
@@ -163,12 +352,16 @@ function dq_seed_content() {
 	}
 	$report[] = $have_testimonials ? 'testimonials: using existing post type ' . dq_source_post_type( 'testimonial' ) : sprintf( '%d testimonials created', $count );
 
-	/* News posts (skipped when the site already has news content) */
+	/* News posts (skipped when the site already has news content). Bodies come from
+	   inc/news-content.php; posts seeded earlier with the title-only placeholder are
+	   backfilled in place so their URLs and IDs stay put. */
 	$count = 0;
+	$filled = dq_backfill_news_bodies();
 	foreach ( $have_news ? array() : dq_default_news() as $i => $n ) {
 		if ( dq_find_post_by_meta( 'post', '_dq_seed_id', 'n' . $i ) ) {
 			continue;
 		}
+		$body = dq_default_news_body( $n['slug'] );
 		$cat = term_exists( $n['cat'], 'category' );
 		if ( ! $cat ) {
 			$cat = wp_insert_term( $n['cat'], 'category' );
@@ -180,7 +373,7 @@ function dq_seed_content() {
 			'post_title'    => $n['title'],
 			'post_name'     => $n['slug'],
 			'post_date'     => $n['date'] . ' 09:00:00',
-			'post_content'  => '<!-- wp:paragraph --><p>' . esc_html( $n['title'] ) . '</p><!-- /wp:paragraph -->',
+			'post_content'  => $body ? $body : '<!-- wp:paragraph --><p>' . esc_html( $n['title'] ) . '</p><!-- /wp:paragraph -->',
 			'post_category' => array( $cat_id ),
 		) );
 		if ( $id && ! is_wp_error( $id ) ) {
@@ -189,7 +382,7 @@ function dq_seed_content() {
 			$count++;
 		}
 	}
-	$report[] = $have_news ? 'news: using existing content (' . dq_source_post_type( 'news' ) . ')' : sprintf( '%d news posts created', $count );
+	$report[] = $have_news ? 'news: using existing content (' . dq_source_post_type( 'news' ) . ')' : sprintf( '%d news posts created, %d bodies backfilled', $count, $filled );
 
 	/* Pages: Home + News & Events */
 	$home = get_page_by_path( 'home' );
@@ -198,24 +391,52 @@ function dq_seed_content() {
 	} else {
 		$home_id = $home->ID;
 	}
-	/* Blogs = the WordPress posts index. News & Events = the news post type archive when the
-	   site has one, otherwise the "News & Events" page (page-news-events.php, news categories). */
-	$blog = get_page_by_path( 'blog' );
-	if ( ! $blog ) {
-		$blog_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Blogs', 'post_name' => 'blog' ) );
-	} else {
-		$blog_id = $blog->ID;
-	}
-	$news = get_page_by_path( 'news-events' );
+	/* Blogs = the WordPress posts index at /blogs/ (live slug; inc/live-urls.php). News & Events =
+	   the news post type when the site has one (page-news-events.php lists it), otherwise the same
+	   page listing the news categories. */
+	$blog_id = dq_ensure_blogs_page();
+	$news    = get_page_by_path( 'news-events' );
 	if ( ! $news ) {
 		$news_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'News & Events', 'post_name' => 'news-events' ) );
 	} else {
 		$news_id = $news->ID;
 	}
+	/* Our Services lives at /our-services/ like the old site. An empty shell is enough: the
+	   landing importer fills it from dynamiqes.com (auto-import on first admin load, or the
+	   setup page), and page-landing.php renders the live copy read-only until then. */
+	$services = get_page_by_path( 'our-services' );
+	if ( ! $services ) {
+		$services_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Our Services', 'post_name' => 'our-services' ) );
+		update_post_meta( $services_id, '_wp_page_template', 'page-landing.php' );
+	} else {
+		$services_id = $services->ID;
+	}
+	/* Book a FREE DEMO: the old site's CTA target (/book-free-demo/), rendered by
+	   page-book-free-demo.php (H1 + the enquiry form). Title tag / description as on the old site. */
+	$demo = get_page_by_path( 'book-free-demo' );
+	if ( ! $demo ) {
+		$demo_id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Book a FREE DEMO today!', 'post_name' => 'book-free-demo' ) );
+	} else {
+		$demo_id = $demo->ID;
+	}
+	if ( $demo_id && ! is_wp_error( $demo_id ) ) {
+		if ( ! get_post_meta( $demo_id, '_dq_seo_title', true ) ) {
+			update_post_meta( $demo_id, '_dq_seo_title', 'Book a Free Demo | DynamIQes' );
+		}
+		if ( ! get_post_meta( $demo_id, '_dq_seo_description', true ) ) {
+			update_post_meta( $demo_id, '_dq_seo_description', 'Discover how Dynamiqes can revolutionize your processes. Our innovative solutions will take your business to the next level. Sign up for a free demo today!' );
+		}
+	}
+	/* Contact Us and About Us: the old site's nav targets (/contact-us/, /about-us/). */
+	$contact_id = dq_ensure_contact_page();
+	$about_id   = dq_ensure_about_page();
+	update_option( 'dq_about_page_v1', time() );
 	update_option( 'show_on_front', 'page' );
 	update_option( 'page_on_front', $home_id );
-	update_option( 'page_for_posts', $blog_id );
-	$report[] = 'Home, Blogs and News & Events pages set';
+	$report[] = 'Home, Blogs, News & Events, Our Services, Book a FREE DEMO and Contact Us pages set';
+	/* Products were created on the live slugs above; the parity pass fixes up anything an earlier
+	   seed left on the old slugs and marks itself done. */
+	$report   = array_merge( $report, dq_adopt_live_urls() );
 
 	/* Remove WordPress' sample content if still untouched. */
 	$hello = get_page_by_path( 'hello-world', OBJECT, 'post' );
@@ -254,6 +475,14 @@ function dq_seed_content() {
 				}
 				wp_update_nav_menu_item( $existing_menu->term_id, $mi->ID, $args );
 			}
+			/* Earlier seeders linked "Contact Us" to the home #contact anchor; the old site has /contact-us/. */
+			if ( $contact_id && ! $mi->menu_item_parent && 'custom' === $mi->type && 'Contact Us' === $mi->title && dq_is_contact_anchor( $mi->url ) ) {
+				wp_update_nav_menu_item( $existing_menu->term_id, $mi->ID, array( 'menu-item-title' => 'Contact Us', 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $contact_id, 'menu-item-status' => 'publish', 'menu-item-parent-id' => 0, 'menu-item-position' => (int) $mi->menu_order ) );
+			}
+			/* Earlier seeders linked "Our Services" to the home #services anchor; the old site has a page. */
+			if ( ! $mi->menu_item_parent && 'custom' === $mi->type && dq_is_services_anchor( $mi->url ) ) {
+				wp_update_nav_menu_item( $existing_menu->term_id, $mi->ID, array( 'menu-item-title' => $mi->title, 'menu-item-type' => 'post_type', 'menu-item-object' => 'page', 'menu-item-object-id' => $services_id, 'menu-item-status' => 'publish', 'menu-item-parent-id' => 0, 'menu-item-position' => (int) $mi->menu_order ) );
+			}
 			if ( 'News & Events' === $mi->title && 'page' === $mi->object && (int) $mi->object_id === (int) $news_id ) {
 				wp_update_nav_menu_item( $existing_menu->term_id, $mi->ID, array( 'menu-item-title' => 'News & Events', 'menu-item-type' => 'custom', 'menu-item-url' => dq_news_url(), 'menu-item-status' => 'publish', 'menu-item-parent-id' => 0, 'menu-item-position' => (int) $mi->menu_order ) );
 			}
@@ -285,15 +514,17 @@ function dq_seed_content() {
 			$pid = dq_find_post_by_meta( 'dq_product', '_dq_product_key', $key );
 			$add( $p['menu_label'], home_url( '/products/' . $p['slug'] . '/' ), $prod_parent, $pid );
 		}
-		$add( 'Our Services', home_url( '/#services' ) );
-		$add( 'About Us', home_url( '/#about' ) );
+		$add( 'Our Services', get_permalink( $services_id ), 0, $services_id );
+		$add( 'About Us', $about_id ? get_permalink( $about_id ) : home_url( '/about-us/' ), 0, $about_id );
 		$blogs = $add( 'Blogs', $blog_url, 0, $blog_id );
 		foreach ( dq_blog_landing_items() as $b ) {
 			$add( $b['title'], $b['url'], $blogs, $b['object_id'] );
 		}
 		$add( 'News & Events', $news_url );
-		$add( 'Careers', home_url( '/#contact' ) );
-		$add( 'Contact Us', home_url( '/#contact' ) );
+		/* Careers is a dedicated page on the old site (/career/), see inc/careers.php. */
+		$career_id = function_exists( 'dq_ensure_career_page' ) ? dq_ensure_career_page() : 0;
+		$add( 'Careers', $career_id ? get_permalink( $career_id ) : home_url( '/career/' ), 0, $career_id );
+		$add( 'Contact Us', get_permalink( $contact_id ), 0, $contact_id );
 		$locations            = get_theme_mod( 'nav_menu_locations', array() );
 		$locations['primary'] = $menu_id;
 		set_theme_mod( 'nav_menu_locations', $locations );
@@ -360,6 +591,9 @@ function dq_setup_page() {
 				flush_rewrite_rules();
 				$notice = __( 'Permalinks flushed.', 'dynamiqes' );
 				break;
+			case 'live_urls':
+				$notice = implode( '; ', dq_adopt_live_urls() );
+				break;
 			case 'landing':
 				$notice = implode( '; ', dq_import_landing_pages( ! empty( $_POST['dq_sideload'] ) ) );
 				break;
@@ -386,6 +620,9 @@ function dq_setup_page() {
 			<h2><?php esc_html_e( '3. Permalinks', 'dynamiqes' ); ?></h2>
 			<p><?php esc_html_e( 'If /products/ shows a 404, flush the permalinks.', 'dynamiqes' ); ?></p>
 			<button class="button" name="dq_action" value="flush"><?php esc_html_e( 'Flush permalinks', 'dynamiqes' ); ?></button>
+			<h2><?php esc_html_e( '4. Live URLs', 'dynamiqes' ); ?></h2>
+			<p><?php esc_html_e( 'Puts the site on the dynamiqes.com URL structure: products at /products/<live slug>/ (the older short slugs 301 there), the Blogs index at /blogs/, News & Events as its own page. Runs once automatically after an update; safe to run again.', 'dynamiqes' ); ?></p>
+			<button class="button" name="dq_action" value="live_urls"><?php esc_html_e( 'Adopt live URLs', 'dynamiqes' ); ?></button>
 		</form>
 		<h2><?php esc_html_e( 'Where things live', 'dynamiqes' ); ?></h2>
 		<ul style="list-style:disc;padding-left:20px">

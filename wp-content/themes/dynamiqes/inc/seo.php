@@ -21,6 +21,26 @@ function dq_seo_plugin_active() {
 /* Title                                                               */
 /* ------------------------------------------------------------------ */
 add_filter( 'document_title_separator', function () { return '—'; } );
+/* A per-page title tag is output verbatim. Going through document_title_parts would run it
+   through wptexturize() (" - " becomes an en dash), and pages imported from dynamiqes.com must
+   keep the old <title> character for character. */
+add_filter( 'pre_get_document_title', function ( $title ) {
+	if ( dq_seo_plugin_active() ) {
+		return $title;
+	}
+	if ( is_post_type_archive( 'dq_product' ) ) { // the live /products/ page this archive replaced (inc/live-urls.php)
+		$live = dq_shadowed_seo( 'title' );
+		return $live ? $live : $title;
+	}
+	if ( ! is_singular() ) {
+		return $title;
+	}
+	$custom = get_post_meta( get_queried_object_id(), '_dq_seo_title', true );
+	if ( ! $custom && is_singular( 'dq_product' ) ) {
+		$custom = dq_shadowed_seo( 'title' ); // the live page this product URL replaced
+	}
+	return $custom ? $custom : $title;
+} );
 add_filter( 'document_title_parts', function ( $parts ) {
 	if ( dq_seo_plugin_active() ) {
 		return $parts;
@@ -58,11 +78,15 @@ function dq_meta_description() {
 		return get_theme_mod( 'dq_seo_home_description', 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and the IQ Suite for Philippine small and mid-market businesses.' );
 	}
 	if ( is_post_type_archive( 'dq_product' ) ) {
-		return __( 'Explore SAP Business One and the DynamIQ IQ Suite of ERP modules and business solutions.', 'dynamiqes' );
+		$live = dq_shadowed_seo( 'description' );
+		return $live ? dq_seo_trim( $live ) : __( 'Explore SAP Business One and the DynamIQ IQ Suite of ERP modules and business solutions.', 'dynamiqes' );
 	}
 	if ( is_singular() ) {
 		$id     = get_queried_object_id();
 		$custom = get_post_meta( $id, '_dq_seo_description', true );
+		if ( ! $custom && is_singular( 'dq_product' ) ) {
+			$custom = dq_shadowed_seo( 'description' );
+		}
 		if ( $custom ) {
 			return dq_seo_trim( $custom );
 		}
@@ -205,9 +229,13 @@ add_filter( 'wp_robots', function ( $robots ) {
 	return $robots;
 } );
 
-/* Sitemap: products in, internal types out. */
+/* Sitemap: products in, internal types out. The theme's testimonials stay in only when they
+   are the site's testimonial source (the live install lists its customer_testimonial posts). */
 add_filter( 'wp_sitemaps_post_types', function ( $types ) {
-	unset( $types['dq_testimonial'], $types['dq_inquiry'], $types['attachment'] );
+	unset( $types['dq_inquiry'], $types['attachment'] );
+	if ( 'dq_testimonial' !== dq_source_post_type( 'testimonial' ) ) {
+		unset( $types['dq_testimonial'] );
+	}
 	return $types;
 } );
 add_filter( 'wp_sitemaps_add_provider', function ( $provider, $name ) {
@@ -253,9 +281,11 @@ function dq_schema_breadcrumbs() {
 		$items[] = array( 'name' => __( 'Our Products', 'dynamiqes' ), 'url' => dq_products_url() );
 		$items[] = array( 'name' => get_the_title(), 'url' => get_permalink() );
 	} elseif ( is_home() ) {
-		$items[] = array( 'name' => __( 'News & Events', 'dynamiqes' ), 'url' => dq_news_url() );
+		$items[] = array( 'name' => __( 'Blogs', 'dynamiqes' ), 'url' => dq_blog_url() );
 	} elseif ( is_singular( 'post' ) ) {
-		$items[] = array( 'name' => __( 'News & Events', 'dynamiqes' ), 'url' => dq_news_url() );
+		/* Blog post unless it sits in a news category (same rule as single.php). */
+		$news    = array_intersect( wp_get_post_categories( get_queried_object_id() ), array_map( 'intval', (array) dq_news_category_ids() ) );
+		$items[] = $news ? array( 'name' => __( 'News & Events', 'dynamiqes' ), 'url' => dq_news_url() ) : array( 'name' => __( 'Blogs', 'dynamiqes' ), 'url' => dq_blog_url() );
 		$items[] = array( 'name' => get_the_title(), 'url' => get_permalink() );
 	} elseif ( is_singular() ) {
 		$items[] = array( 'name' => get_the_title(), 'url' => get_permalink() );
@@ -309,7 +339,7 @@ add_action( 'wp_head', function () {
 			if ( ! empty( $p['faqs'] ) ) {
 				$qa = array();
 				foreach ( $p['faqs'] as $f ) {
-					$qa[] = array( '@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => array( '@type' => 'Answer', 'text' => $f[1] ) );
+					$qa[] = array( '@type' => 'Question', 'name' => $f[0], 'acceptedAnswer' => array( '@type' => 'Answer', 'text' => trim( wp_strip_all_tags( $f[1] ) ) ) );
 				}
 				$graph[] = array( '@type' => 'FAQPage', 'mainEntity' => $qa );
 			}

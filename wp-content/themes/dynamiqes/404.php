@@ -11,8 +11,8 @@ get_header();
 	<section class="page-hero">
 		<div class="wrap">
 			<span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'Error 404', 'dynamiqes' ); ?></span>
-			<h1<?php dq_reveal(); ?>><?php esc_html_e( 'Page not found', 'dynamiqes' ); ?></h1>
-			<p<?php dq_reveal(); ?>><?php esc_html_e( 'The page you are looking for may have moved or no longer exists.', 'dynamiqes' ); ?></p>
+			<h1<?php dq_reveal(); ?>><?php esc_html_e( '404 Error', 'dynamiqes' ); ?></h1><?php /* H1 + first line as on the live 404 */ ?>
+			<p<?php dq_reveal(); ?>><?php esc_html_e( 'Sorry, the page you were looking for was not found.', 'dynamiqes' ); ?></p>
 		</div>
 	</section>
 	<section>

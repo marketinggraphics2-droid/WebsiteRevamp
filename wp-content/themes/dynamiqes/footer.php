@@ -9,14 +9,14 @@ $c        = dq_contact_info();
 $privacy  = get_privacy_policy_url();
 $quick    = array(
 	array( 'SAP System Services and Solutions Philippines', home_url( '/' ) ),
-	array( 'SAP Business One', home_url( '/products/sap-business-one/' ) ),
-	array( __( 'About Us', 'dynamiqes' ), dq_home_anchor( 'about' ) ),
-	array( __( 'Contact Us', 'dynamiqes' ), dq_home_anchor( 'contact' ) ),
+	array( 'SAP Business One', home_url( '/products/sap-business-one-philippines/' ) ),
+	array( __( 'About Us', 'dynamiqes' ), dq_about_url() ),
+	array( __( 'Contact Us', 'dynamiqes' ), dq_contact_url() ),
 	array( __( 'Privacy Policy', 'dynamiqes' ), $privacy ? $privacy : dq_home_anchor( 'contact' ) ),
 );
 $explore  = array(
 	array( __( 'Our Products', 'dynamiqes' ), dq_products_url() ),
-	array( __( 'Our Services', 'dynamiqes' ), dq_home_anchor( 'services' ) ),
+	array( __( 'Our Services', 'dynamiqes' ), dq_services_url() ),
 	array( __( 'Blogs', 'dynamiqes' ), dq_blog_url() ),
 	array( __( 'News & Events', 'dynamiqes' ), dq_news_url() ),
 	array( __( 'Testimonials', 'dynamiqes' ), dq_home_anchor( 'testimonials' ) ),
@@ -34,11 +34,12 @@ $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 		<div class="video-track">
 			<?php foreach ( array( false, true ) as $dup ) : // second pass is the seamless-loop copy ?>
 			<?php foreach ( $videos as $v ) : ?>
-				<figure class="video-tile" data-video="<?php echo esc_url( $v['video'] ); ?>" data-poster="<?php echo esc_url( $v['poster'] ); ?>" data-label="<?php echo esc_attr( $v['label'] ); ?>"<?php echo $dup ? ' aria-hidden="true"' : ' role="button" tabindex="0" aria-label="' . esc_attr( sprintf( /* translators: %s: clip label */ __( 'Open %s in full view', 'dynamiqes' ), $v['label'] ) ) . '"'; ?>>
-					<?php /* No src in the markup on purpose: the clips are large, the tiles are shipped twice
-					         and main.js clones more sets to fill the track, so a src here would start every copy
-					         downloading with the page. main.js attaches the tile's data-video once the wall is
-					         near the viewport (see "5b · Video wall"). */ ?>
+				<figure class="video-tile" data-video="<?php echo esc_url( $v['video'] ); ?>" data-preview="<?php echo esc_url( ! empty( $v['preview'] ) ? $v['preview'] : $v['video'] ); ?>"<?php if ( ! empty( $v['preview_webm'] ) ) : ?> data-preview-webm="<?php echo esc_url( $v['preview_webm'] ); ?>"<?php endif; ?> data-poster="<?php echo esc_url( $v['poster'] ); ?>" data-label="<?php echo esc_attr( $v['label'] ); ?>"<?php echo $dup ? ' aria-hidden="true"' : ' role="button" tabindex="0" aria-label="' . esc_attr( sprintf( /* translators: %s: clip label */ __( 'Open %s in full view', 'dynamiqes' ), $v['label'] ) ) . '"'; ?>>
+					<?php /* No src in the markup on purpose: the tiles are shipped twice and main.js clones more
+					         sets to fill the track, so a src here would start every copy downloading with the page.
+					         main.js attaches the tile's data-preview-webm / data-preview (the small 240p strip rendition) once the wall
+					         is near the viewport (see "5b · Video wall"); the full data-video is only loaded by the
+					         lightbox after a click (see "5c"). */ ?>
 					<video muted loop playsinline preload="none"<?php if ( ! empty( $v['poster'] ) ) : ?> poster="<?php echo esc_url( $v['poster'] ); ?>"<?php endif; ?>></video>
 					<span class="video-tile-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
 				</figure>
@@ -87,7 +88,7 @@ $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 	</div>
 </footer>
 </div><!-- .site-end -->
-<?php if ( $videos ) : ?>
+<?php if ( $videos || ! empty( $GLOBALS['dq_lightbox'] ) ) : // also printed when a template asked for it (testimonial videos, dq_request_lightbox()) ?>
 <!-- video lightbox: one shared player, fed by whichever tile was clicked. Lives outside
      .site-end / .video-wall (both position:relative + z-index) so its own z-index wins
      over the sticky nav and the chat widget. -->
@@ -95,7 +96,7 @@ $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 	<div class="video-lightbox-backdrop" data-close></div>
 	<div class="video-lightbox-panel" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Video', 'dynamiqes' ); ?>">
 		<button type="button" class="video-lightbox-close" data-close aria-label="<?php esc_attr_e( 'Close video', 'dynamiqes' ); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
-		<div class="video-lightbox-stage"></div><!-- the clicked tile's own <video> is moved in here, so playback simply continues -->
+		<div class="video-lightbox-stage"></div><!-- main.js creates a player here on open, loading the tile's full-size data-video -->
 		<p class="video-lightbox-cap"></p>
 	</div>
 </div>

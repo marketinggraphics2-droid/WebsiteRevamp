@@ -84,6 +84,9 @@ add_filter( 'body_class', function ( $classes ) {
 	} else {
 		$classes[] = 'sub-page';
 		$classes[] = 'generic-page';
+		if ( is_page( 'our-services' ) ) {
+			$classes[] = 'services-page'; // one-screen composition for the service bands, CTA and contact
+		}
 	}
 	return array_values( array_unique( $classes ) );
 } );
@@ -127,4 +130,17 @@ add_filter( 'upload_mimes', function ( $mimes ) {
 		$mimes['webp'] = 'image/webp';
 	}
 	return $mimes;
+} );
+
+/** Blogs index = blog posts only. News posts (the categories chosen under Customize → Content
+ *  sources) have their own News & Events page, as on the old site where news is a separate
+ *  post type; without this the two listings showed the same items. */
+add_action( 'pre_get_posts', function ( $q ) {
+	if ( is_admin() || ! $q->is_main_query() || ! $q->is_home() || ! function_exists( 'dq_news_category_ids' ) ) {
+		return;
+	}
+	$ids = array_map( 'intval', (array) dq_news_category_ids() );
+	if ( $ids ) {
+		$q->set( 'category__not_in', array_merge( (array) $q->get( 'category__not_in' ), $ids ) );
+	}
 } );

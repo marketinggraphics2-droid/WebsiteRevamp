@@ -34,8 +34,11 @@ if ( is_search() ) {
 	<section>
 		<div class="wrap">
 			<?php if ( have_posts() ) : ?>
+				<?php if ( is_home() && ! is_paged() ) : the_post(); /* newest post gets the featured slot, as on the live /blogs/ */ ?>
+					<?php get_template_part( 'template-parts/post-feature' ); ?>
+				<?php endif; ?>
 				<div class="post-grid">
-					<?php while ( have_posts() ) : the_post(); get_template_part( 'template-parts/post-card' ); endwhile; ?>
+					<?php while ( have_posts() ) : the_post(); get_template_part( 'template-parts/post-card', null, array( 'heading' => 'p' ) ); endwhile; ?>
 				</div>
 				<nav class="pagination" aria-label="<?php esc_attr_e( 'Pagination', 'dynamiqes' ); ?>"><?php echo paginate_links( array( 'prev_text' => '←', 'next_text' => '→' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></nav>
 			<?php else : ?>

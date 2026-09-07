@@ -47,9 +47,13 @@ function dq_product_field_map() {
 		'listing'        => array( 'lines', __( 'Products page paragraphs', 'dynamiqes' ), __( 'One paragraph per line.', 'dynamiqes' ) ),
 		'overview'       => array( 'lines', __( 'Overview paragraphs', 'dynamiqes' ), __( 'One paragraph per line.', 'dynamiqes' ) ),
 		'closing'        => array( 'text', __( 'Overview closing line (bold)', 'dynamiqes' ), '' ),
+		'overview_title' => array( 'text', __( 'Overview heading', 'dynamiqes' ), __( 'The H2 above the overview paragraphs (live site: "Product Overview").', 'dynamiqes' ) ),
 		'features_intro' => array( 'textarea', __( 'Features intro', 'dynamiqes' ), '' ),
-		'features'       => array( 'features', __( 'Feature groups', 'dynamiqes' ), __( 'One group per line: Title | item; item; item', 'dynamiqes' ) ),
-		'faqs'           => array( 'faqs', __( 'FAQs', 'dynamiqes' ), __( 'One per line: Question | Answer', 'dynamiqes' ) ),
+		'features_title' => array( 'text', __( 'Features heading', 'dynamiqes' ), __( 'H2 of the feature groups when no Page sections are set (default "<Name> Features").', 'dynamiqes' ) ),
+		'features'       => array( 'features', __( 'Feature groups', 'dynamiqes' ), __( 'One group per line: Title | item; item; item  — or  Title > paragraph', 'dynamiqes' ) ),
+		'faqs'           => array( 'faqs', __( 'FAQs', 'dynamiqes' ), __( 'One per line: Question | Answer (the answer may hold <p>, <ul>, <li>).', 'dynamiqes' ) ),
+		'faq_heading'    => array( 'text', __( 'FAQ question tag', 'dynamiqes' ), __( '"h3" marks every question up as a heading (the live SAP Business One page); "p" keeps them plain text (the other live pages).', 'dynamiqes' ) ),
+		'sections'       => array( 'blocks', __( 'Page sections', 'dynamiqes' ), __( 'The page in order, mirroring dynamiqes.com. "## @overview" and "## @faq" place the overview / FAQ blocks; "## Heading" starts a section, "##cta Heading" a call-to-action band; "#> Kicker | text" adds the small heading above a CTA; "### Item | li; li" or "### Item > paragraph" adds an H3 card; "- text" a bullet; other lines are paragraphs.', 'dynamiqes' ) ),
 	);
 }
 
@@ -69,7 +73,8 @@ function dq_parse_features( $text ) {
 	foreach ( dq_parse_lines( $text ) as $line ) {
 		$parts = array_map( 'trim', explode( '|', $line, 2 ) );
 		$items = isset( $parts[1] ) ? array_values( array_filter( array_map( 'trim', explode( ';', $parts[1] ) ) ) ) : array();
-		$out[] = array( 'title' => $parts[0], 'items' => $items );
+		$head  = array_map( 'trim', explode( ' > ', $parts[0], 2 ) ); // "Title > paragraph": an H3 with a paragraph instead of a list
+		$out[] = array( 'title' => $head[0], 'text' => isset( $head[1] ) ? $head[1] : '', 'items' => $items );
 	}
 	return $out;
 }
@@ -89,7 +94,7 @@ function dq_lines_to_text( $arr ) {
 function dq_features_to_text( $arr ) {
 	$lines = array();
 	foreach ( (array) $arr as $g ) {
-		$lines[] = $g['title'] . ' | ' . implode( '; ', $g['items'] );
+		$lines[] = $g['title'] . ( ! empty( $g['text'] ) ? ' > ' . $g['text'] : '' ) . ( ! empty( $g['items'] ) ? ' | ' . implode( '; ', $g['items'] ) : '' );
 	}
 	return implode( "\n", $lines );
 }
@@ -101,18 +106,176 @@ function dq_faqs_to_text( $arr ) {
 	return implode( "\n", $lines );
 }
 
+/* ---- page sections (the live page's H2 blocks, in order) ---- */
+
+/**
+ * Parse the "Page sections" text into section arrays. Lines:
+ *   ## @overview / ## @faq / ## @faq-plain   typed blocks (overview paragraphs, FAQ; -plain = FAQ title not a heading)
+ *   ## Heading                               a section (H2) · ##cta Heading — a call-to-action band
+ *   #> Kicker | kicker text                  small H3 + line above a CTA heading (live "Ready To Get Started?")
+ *   ### Item | li; li  ·  ### Item > text    an H3 card with a list or a paragraph
+ *   - text                                   bullet (section list, or the current item's list)
+ *   anything else                            paragraph (intro before the items, closing after them)
+ */
+function dq_parse_sections( $text ) {
+	$sections = array();
+	$cur      = null;
+	$item     = null;
+	foreach ( dq_parse_lines( $text ) as $line ) {
+		if ( 0 === strpos( $line, '###' ) ) {
+			if ( $cur ) {
+				$g    = dq_parse_features( substr( $line, 3 ) );
+				$item = count( $cur['items'] );
+				$cur['items'][] = $g[0];
+			}
+			continue;
+		}
+		if ( preg_match( '/^##(cta)?\s*(.*)$/', $line, $m ) ) {
+			if ( $cur ) {
+				$sections[] = $cur;
+			}
+			$item  = null;
+			$title = trim( $m[2] );
+			if ( '@overview' === $title ) {
+				$cur = array( 'type' => 'overview' );
+			} elseif ( '@faq' === $title || '@faq-plain' === $title ) {
+				$cur = array( 'type' => 'faq', 'heading' => '@faq' === $title );
+			} else {
+				$cur = array( 'type' => $m[1] ? 'cta' : 'generic', 'title' => $title, 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array() );
+			}
+			continue;
+		}
+		if ( ! $cur || ! isset( $cur['title'] ) ) {
+			continue;
+		}
+		if ( 0 === strpos( $line, '#>' ) ) {
+			$parts              = array_map( 'trim', explode( '|', substr( $line, 2 ), 2 ) );
+			$cur['kicker']      = $parts[0];
+			$cur['kicker_text'] = isset( $parts[1] ) ? $parts[1] : '';
+			continue;
+		}
+		if ( 0 === strpos( $line, '- ' ) ) {
+			$t = trim( substr( $line, 2 ) );
+			if ( null !== $item && isset( $cur['items'][ $item ] ) ) {
+				$cur['items'][ $item ]['items'][] = $t;
+			} else {
+				$cur['list'][] = $t;
+			}
+			continue;
+		}
+		if ( $cur['items'] ) {
+			$cur['closing'][] = $line;
+		} else {
+			$cur['intro'][] = $line;
+		}
+	}
+	if ( $cur ) {
+		$sections[] = $cur;
+	}
+	return $sections;
+}
+function dq_sections_to_text( $arr ) {
+	$lines = array();
+	foreach ( (array) $arr as $s ) {
+		$type = isset( $s['type'] ) ? $s['type'] : 'generic';
+		if ( 'overview' === $type ) {
+			$lines[] = '## @overview';
+			continue;
+		}
+		if ( 'faq' === $type ) {
+			$lines[] = ( isset( $s['heading'] ) && false === $s['heading'] ) ? '## @faq-plain' : '## @faq';
+			continue;
+		}
+		$lines[] = ( 'cta' === $type ? '##cta ' : '## ' ) . ( isset( $s['title'] ) ? $s['title'] : '' );
+		if ( ! empty( $s['kicker'] ) ) {
+			$lines[] = '#> ' . $s['kicker'] . ( ! empty( $s['kicker_text'] ) ? ' | ' . $s['kicker_text'] : '' );
+		}
+		foreach ( (array) ( isset( $s['intro'] ) ? $s['intro'] : array() ) as $p ) {
+			$lines[] = $p;
+		}
+		foreach ( (array) ( isset( $s['list'] ) ? $s['list'] : array() ) as $l ) {
+			$lines[] = '- ' . $l;
+		}
+		foreach ( (array) ( isset( $s['items'] ) ? $s['items'] : array() ) as $g ) {
+			$lines[] = '### ' . $g['title'] . ( ! empty( $g['text'] ) ? ' > ' . $g['text'] : '' ) . ( ! empty( $g['items'] ) ? ' | ' . implode( '; ', $g['items'] ) : '' );
+		}
+		foreach ( (array) ( isset( $s['closing'] ) ? $s['closing'] : array() ) as $p ) {
+			$lines[] = $p;
+		}
+	}
+	return implode( "\n", $lines );
+}
+
+/**
+ * The ordered sections a product page renders (single-dq_product.php), normalised. A product
+ * without explicit sections (a custom one added in WP Admin) gets the classic order: overview,
+ * feature groups, FAQ.
+ */
+function dq_product_sections( $p ) {
+	$list = ! empty( $p['sections'] ) && is_array( $p['sections'] ) ? $p['sections'] : array();
+	if ( ! $list ) {
+		if ( ! empty( $p['overview'] ) ) {
+			$list[] = array( 'type' => 'overview' );
+		}
+		if ( ! empty( $p['features'] ) ) {
+			$list[] = array(
+				'type'  => 'generic',
+				'title' => ! empty( $p['features_title'] ) ? $p['features_title'] : sprintf( __( '%s Features', 'dynamiqes' ), $p['name'] ),
+				'intro' => ! empty( $p['features_intro'] ) ? array( $p['features_intro'] ) : array(),
+				'items' => $p['features'],
+			);
+		}
+		if ( ! empty( $p['faqs'] ) ) {
+			$list[] = array( 'type' => 'faq' );
+		}
+	}
+	$out = array();
+	foreach ( $list as $s ) {
+		$s = wp_parse_args( $s, array( 'type' => 'generic', 'title' => '', 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array(), 'heading' => true ) );
+		if ( 'faq' === $s['type'] && empty( $p['faqs'] ) ) {
+			continue;
+		}
+		if ( 'overview' === $s['type'] && empty( $p['overview'] ) && empty( $s['items'] ) ) {
+			continue;
+		}
+		$out[] = $s;
+	}
+	return $out;
+}
+
+/** Copy with only inline formatting kept (links, emphasis) — the live paragraphs carry internal links. */
+function dq_inline_html( $text ) {
+	return wp_kses( (string) $text, array(
+		'a'      => array( 'href' => true, 'target' => true, 'rel' => true, 'title' => true ),
+		'strong' => array(),
+		'em'     => array(),
+		'b'      => array(),
+		'i'      => array(),
+		'br'     => array(),
+		'span'   => array( 'class' => true ),
+	) );
+}
+
+/** FAQ answer: plain text becomes a paragraph; imported answers may already hold <p>/<ul>. */
+function dq_faq_answer_html( $answer ) {
+	$answer = (string) $answer;
+	return false === strpos( $answer, '<' ) ? '<p>' . esc_html( $answer ) . '</p>' : wp_kses_post( $answer );
+}
+
 /**
  * Default catalogue, ported 1:1 from the live site (home cards, products page, product template).
- * Keys are stable identifiers stored in `_dq_product_key`.
+ * Keys are stable identifiers stored in `_dq_product_key`. Slugs are the live dynamiqes.com URLs
+ * (/products/<slug>/, see the page sitemap) so the rebuilt pages keep their rankings; the theme's
+ * earlier short slugs live on as 301s in dq_product_legacy_slugs().
  */
-function dq_product_defaults() {
-	static $data = null;
+function dq_product_defaults( $raw = false ) {
+	static $data = null, $base = null;
 	if ( null !== $data ) {
-		return $data;
+		return $raw ? $base : $data;
 	}
 	$data = array(
 		'sap' => array(
-			'slug'           => 'sap-business-one',
+			'slug'           => 'sap-business-one-philippines',
 			'name'           => 'SAP Business One',
 			'menu_label'     => 'SAP Business One',
 			'title'          => 'Run Your Entire Business with SAP Business One',
@@ -192,7 +355,7 @@ function dq_product_defaults() {
 			),
 		),
 		'tax' => array(
-			'slug'           => 'dynamiq-tax',
+			'slug'           => 'dynamiq-tax-module',
 			'name'           => 'IQ Tax',
 			'menu_label'     => 'IQ Tax Module',
 			'title'          => 'Make Tax Filing and Compliance Easy and Accessible',
@@ -231,7 +394,7 @@ function dq_product_defaults() {
 			),
 		),
 		'barcode' => array(
-			'slug'           => 'dynamiq-barcode',
+			'slug'           => 'dynamiq-barcoding',
 			'name'           => 'IQ Barcode',
 			'menu_label'     => 'IQ Barcoding',
 			'title'          => 'Bring Barcoding and Scanning into SAP Business One',
@@ -269,7 +432,7 @@ function dq_product_defaults() {
 			),
 		),
 		'link' => array(
-			'slug'           => 'dynamiq-link',
+			'slug'           => 'dynamiq-iq-link',
 			'name'           => 'IQ Link',
 			'menu_label'     => 'IQ Link',
 			'title'          => 'Create a Unified Single System with IQ Link',
@@ -307,7 +470,7 @@ function dq_product_defaults() {
 			),
 		),
 		'rem' => array(
-			'slug'           => 'dynamiq-rem',
+			'slug'           => 'dynamiq-real-estate-management',
 			'name'           => 'IQ REM',
 			'menu_label'     => 'IQ REM',
 			'title'          => 'Manage Real Estate Operations with IQ REM',
@@ -346,7 +509,7 @@ function dq_product_defaults() {
 			),
 		),
 		'ai' => array(
-			'slug'           => 'dynamiq-ai',
+			'slug'           => 'dynamiq-ai-sap-b1',
 			'name'           => 'IQ Ai',
 			'menu_label'     => 'IQ Ai',
 			'title'          => 'Turn Business Data into Real-Time Insights with IQ Ai',
@@ -385,7 +548,7 @@ function dq_product_defaults() {
 			),
 		),
 		'desk' => array(
-			'slug'           => 'dynamiq-desk',
+			'slug'           => 'sap-b1-it-desk',
 			'name'           => 'IQ Desk',
 			'menu_label'     => 'IQ Desk',
 			'title'          => 'Simplify Support and Asset Tracking with IQ Desk',
@@ -423,7 +586,7 @@ function dq_product_defaults() {
 			),
 		),
 		'ecom' => array(
-			'slug'           => 'dynamiq-ecom',
+			'slug'           => 'sap-b1-ecom-platform',
 			'name'           => 'IQ Ecom',
 			'menu_label'     => 'IQ Ecom',
 			'title'          => 'Connect Your Online Store to SAP Business One',
@@ -465,9 +628,37 @@ function dq_product_defaults() {
 	foreach ( $data as $k => &$p ) {
 		$p['key']   = $k;
 		$p['order'] = $i++;
+		$p         += array( 'seo_title' => '', 'seo_description' => '', 'overview_title' => __( 'Product Overview', 'dynamiqes' ), 'features_title' => '', 'faq_heading' => 'p', 'sections' => array() );
 	}
 	unset( $p );
-	return $data;
+	$base = $data;
+	/* The live dynamiqes.com copy and section order (inc/product-content.php) is the SEO benchmark
+	   and wins over this catalogue; the catalogue stays as the fallback (images, cards, menu labels). */
+	if ( function_exists( 'dq_product_live_content' ) ) {
+		foreach ( dq_product_live_content() as $k => $live ) {
+			if ( isset( $data[ $k ] ) ) {
+				$data[ $k ] = array_merge( $data[ $k ], $live );
+			}
+		}
+	}
+	return $raw ? $base : $data;
+}
+
+/**
+ * Slugs the theme used before it adopted the live URLs (theme ≤ 1.1.0), mapped to the catalogue
+ * key. inc/live-urls.php 301s /products/<old>/ to the live URL and renames seeded posts once.
+ */
+function dq_product_legacy_slugs() {
+	return array(
+		'sap-business-one' => 'sap',
+		'dynamiq-tax'      => 'tax',
+		'dynamiq-barcode'  => 'barcode',
+		'dynamiq-link'     => 'link',
+		'dynamiq-rem'      => 'rem',
+		'dynamiq-ai'       => 'ai',
+		'dynamiq-desk'     => 'desk',
+		'dynamiq-ecom'     => 'ecom',
+	);
 }
 
 /**
@@ -489,6 +680,7 @@ function dq_get_product( $post = null ) {
 		'title' => $post->post_title, 'description' => '', 'logo' => '', 'logo_light' => '', 'background' => '', 'hero' => '',
 		'overview_image' => '', 'feature_image' => '', 'card_art' => '', 'card_photo' => '', 'card_tagline' => '', 'card_title' => '', 'card_desc' => '', 'strip_desc' => '',
 		'listing' => array(), 'overview' => array(), 'closing' => '', 'features_intro' => '', 'features' => array(), 'faqs' => array(), 'order' => 99,
+		'seo_title' => '', 'seo_description' => '', 'overview_title' => __( 'Product Overview', 'dynamiqes' ), 'features_title' => '', 'faq_heading' => 'p', 'sections' => array(),
 	);
 	$product = $base;
 	foreach ( dq_product_field_map() as $field => $def ) {
@@ -505,6 +697,9 @@ function dq_get_product( $post = null ) {
 				break;
 			case 'faqs':
 				$product[ $field ] = dq_parse_faqs( $raw );
+				break;
+			case 'blocks':
+				$product[ $field ] = dq_parse_sections( $raw );
 				break;
 			default:
 				$product[ $field ] = $raw;
