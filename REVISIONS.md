@@ -81,6 +81,46 @@ bir-cas-philippines, promo/bir-cas-solution, promo/accounting-inventory-system, 
 - [x] **G7** 404 — fix padding between the two buttons. Row 78.
 - [x] **G8** 404 — centre-align all elements. Row 79.
 
+## H. Card icons and client logos (raised by the client, 2026-09-10)
+
+Not a row on the review sheet — the client spotted that art the live pages carry was absent
+from the rebuild ("theres no logos/icons in the new build"). It was a systematic gap: every H3
+card on the live product and landing pages has a small branded icon, and the original scrape
+dropped all of them. 198 icons in total.
+
+- [x] **H1** Product pages: 41 card icons mirrored into `assets/products/icons/` and attached
+      per item in `inc/product-content.php` (`'icon' => …`), rendered by `dq_product_item_icon()`.
+      Where an item has no icon on live, the drawn SVG from `dq_trust_icon()` still stands in.
+- [x] **H2** Product pages: the four per-section illustrations the SAP page shows beside its
+      sections (`assets/products/sections/`). `feature_image` was empty for SAP, so its sections
+      had no art at all — sections now take their own `'image'`.
+- [x] **H3** Landing / promo pages: 157 card icons kept at import time instead of being
+      stripped. The importer parks the icon on its heading as `data-icon` and
+      `inc/landing-sections.php` renders it. Three separate filters had been dropping them:
+      the icon-name pattern, the small-size test, and an outright `.svg` reject (the promo
+      pages ship every icon as SVG).
+- [x] **H4** Sections where every card has its own art and there is no separate section photo
+      keep all of it (the count test in the importer: images exactly equal to cards).
+- [x] **H5** Careers: the four core-value icons and the culture photo
+      (`assets/pages/career/`), plus the live page's own "Join Us" photo in place of the
+      borrowed SAP product shot.
+- [x] **H6** SEO/SEM logo bands use the campaign pages' own wider logo set
+      (`assets/trust/sem/`, 11 logos) rather than the home marquee's nine.
+
+Residual, deliberately or knowingly left:
+
+- The **"SAP Silver Partner" seal** in the two provider pages' heroes is *not* restored: item F5
+  has us renaming the tier to "Premier Partner" throughout, so re-adding a Silver badge would
+  contradict the client's own instruction. Needs a decision, and a Premier-tier asset.
+- `trusted-brand-seal.png` (both provider heroes) and the BIR seal on
+  `/bir-cas-provider-philippines/` are hero trust seals the importer does not capture.
+- Three single images where the importer's section-photo-vs-card-art count is off by one:
+  `erp-solutions-image-3` on `/erp-solutions-philippines/`, and `barcode-and-qr-icon` plus
+  `barcode-inventory-system-image-5` on `/barcode-inventory-system-philippines/`.
+- `implementation-website` / `implementation-mobile-and-tablet` on `/our-services/`.
+- Product hero and overview art differs from live by design (our own mockups), as do the
+  testimonial logos (`.webp` renditions of the same brands).
+
 ---
 
 ## Re-import required on staging

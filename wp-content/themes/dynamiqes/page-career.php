@@ -81,8 +81,17 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 					<h2><?php echo esc_html( $copy['join_h2'] ); ?></h2>
 					<p><?php echo esc_html( $copy['join_p'] ); ?></p>
 				</div>
-				<?php if ( $sap && ! empty( $sap['hero'] ) ) : ?>
-				<div class="career-join-media"<?php dq_reveal( 'scale' ); ?>><img src="<?php echo esc_url( $sap['hero'] ); ?>" alt="<?php esc_attr_e( 'SAP Business One software displayed on a monitor', 'dynamiqes' ); ?>" loading="lazy"></div>
+				<?php
+				/* the live /career/ page's own photo; the SAP product shot is the fallback */
+				$join_img = dq_page_asset( 'career/join.jpg' );
+				$join_alt = __( 'The DynamIQ team at work', 'dynamiqes' );
+				if ( ! $join_img && $sap && ! empty( $sap['hero'] ) ) {
+					$join_img = $sap['hero'];
+					$join_alt = __( 'SAP Business One software displayed on a monitor', 'dynamiqes' );
+				}
+				?>
+				<?php if ( $join_img ) : ?>
+				<div class="career-join-media"<?php dq_reveal( 'scale' ); ?>><img src="<?php echo esc_url( $join_img ); ?>" alt="<?php echo esc_attr( $join_alt ); ?>" loading="lazy"></div>
 				<?php endif; ?>
 			</div>
 		</section>
@@ -94,13 +103,20 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 					<h2><?php echo esc_html( $copy['culture_h2'] ); ?></h2>
 					<p><?php echo esc_html( $copy['culture_p'] ); ?></p>
 				</div>
+				<?php $culture_img = dq_page_asset( 'career/experience.jpg' ); ?>
+				<?php if ( $culture_img ) : /* the live page's culture photo */ ?>
+				<figure class="career-culture-media"<?php dq_reveal( 'scale' ); ?>><img src="<?php echo esc_url( $culture_img ); ?>" alt="<?php esc_attr_e( 'Life at DynamIQ', 'dynamiqes' ); ?>" loading="lazy"></figure>
+				<?php endif; ?>
 				<div class="career-values-head"<?php dq_reveal(); ?>>
 					<h2><?php echo esc_html( $copy['values_h2'] ); ?></h2>
 					<p><?php echo esc_html( $copy['values_lead'] ); ?></p>
 				</div>
 				<div class="career-values">
-					<?php foreach ( $copy['values'] as $i => $v ) : ?>
+					<?php foreach ( $copy['values'] as $i => $v ) : $icon = ! empty( $v[2] ) ? dq_page_asset( 'career/' . $v[2] ) : ''; ?>
 					<article class="feature-group"<?php dq_reveal( '', $i * 90 ); ?>>
+						<?php if ( $icon ) : /* the live page's own core-value icon */ ?>
+						<span class="feature-icon"><img class="item-icon" src="<?php echo esc_url( $icon ); ?>" alt="" width="52" height="50" loading="lazy" decoding="async"></span>
+						<?php endif; ?>
 						<h3><?php echo esc_html( $v[0] ); ?></h3>
 						<p><?php echo esc_html( $v[1] ); ?></p>
 					</article>

@@ -197,7 +197,17 @@ function dq_landing_parse( $slug, $html = '' ) {
 		}
 
 		$section_images = 0;
+		$pending_icon   = ''; // card icon waiting for its H3 (see the img branch below)
 		$started        = ! $from_h2;
+		/* Some sections have no illustration of their own — every image in them is one card's
+		   art ("Advantages of the Barcode Inventory System", "Streamline Inventory Management").
+		   Taking the first as the section photo left that card the only one without art. The
+		   test is an exact count: one image per card and nothing spare means there is no section
+		   photo. A section with a photo *and* a set of card icons has one image more than it has
+		   cards, and keeps its photo. */
+		$owned_imgs    = count( dq_landing_owned_nodes( $xp->query( './/img', $section ), $section ) );
+		$owned_cards   = count( dq_landing_owned_nodes( $xp->query( './/h3|.//h4', $section ), $section ) );
+		$cards_own_art = ( $owned_cards >= 2 && $owned_imgs === $owned_cards );
 		$caption_list   = array(); // icon + caption rows on the old site are bare <p>s after a "...:" lead-in; rebuild them as a list
 		foreach ( $xp->query( './/h2|.//h3|.//h4|.//p|.//ul|.//ol|.//img', $section ) as $node ) {
 			$name = strtolower( $node->nodeName );
@@ -215,22 +225,46 @@ function dq_landing_parse( $slug, $html = '' ) {
 					continue;
 				}
 				$src = dq_landing_img_src( $node );
+				if ( ! $src ) {
+					continue;
+				}
+				/* A vector never stands in as the section photo, but it is very often the card
+				   icon — the promo pages ship all of theirs as SVG, which an outright reject
+				   dropped along with everything else. */
+				if ( preg_match( '/\.(svg|gif)(\?|$)/i', $src ) ) {
+					$pending_icon = $src;
+					continue;
+				}
 				$w   = (int) $node->getAttribute( 'width' );
 				$h   = (int) $node->getAttribute( 'height' );
 				$cls = strtolower( $node->getAttribute( 'class' ) . ' ' . $node->parentNode->getAttribute( 'class' ) );
-				/* One illustrative image per section; skip icons, badges, logos and tiny graphics. */
-				if ( ! $src || isset( $seen[ $src ] ) || $section_images >= 1
-					|| preg_match( '/\.(svg|gif)(\?|$)/i', $src )
-					|| preg_match( '/(logo|icon|badge|partners?|years|perfect|rate|check|arrow|star)/i', basename( $src ) . ' ' . $cls )
-					|| ( $w && $w < 200 ) || ( $h && $h < 200 ) ) {
+
+				/* Is this the card icon that sits above an H3, or the section's photo?
+				   The old pages ship the icons with no width/height attributes and names the
+				   pattern below cannot always tell from a photo ("top-finance.png" is 54x60),
+				   so anything not obviously large gets measured. */
+				$named_icon = (bool) preg_match( '/(logo|icon|badge|partners?|years|perfect|rate|check|arrow|star)/i', basename( $src ) . ' ' . $cls );
+				$small      = ( $w && $w < 200 ) || ( $h && $h < 200 );
+				if ( ! $named_icon && ! $small && ! $w && ! $h ) {
+					$dims  = dq_landing_image_size( $src );
+					$small = $dims && ( $dims[0] < 200 || $dims[1] < 200 );
+				}
+				if ( $named_icon || $small ) {
+					/* Every H3 card on these pages carries one of these. They used to be dropped
+					   outright, which is what the client spotted as "no logos/icons in the new
+					   build"; hold it for the heading that follows. */
+					$pending_icon = $src;
 					continue;
 				}
-				/* The old pages often ship the icons with no width/height attributes and a name
-				   the filter above cannot tell from a photo ("top-finance.png" is 54x60), so a
-				   54px icon became a section image and got stretched across the column. Measure
-				   it. A probe that fails leaves the image in — the size cap in the CSS covers it. */
-				$dims = dq_landing_image_size( $src );
-				if ( $dims && ( $dims[0] < 200 || $dims[1] < 200 ) ) {
+				if ( isset( $seen[ $src ] ) ) {
+					continue; // the old pages repeat a block for desktop/mobile
+				}
+				if ( $cards_own_art || $section_images >= 1 ) {
+					/* The section already has its photo. Some sections give every card its own
+					   full-size illustration rather than a small icon ("Streamline Inventory
+					   Management" on the SAP provider page), so hold this for the card instead
+					   of dropping it — one photo per section, but the cards keep their art. */
+					$pending_icon = $src;
 					continue;
 				}
 				$section_images++;
@@ -278,8 +312,13 @@ function dq_landing_parse( $slug, $html = '' ) {
 				$caption_list = array();
 			}
 			/* paragraphs keep their in-text links (item F4); headings stay plain text */
-			$body     = 'p' === $name ? dq_landing_inline( $node ) : '';
-			$blocks[] = '<' . $name . '>' . dq_landing_fix_copy( $body ? $body : esc_html( $t ) ) . '</' . $name . '>';
+			$body = 'p' === $name ? dq_landing_inline( $node ) : '';
+			$attr = '';
+			if ( ( 'h3' === $name || 'h4' === $name ) && '' !== $pending_icon ) {
+				$attr = ' data-icon="' . esc_url( $pending_icon ) . '"'; // the card icon that preceded it
+			}
+			$pending_icon = '';
+			$blocks[]     = '<' . $name . $attr . '>' . dq_landing_fix_copy( $body ? $body : esc_html( $t ) ) . '</' . $name . '>';
 		}
 		if ( $caption_list ) {
 			$blocks[] = '<ul>' . implode( '', $caption_list ) . '</ul>';

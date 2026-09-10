@@ -231,7 +231,7 @@ function dq_product_sections( $p ) {
 	}
 	$out = array();
 	foreach ( $list as $s ) {
-		$s = wp_parse_args( $s, array( 'type' => 'generic', 'title' => '', 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array(), 'heading' => true ) );
+		$s = wp_parse_args( $s, array( 'type' => 'generic', 'title' => '', 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array(), 'heading' => true, 'image' => '' ) );
 		if ( 'faq' === $s['type'] && empty( $p['faqs'] ) ) {
 			continue;
 		}

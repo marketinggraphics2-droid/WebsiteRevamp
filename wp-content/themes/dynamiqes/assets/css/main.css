@@ -3040,3 +3040,31 @@ h4.post-share-label{margin:0}
 .thankyou-next-card .arr{color:var(--orange-deep);font-weight:700;transition:transform .3s cubic-bezier(.2,.7,.2,1)}
 .thankyou-next-card:hover .arr{transform:translateX(5px)}
 @media(max-width:840px){.thankyou-next-grid{grid-template-columns:1fr}}
+
+/* ═══ Card icons restored ═══
+   The live product and landing pages carry a small branded PNG on every H3 card. They were
+   dropped when the pages were rebuilt; these place them back on the card and inside the
+   trust-signal badge, sized to the ~55px originals. */
+/* The originals are pale orange line art, so they sit on a plain surface with a hairline
+   rather than the brand tint the drawn SVG fallback uses — on the tint they wash out. */
+.feature-icon{
+  position:relative;display:grid;place-items:center;width:58px;height:58px;margin-bottom:6px;
+  border-radius:14px;background:var(--color-surface);border:1px solid rgba(var(--rgb-brand),.28);
+}
+.feature-icon .item-icon{width:36px;height:36px;object-fit:contain}
+.trust-badge:has(.item-icon){background:var(--color-surface);border-color:rgba(var(--rgb-brand),.28)}
+.trust-badge .item-icon{width:34px;height:34px;object-fit:contain}
+.lp-cards .feature-group .feature-icon{margin-bottom:2px}
+@media(max-width:520px){
+  .feature-icon{width:50px;height:50px;border-radius:12px}
+  .feature-icon .item-icon{width:30px;height:30px}
+}
+
+/* Careers: the live page's culture photo between the intro and the core values. */
+.career-culture-media{
+  margin:clamp(28px,3.6vw,44px) auto clamp(32px,4vw,52px);max-width:1000px;width:100%;
+  border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--bg-2);
+  aspect-ratio:16/7;
+}
+.career-culture-media img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:640px){.career-culture-media{aspect-ratio:16/10}}

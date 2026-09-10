@@ -44,7 +44,7 @@ $render_items = function ( $items ) {
 		echo '<ul class="trust-grid">';
 		foreach ( $items as $g ) {
 			echo '<li class="trust-signal"' . dq_reveal_attr() . '>';
-			echo '<span class="trust-badge">' . dq_trust_icon( $g['title'] ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<span class="trust-badge">' . dq_product_item_icon( $g ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
 			echo '<h3>' . esc_html( $g['title'] ) . '</h3>';
 			echo '</li>';
 		}
@@ -54,6 +54,9 @@ $render_items = function ( $items ) {
 	echo '<div class="feature-grid">';
 	foreach ( $items as $g ) {
 		echo '<article class="feature-group"' . dq_reveal_attr() . '>';
+		if ( ! empty( $g['icon'] ) ) { /* the live page's own card icon */
+			echo '<span class="feature-icon">' . dq_product_item_icon( $g ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
+		}
 		echo '<h3>' . esc_html( $g['title'] ) . '</h3>';
 		if ( ! empty( $g['text'] ) ) {
 			echo '<p>' . dq_inline_html( $g['text'] ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput
@@ -97,7 +100,15 @@ $render_items = function ( $items ) {
 	</section>
 	<?php endif; ?>
 
-	<?php $overview_done = false; foreach ( $sections as $i => $s ) : ?>
+	<?php $overview_done = false; foreach ( $sections as $i => $s ) :
+		/* Each section's own illustration (the live page has one per section); a product with
+		   no per-section art falls back to the single feature mockup, on the first section. */
+		$sec_img = ! empty( $s['image'] ) ? dq_asset( $s['image'] ) : '';
+		if ( '' === $sec_img && 'generic' === $s['type'] && $showcase ) {
+			$sec_img  = $showcase;
+			$showcase = '';
+		}
+		?>
 		<?php if ( 'overview' === $s['type'] ) : ?>
 	<section class="overview"<?php echo $overview_done ? '' : ' id="overview"'; ?>>
 		<div class="wrap overview-grid">
@@ -117,7 +128,7 @@ $render_items = function ( $items ) {
 		<?php if ( ! empty( $s['items'] ) ) : ?><div class="wrap overview-items"><?php $render_items( $s['items'] ); ?></div><?php endif; ?>
 	</section>
 		<?php $overview_done = true; elseif ( 'generic' === $s['type'] ) : ?>
-	<section class="features portal-features<?php echo $showcase ? ' has-showcase' : ''; ?>" id="<?php echo esc_attr( 'section-' . sanitize_title( $s['title'] ) ); ?>">
+	<section class="features portal-features<?php echo $sec_img ? ' has-showcase' : ''; ?>" id="<?php echo esc_attr( 'section-' . sanitize_title( $s['title'] ) ); ?>">
 		<div class="wrap portal-features-layout">
 			<div class="portal-features-copy">
 				<?php /* one shared measure for the eyebrow, H2 and intro: the copy under a heading
@@ -133,9 +144,9 @@ $render_items = function ( $items ) {
 				<?php if ( ! empty( $s['items'] ) ) { $render_items( $s['items'] ); } ?>
 				<?php foreach ( $s['closing'] as $para ) : ?><p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 			</div>
-			<?php if ( $showcase ) : ?>
-			<div class="showcase-frame"<?php dq_reveal(); ?>><img src="<?php echo esc_url( $showcase ); ?>" alt="<?php echo esc_attr( $p['name'] . ' feature interface' ); ?>" loading="lazy"></div>
-			<?php $showcase = ''; endif; ?>
+			<?php if ( $sec_img ) : ?>
+			<div class="showcase-frame"<?php dq_reveal(); ?>><img src="<?php echo esc_url( $sec_img ); ?>" alt="<?php echo esc_attr( $s['title'] ? $s['title'] : $p['name'] . ' feature interface' ); ?>" loading="lazy"></div>
+			<?php endif; ?>
 		</div>
 	</section>
 		<?php elseif ( 'cta' === $s['type'] ) : ?>

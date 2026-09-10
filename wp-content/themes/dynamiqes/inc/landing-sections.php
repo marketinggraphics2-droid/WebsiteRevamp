@@ -122,6 +122,8 @@ function dq_lp_parse_groups( $html ) {
 			}
 			$pending = array(
 				'title' => trim( wp_strip_all_tags( dq_lp_inner_html( $node ) ) ),
+				/* the importer parks the live card icon on the heading as data-icon */
+				'icon'  => $node instanceof DOMElement ? trim( $node->getAttribute( 'data-icon' ) ) : '',
 				'text'  => array(),
 				'list'  => '',
 			);
@@ -217,11 +219,12 @@ function dq_lp_is_logo_band( array $g ) {
 	return (bool) preg_match( '/\b(trusted by|top businesses|companies across|our clients|client logos)\b/i', $g['title'] );
 }
 
-/** Client-logo strip, reusing the home page's marquee. */
+/** Client-logo strip, using the campaign pages' own logo set in the home marquee's markup. */
 function dq_lp_logos() {
-	$out = '<div class="trust-marq"><div class="trust-track">';
+	$logos = function_exists( 'dq_sem_logos' ) ? dq_sem_logos() : dq_trust_logos();
+	$out   = '<div class="trust-marq"><div class="trust-track">';
 	foreach ( array( false, true ) as $dup ) {
-		foreach ( dq_trust_logos() as $l ) {
+		foreach ( $logos as $l ) {
 			$out .= '<img src="' . esc_url( dq_asset( $l[1] ) ) . '" alt="' . ( $dup ? '' : esc_attr( $l[0] ) ) . '"'
 				. ( $dup ? ' aria-hidden="true"' : '' ) . ' loading="lazy" height="40">';
 		}
@@ -280,6 +283,9 @@ function dq_lp_cards( array $items ) {
 	$out = '<div class="feature-grid">';
 	foreach ( $items as $i => $it ) {
 		$out .= '<article class="feature-group"' . dq_reveal_attr( '', min( $i, 5 ) * 60 ) . '>';
+		if ( ! empty( $it['icon'] ) ) {
+			$out .= '<span class="feature-icon">' . dq_product_item_icon( $it ) . '</span>';
+		}
 		$out .= '<h3>' . esc_html( $it['title'] ) . '</h3>';
 		foreach ( $it['text'] as $p ) {
 			$out .= '<p>' . dq_inline_html( $p ) . '</p>';
@@ -297,7 +303,7 @@ function dq_lp_signals( array $items ) {
 	$out = '<ul class="trust-grid">';
 	foreach ( $items as $i => $it ) {
 		$out .= '<li class="trust-signal"' . dq_reveal_attr( '', min( $i, 5 ) * 60 ) . '>';
-		$out .= '<span class="trust-badge">' . dq_trust_icon( $it['title'] ) . '</span>';
+		$out .= '<span class="trust-badge">' . dq_product_item_icon( $it ) . '</span>';
 		$out .= '<h3>' . esc_html( $it['title'] ) . '</h3>';
 		$out .= '</li>';
 	}

@@ -146,6 +146,23 @@ function dq_page_hero_photo( $file, $post_id = null ) {
 	return dq_asset( 'assets/pages/' . ltrim( $file, '/' ) );
 }
 
+/**
+ * URL for a file under assets/pages/, or '' when it is not shipped.
+ *
+ * Used for the per-page art mirrored from the live site (the Careers core-value icons and
+ * section photos). Returning '' lets a template fall back rather than emit a broken image.
+ *
+ * @param string $file Path relative to assets/pages/ (e.g. "career/driven.png").
+ * @return string
+ */
+function dq_page_asset( $file ) {
+	$file = ltrim( (string) $file, '/' );
+	if ( '' === $file || ! file_exists( DQ_DIR . '/assets/pages/' . $file ) ) {
+		return '';
+	}
+	return dq_asset( 'assets/pages/' . $file );
+}
+
 /** Echo scroll-reveal attributes. */
 function dq_reveal( $variant = '', $delay = null ) {
 	echo ' data-reveal' . ( $variant ? '="' . esc_attr( $variant ) . '"' : '' );
@@ -498,6 +515,36 @@ function dq_trust_logos() {
 	) );
 }
 
+/**
+ * Client logos for the SEO/SEM landing bands ("Trusted by Companies Across Industries",
+ * "See Why Top Businesses Choose SAP B1 and DynamIQ").
+ *
+ * The live campaign pages use their own, wider set than the home marquee — mirrored into
+ * assets/trust/sem/. Falls back to the home set if the files are not shipped.
+ */
+function dq_sem_logos() {
+	$files = array(
+		array( 'Bridgestone', 'bridgestone.png' ),
+		array( 'MacroAsia Corporation', 'macroasia.png' ),
+		array( 'Metalink', 'metalink.png' ),
+		array( 'Presline Steel Products Inc.', 'presline.png' ),
+		array( 'Metal Alliance', 'metalalliance.png' ),
+		array( 'Spartans', 'spartans.png' ),
+		array( 'Pampanga', 'pampanga.png' ),
+		array( 'Modern Brands', 'modernbrands.png' ),
+		array( 'Intelligent Skin Care', 'intelligent.png' ),
+		array( 'Florabel', 'florabel.png' ),
+		array( "Cecile's Pharmacy", 'ceciles.png' ),
+	);
+	$out = array();
+	foreach ( $files as $f ) {
+		if ( file_exists( DQ_DIR . '/assets/trust/sem/' . $f[1] ) ) {
+			$out[] = array( $f[0], 'assets/trust/sem/' . $f[1] );
+		}
+	}
+	return apply_filters( 'dq_sem_logos', $out ? $out : dq_trust_logos() );
+}
+
 /** SAP Business One feature bento (home). */
 function dq_sap_features() {
 	return apply_filters( 'dq_sap_features', array(
@@ -741,4 +788,23 @@ function dq_trust_icon( $label ) {
 		$key = 'shield';
 	}
 	return '<svg class="trust-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="' . esc_attr( $paths[ $key ] ) . '"/></svg>';
+}
+
+/**
+ * Card icon for a product / landing item.
+ *
+ * The live pages ship a small branded PNG per card (assets/products/icons/…, attached to each
+ * item in inc/product-content.php). Those were dropped when the pages were first rebuilt, which
+ * is what the client spotted. Where an item carries one, use it; where it does not, fall back to
+ * the drawn icon from dq_trust_icon() so a card is never left blank.
+ *
+ * @param array $item Item with optional 'icon' and a 'title'.
+ * @return string Inline SVG or an <img>.
+ */
+function dq_product_item_icon( $item ) {
+	$icon = isset( $item['icon'] ) ? trim( (string) $item['icon'] ) : '';
+	if ( '' !== $icon ) {
+		return '<img class="item-icon" src="' . esc_url( dq_asset( $icon ) ) . '" alt="" width="55" height="55" loading="lazy" decoding="async">';
+	}
+	return dq_trust_icon( isset( $item['title'] ) ? $item['title'] : '' );
 }
