@@ -152,6 +152,20 @@ fits rather than merely being given a taller box. Narrow layouts keep their natu
       ghost button so two solid orange buttons no longer stack on mobile; full-width submit.
       No horizontal scroll at 1440, 1366, 1280, 1024, 820, 768, 390 or 360.
 
+- [x] **I8** Follow-ups the client spotted after the first pass:
+      - A stale `.product-detail-page .features.has-showcase .feature-grid` rule capped those
+        sections at two columns. It made sense when the cards sat inside the narrow copy
+        column, but they now span the section, so four cards ran as two rows in half the
+        width. Removed (it outranked the newer four-column rule on specificity).
+      - `.lp-checklist` was a fixed two columns at ~618px each, putting six short phrases on
+        three rows; it is `auto-fit` now.
+      - The product hero image carried a `box-shadow`, which paints a rectangular panel behind
+        a transparent cut-out — the "border" around the SAP monitor. It is a `drop-shadow`
+        filter instead, which follows the silhouette on a cut-out and is indistinguishable
+        from a box-shadow on the opaque screenshots. The corner radius stays for those.
+      A grid audit across 1440/820/768/390 confirmed every card, signal, checklist and form
+      grid now steps 4 -> 2 -> 1 with no other stale caps.
+
 Where a section still exceeds one screen it is because the copy genuinely does not fit — the
 worst cases are the 7-9 card sections at ~1.3 screens on a 900px-tall window. The rule is
 `min-height`, so those grow rather than clip, which is what the design guide requires.
