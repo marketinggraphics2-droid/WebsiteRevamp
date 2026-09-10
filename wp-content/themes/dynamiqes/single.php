@@ -97,10 +97,12 @@ if ( $related->post_count < 3 ) {
 					</details>
 					<div class="post-share">
 						<?php if ( $is_news ) : /* live news item: H4 "Share Article:" */ ?><h4 class="post-share-label"><?php esc_html_e( 'Share Article:', 'dynamiqes' ); ?></h4><?php else : ?><p class="post-share-label"><?php esc_html_e( 'Share Article:', 'dynamiqes' ); ?></p><?php /* live blog post: <p class="share-article">Share Article:</p> */ ?><?php endif; ?>
+						<div class="post-share-links">
 						<?php foreach ( $share as $s ) : ?>
 							<a href="<?php echo esc_url( $s[1] ); ?>"<?php echo 0 === strpos( $s[1], 'mailto:' ) ? '' : ' target="_blank" rel="noopener"'; ?> aria-label="<?php echo esc_attr( sprintf( /* translators: %s: network */ __( 'Share on %s', 'dynamiqes' ), $s[0] ) ); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="<?php echo esc_attr( $s[2] ); ?>"/></svg></a>
 						<?php endforeach; ?>
 						<button type="button" class="post-copy" data-url="<?php echo esc_url( $permalink ); ?>" aria-label="<?php esc_attr_e( 'Copy link', 'dynamiqes' ); ?>"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10.6 13.4a1 1 0 0 1 0-1.4l2.8-2.8a1 1 0 0 1 1.4 1.4L12 13.4a1 1 0 0 1-1.4 0zm-2.1 4.9a3 3 0 0 1 0-4.2l2.1-2.1-1.4-1.4L7.1 12.7a5 5 0 1 0 7.1 7.1l2.1-2.1-1.4-1.4-2.1 2.1a3 3 0 0 1-4.3-.1zm7-16.4-2.1 2.1 1.4 1.4 2.1-2.1a3 3 0 1 1 4.2 4.2l-2.1 2.1 1.4 1.4 2.1-2.1a5 5 0 0 0-7-7z"/></svg><span class="post-copy-done" aria-live="polite"></span></button>
+						</div>
 					</div>
 				</aside>
 			</div>

@@ -68,6 +68,9 @@ add_filter( 'wp_resource_hints', function ( $urls, $relation ) {
 add_filter( 'body_class', function ( $classes ) {
 	if ( is_front_page() ) {
 		$classes[] = 'home-page';
+	} elseif ( is_404() ) {
+		$classes[] = 'sub-page';
+		$classes[] = 'error404-page'; // fully centred composition (review items G7/G8)
 	} elseif ( is_post_type_archive( 'dq_product' ) ) {
 		$classes[] = 'sub-page';
 		$classes[] = 'products-page';
@@ -143,4 +146,13 @@ add_action( 'pre_get_posts', function ( $q ) {
 	if ( $ids ) {
 		$q->set( 'category__not_in', array_merge( (array) $q->get( 'category__not_in' ), $ids ) );
 	}
+} );
+
+/** Search results: 9 per page so the 3-column grid always fills its rows and never
+ *  leaves a row holding a single card (SEO Hacker review, item A6). */
+add_action( 'pre_get_posts', function ( $q ) {
+	if ( is_admin() || ! $q->is_main_query() || ! $q->is_search() ) {
+		return;
+	}
+	$q->set( 'posts_per_page', 9 );
 } );

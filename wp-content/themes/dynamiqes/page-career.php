@@ -58,7 +58,8 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 					<?php foreach ( $jobs as $i => $j ) : ?>
 					<article class="career-card" data-location="<?php echo esc_attr( sanitize_title( $j['location'] ) ); ?>"<?php dq_reveal( '', min( $i, 7 ) * 70 ); ?>>
 						<h3><?php echo esc_html( $j['title'] ); ?></h3>
-						<?php if ( $j['location'] ) : ?><p class="career-loc"><?php echo $pin; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php echo esc_html( $j['location'] ); ?><?php if ( $j['type'] ) : ?> <span class="career-type">· <?php echo esc_html( $j['type'] ); ?></span><?php endif; ?></p><?php endif; ?>
+						<?php /* always rendered — an opening with no location keeps its row so the cards in a line stay aligned (review item A2) */ ?>
+						<p class="career-loc"><?php if ( $j['location'] ) : ?><?php echo $pin; // phpcs:ignore WordPress.Security.EscapeOutput ?><?php echo esc_html( $j['location'] ); ?><?php if ( $j['type'] ) : ?> <span class="career-type">· <?php echo esc_html( $j['type'] ); ?></span><?php endif; ?><?php endif; ?></p>
 						<h4><?php esc_html_e( 'Job Description', 'dynamiqes' ); ?></h4>
 						<p><?php echo esc_html( wp_trim_words( $j['summary'], 28, '…' ) ); ?></p>
 						<?php if ( $j['url'] ) : ?>

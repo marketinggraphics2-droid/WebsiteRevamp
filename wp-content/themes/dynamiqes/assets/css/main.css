@@ -2661,3 +2661,73 @@ h4.post-share-label{margin:0}
 
 /* /products/ SAP feature: the live page's caption line under the media */
 .products-page .sap-caption{margin-top:12px;text-align:center;font-size:var(--fs-sm);font-weight:600;color:var(--soft)}
+
+/* ═══════════════════════════════════════════════════════════════
+   SEO Hacker review revisions — "For Revision (IQ Team)", Sept 2026
+   Each rule is tagged with the item id in REVISIONS.md.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* A1 · listing cards (Blogs, News & Events, search results, related posts):
+   the title, excerpt and "Read more" must line up across a row whatever the copy
+   length. The media already shares an aspect-ratio and .tlink is bottom-pinned, so
+   reserving a fixed line count for the title and excerpt is what locks the rows. */
+.post-card-body{gap:10px}
+/* the clamp lives on the anchor, not the title box: the title's link carries a
+   padding/negative-margin tap target which would otherwise be counted inside the
+   clamped box and spill a third, half-cut line. */
+.post-card-body .card-title{min-height:calc(2em * var(--lh-heading));overflow:hidden}
+.post-card-body .card-title a{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+}
+.post-card-body>p{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
+  min-height:calc(3em * var(--lh-body));margin-bottom:4px;
+}
+
+/* A2 · job listing cards (/career/): job title, location, description and Read more
+   align the same way. The location line and the description keep a reserved height so
+   an opening with no location does not pull the rest of its card up. */
+.career-card h3{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;
+  min-height:calc(2em * var(--lh-heading));
+}
+.career-card .career-loc{min-height:calc(1em * var(--lh-body))}
+.career-card h4+p{
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden;
+  min-height:calc(3em * var(--lh-body));
+}
+
+/* A3 · Share Article: the icons stay on one row. The label keeps its own line in the
+   narrow article rail (it is an H4 on news items, part of the live heading outline),
+   the tiles shrink rather than wrap. */
+.post-share-links{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;min-width:0}
+.post-share-links>a,.post-share-links>.post-copy{flex:0 1 42px;min-width:34px}
+@media(min-width:1024px){.post-share{flex-wrap:nowrap}}
+
+/* A4 · in-page CTA panels (product pages, Our Services): the 20ch heading measure left
+   a very wide empty margin either side of a long headline. Wider measure + tighter
+   inline padding. The shared closing band keeps the homepage's narrow measure. */
+.product-cta .cta-panel,.svc-cta-band .cta-panel{padding-inline:clamp(24px,3.2vw,48px)}
+.product-cta .cta-panel h2,.svc-cta-band .cta-panel h2{max-width:44ch}
+.product-cta .cta-panel p,.svc-cta-band .cta-panel p{max-width:78ch}
+
+/* A5 · filled orange buttons carried white label text — 2.2:1 against #F88F10, which
+   is what the review flagged as hard to read on the "Ready to get started?" panels.
+   Ink on orange is 8.2:1 and keeps the brand fill. */
+:root{--on-orange:#241A0D}
+.dynamiq-cta a,.btn-orange,.btn-primary{color:var(--on-orange)}
+.dynamiq-cta a:hover,.btn-orange:hover,.btn-primary:hover{color:var(--on-orange)}
+.cta-panel .dynamiq-cta a,.cta-panel .btn-orange{color:var(--on-orange)}
+
+/* G7/G8 · 404: the whole page reads centred (the hero was left-aligned against a centred
+   body), and the two links sit in a spaced row instead of an inline run with no gap. */
+.error404-page .page-hero{text-align:center}
+.error404-page .page-hero h1,.error404-page .page-hero p{max-width:none;margin-inline:auto}
+.error404-page .page-hero h1{max-width:20ch}
+.error404-page .page-hero p{max-width:52ch}
+.error404-page .not-found{padding-block:clamp(20px,3vw,44px) clamp(48px,7vw,96px)}
+.not-found-actions{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:16px 28px;margin-top:28px}
+@media(max-width:520px){
+  .not-found-actions{flex-direction:column;gap:14px}
+  .not-found-actions .btn{width:100%}
+}

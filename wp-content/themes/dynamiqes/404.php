@@ -20,10 +20,11 @@ get_header();
 			<div class="not-found"<?php dq_reveal(); ?>>
 				<p><?php esc_html_e( 'Try a search, or head back to the home page or our products.', 'dynamiqes' ); ?></p>
 				<?php get_search_form(); ?>
-				<p style="margin-top:24px">
+				<?php /* the two links sit in a spaced, centred row rather than an inline run (review items G7/G8) */ ?>
+				<div class="not-found-actions">
 					<a class="btn btn-orange" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php esc_html_e( 'Back to Home', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></a>
 					<a class="tlink" href="<?php echo esc_url( dq_products_url() ); ?>"><?php esc_html_e( 'View Products', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></a>
-				</p>
+				</div>
 			</div>
 		</div>
 	</section>
