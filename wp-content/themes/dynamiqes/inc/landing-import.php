@@ -109,9 +109,11 @@ function dq_landing_parse( $slug, $html = '' ) {
 						$intro .= '<p>' . esc_html( $t ) . '</p>';
 					}
 				} elseif ( ! $og_image ) {
-					/* hero image: first real image in the hero section */
+					/* Hero image: the first real *photo* in the hero section. "First image" alone
+					   picked up a 20x20 check.png on the two SEM provider pages and used it as the
+					   page's hero, so the same icon test the section images use applies here. */
 					$src = dq_landing_img_src( $node );
-					if ( $src ) {
+					if ( $src && ! dq_landing_is_icon( $src, $node ) ) {
 						$og_image = $src;
 					}
 				}
@@ -517,6 +519,42 @@ function dq_landing_fix_copy( $text ) {
 	   dash goes with the tier rather than leaving "SAP Business One - Premier Partner". */
 	$text = preg_replace( '/SAP Business One\s*[-\x{2010}-\x{2015}]\s*Gold Partner/u', 'SAP Business One Premier Partner', $text );
 	return str_replace( 'Gold Partner', 'Premier Partner', $text );
+}
+
+/**
+ * Is this image an icon rather than a photo?
+ *
+ * Vectors and anything the name marks as chrome are icons outright; everything else without
+ * usable width/height attributes gets measured. Used for the hero pick and the section images —
+ * a 20x20 check.png was being used as a page hero.
+ *
+ * @param string       $src  Image URL.
+ * @param DOMNode|null $node The <img>, when available, for its width/height attributes.
+ * @return bool
+ */
+function dq_landing_is_icon( $src, $node = null ) {
+	if ( preg_match( '/\.(svg|gif)(\?|$)/i', $src ) ) {
+		return true;
+	}
+	$cls = '';
+	$w   = 0;
+	$h   = 0;
+	if ( $node instanceof DOMElement ) {
+		$w   = (int) $node->getAttribute( 'width' );
+		$h   = (int) $node->getAttribute( 'height' );
+		$cls = strtolower( $node->getAttribute( 'class' ) . ' ' . ( $node->parentNode instanceof DOMElement ? $node->parentNode->getAttribute( 'class' ) : '' ) );
+	}
+	if ( preg_match( '/(logo|icon|badge|partners?|years|perfect|rate|check|arrow|star)/i', basename( $src ) . ' ' . $cls ) ) {
+		return true;
+	}
+	if ( ( $w && $w < 200 ) || ( $h && $h < 200 ) ) {
+		return true;
+	}
+	if ( ! $w && ! $h ) {
+		$dims = dq_landing_image_size( $src );
+		return (bool) ( $dims && ( $dims[0] < 200 || $dims[1] < 200 ) );
+	}
+	return false;
 }
 
 /**

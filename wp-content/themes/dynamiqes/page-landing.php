@@ -42,6 +42,11 @@ if ( function_exists( 'dq_localize_theme_asset_urls' ) ) {
 	$intro    = dq_localize_theme_asset_urls( (string) $intro );
 	$hero_img = dq_localize_theme_asset_urls( (string) $hero_img ); // the hero comes from meta, not the body
 }
+/* Content imported before the hero pick learned to skip icons can still name one — a 20x20
+   check.png on the two SEM provider pages. Better no hero image than a 20px one in the frame. */
+if ( $hero_img && function_exists( 'dq_is_icon_sized' ) && dq_is_icon_sized( $hero_img ) ) {
+	$hero_img = '';
+}
 
 /* Designed sections. Un-imported markup (typed straight into the editor) has no H2 rhythm to
    group on, so it falls back to the plain content column. */

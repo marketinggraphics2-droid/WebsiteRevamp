@@ -808,3 +808,36 @@ function dq_product_item_icon( $item ) {
 	}
 	return dq_trust_icon( isset( $item['title'] ) ? $item['title'] : '' );
 }
+
+/**
+ * Is this image URL an icon being used where a photo belongs?
+ *
+ * The imported hero image is whatever the old page put first in its hero section, which on the
+ * two SEM provider pages was a 20x20 check.png. The importer now skips icons when choosing one,
+ * but content imported before that fix still carries the icon, so the templates check too
+ * rather than rendering a 20px graphic in a hero-sized frame.
+ *
+ * Only files this theme ships can be measured; anything remote is left alone.
+ *
+ * @param string $url Image URL.
+ * @param int    $min Minimum edge, in pixels, for a photo.
+ * @return bool
+ */
+function dq_is_icon_sized( $url, $min = 200 ) {
+	$url = trim( (string) $url );
+	if ( '' === $url ) {
+		return false;
+	}
+	$marker = '/wp-content/themes/' . basename( DQ_DIR ) . '/';
+	$path   = parse_url( $url, PHP_URL_PATH );
+	if ( ! $path || false === strpos( $path, $marker ) ) {
+		return false; // not one of ours; no way to measure it cheaply
+	}
+	$rel  = rawurldecode( substr( $path, strpos( $path, $marker ) + strlen( $marker ) ) );
+	$file = DQ_DIR . '/' . $rel;
+	if ( false !== strpos( $rel, '..' ) || ! is_file( $file ) ) {
+		return false;
+	}
+	$size = @getimagesize( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+	return (bool) ( $size && ( $size[0] < $min || $size[1] < $min ) );
+}
