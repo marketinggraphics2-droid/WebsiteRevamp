@@ -46,7 +46,11 @@ Legend: `[ ]` open · `[x]` done · `[?]` blocked on input from IQ/client
 
 - [?] **E1** Needs the *approved product page additional copies* applied. Rows 12-18:
       IQ Barcoding, IQ Link, IQ Real Estate Management, IQ Ai for SAP B1, IQ Desk,
-      IQ Ecom Platform, IQ Portal. **Blocked: the approved copy document is not in the repo.**
+      IQ Ecom Platform, IQ Portal.
+      **Blocked.** The copy is in neither the repo nor the live site: the h1-h3 outline of
+      each of the seven local pages diffs clean against `dynamiqes.com/products/<slug>/`, so
+      the staging pages already carry everything the live pages do. This needs the approved
+      copy document from the IQ team before anything can be applied.
 
 ## F. Landing pages — SEO/SEM (the big one)
 
