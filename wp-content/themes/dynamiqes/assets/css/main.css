@@ -3453,3 +3453,36 @@ h4.post-share-label{margin:0}
   .career-page .career-values .feature-group,
   .career-page .career-card{padding:14px 15px}
 }
+
+/* ═══ Card art that is a full-size photo, not an icon ═══
+   The live pages give these their own row — heading and copy beside a large photograph —
+   so a 638x471 image is never squeezed into an icon badge. Sides alternate down the stack. */
+.lp-photo-rows{display:grid;gap:clamp(24px,3.5vw,56px);margin-top:clamp(24px,3.5vw,48px)}
+.lp-photo-row{
+  display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:clamp(24px,3.5vw,64px);align-items:center;
+}
+.lp-photo-row.is-flipped .lp-photo-media{order:-1}
+.lp-photo-copy h3{
+  font-size:clamp(1.375rem,1.1rem + 1vw,2rem);line-height:var(--lh-tight);
+  letter-spacing:-.025em;margin-bottom:14px;
+}
+.lp-photo-copy p{color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body)}
+.lp-photo-copy p+p{margin-top:.85em}
+.lp-photo-copy a{color:var(--orange-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.lp-photo-media{
+  margin:0;width:100%;border-radius:18px;overflow:hidden;border:1px solid var(--line);
+  background:var(--bg-2);aspect-ratio:4/3;max-height:420px;
+}
+.lp-photo-media img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:900px){
+  .lp-photo-row{grid-template-columns:1fr;gap:20px}
+  .lp-photo-row.is-flipped .lp-photo-media{order:0}
+  .lp-photo-media{aspect-ratio:16/10;max-height:min(320px,34dvh)}
+}
+@media(min-width:901px){
+  /* one row per screen reads better than three crammed together */
+  .lp-photos{min-height:calc(100dvh - var(--nav-h,88px));display:grid;align-content:center}
+  .lp-photo-media{max-height:min(46dvh,420px)}
+  .lp-photo-rows{gap:clamp(20px,3dvh,44px)}
+}

@@ -122,8 +122,10 @@ function dq_lp_parse_groups( $html ) {
 			}
 			$pending = array(
 				'title' => trim( wp_strip_all_tags( dq_lp_inner_html( $node ) ) ),
-				/* the importer parks the live card icon on the heading as data-icon */
+				/* the importer parks the live card art on the heading: data-icon for a ~60px
+				   icon, data-photo for full-size art that deserves its own row */
 				'icon'  => $node instanceof DOMElement ? trim( $node->getAttribute( 'data-icon' ) ) : '',
+				'photo' => $node instanceof DOMElement ? trim( $node->getAttribute( 'data-photo' ) ) : '',
 				'text'  => array(),
 				'list'  => '',
 			);
@@ -232,6 +234,11 @@ function dq_lp_logos() {
 	return $out . '</div></div>';
 }
 
+/** Does this heading name a FAQ section? */
+function dq_lp_is_faq_title( $title ) {
+	return (bool) preg_match( '/frequently asked question|(^|\s)faq(s)?(\s|$|\?|\))/i', (string) $title );
+}
+
 /** Which section variant a group renders as. */
 function dq_lp_variant( array $g ) {
 	if ( '' !== $g['cta'] ) {
@@ -241,6 +248,19 @@ function dq_lp_variant( array $g ) {
 		return 'faq';
 	}
 	if ( $g['items'] ) {
+		/* A "Frequently Asked Questions" heading always means an accordion, whatever the old
+		   page's markup was: four of the landing pages spell their FAQ out as headings and
+		   paragraphs, which would otherwise render as a grid of cards. */
+		if ( dq_lp_is_faq_title( $g['title'] ) ) {
+			return 'faq-items';
+		}
+		/* Items whose art is a full-size photo get a row each — heading, copy and photo —
+		   which is how the live page lays them out. */
+		foreach ( $g['items'] as $it ) {
+			if ( ! empty( $it['photo'] ) ) {
+				return 'photo-rows';
+			}
+		}
 		foreach ( $g['items'] as $it ) {
 			if ( $it['text'] || '' !== $it['list'] ) {
 				return 'cards';
@@ -308,6 +328,48 @@ function dq_lp_signals( array $items ) {
 		$out .= '</li>';
 	}
 	return $out . '</ul>';
+}
+
+/**
+ * H3 items whose art is a full-size photo: one row each, copy beside the photo, sides
+ * alternating. Squeezing a 638x471 photograph into a 56px icon badge is what this replaces.
+ */
+function dq_lp_photo_rows( array $items ) {
+	$out = '<div class="lp-photo-rows">';
+	foreach ( $items as $i => $it ) {
+		$flip = ( $i % 2 ) ? ' is-flipped' : '';
+		$out .= '<div class="lp-photo-row' . $flip . '"' . dq_reveal_attr() . '>';
+		$out .= '<div class="lp-photo-copy"><h3>' . esc_html( $it['title'] ) . '</h3>';
+		foreach ( $it['text'] as $para ) {
+			$out .= '<p>' . dq_inline_html( $para ) . '</p>';
+		}
+		if ( '' !== $it['list'] ) {
+			$out .= '<ul class="lp-checklist">' . wp_kses_post( $it['list'] ) . '</ul>';
+		}
+		$out .= '</div>';
+		$out .= '<figure class="lp-photo-media"><img src="' . esc_url( $it['photo'] ) . '" alt="' . esc_attr( $it['title'] ) . '" loading="lazy" decoding="async"></figure>';
+		$out .= '</div>';
+	}
+	return $out . '</div>';
+}
+
+/**
+ * H3 items as an accordion, for the FAQ sections whose source markup was plain headings and
+ * paragraphs rather than an accordion widget. Same <details> treatment as the product pages.
+ */
+function dq_lp_faq_items( array $items ) {
+	$out = '<div class="faq-list"' . dq_reveal_attr() . '>';
+	foreach ( $items as $it ) {
+		$out .= '<details><summary><h3>' . esc_html( $it['title'] ) . '</h3></summary><div class="faq-answer">';
+		foreach ( $it['text'] as $para ) {
+			$out .= '<p>' . dq_inline_html( $para ) . '</p>';
+		}
+		if ( '' !== $it['list'] ) {
+			$out .= '<ul>' . wp_kses_post( $it['list'] ) . '</ul>';
+		}
+		$out .= '</div></details>';
+	}
+	return $out . '</div>';
 }
 
 /** Bullet lists as checklists. */
@@ -442,6 +504,19 @@ function dq_landing_sections( $html, $eyebrow = '' ) {
 
 		$media = '' !== $g['media'] ? '<figure class="lp-inline-media"' . dq_reveal_attr( 'scale' ) . '>' . wp_kses_post( $g['media'] ) . '</figure>' : '';
 
+		if ( 'faq-items' === $variant ) {
+			$out .= '<section class="lp-section lp-faq' . $alt . '"><div class="wrap faq-grid">'
+				. '<div class="faq-head">' . dq_lp_head( $g, $eyebrow ) . '</div>'
+				. dq_lp_faq_items( $g['items'] )
+				. '</div></section>';
+			continue;
+		}
+		if ( 'photo-rows' === $variant ) {
+			$out .= '<section class="lp-section lp-photos' . $alt . '"><div class="wrap">'
+				. dq_lp_head( $g, $eyebrow ) . $media . dq_lp_photo_rows( $g['items'] ) . $extra
+				. '</div></section>';
+			continue;
+		}
 		if ( 'cards' === $variant ) {
 			$out .= '<section class="lp-section lp-cards' . $alt . '"><div class="wrap">'
 				. dq_lp_head( $g, $eyebrow ) . $media . dq_lp_cards( $g['items'] ) . dq_lp_lists( $g['lists'] ) . $extra

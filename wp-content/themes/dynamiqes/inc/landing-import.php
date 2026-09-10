@@ -199,7 +199,8 @@ function dq_landing_parse( $slug, $html = '' ) {
 		}
 
 		$section_images = 0;
-		$pending_icon   = ''; // card icon waiting for its H3 (see the img branch below)
+		$pending_icon   = ''; // card art waiting for its H3 (see the img branch below)
+		$pending_attr   = 'data-icon'; // data-icon for a ~60px icon, data-photo for full-size art
 		$started        = ! $from_h2;
 		/* Some sections have no illustration of their own — every image in them is one card's
 		   art ("Advantages of the Barcode Inventory System", "Streamline Inventory Management").
@@ -288,9 +289,10 @@ function dq_landing_parse( $slug, $html = '' ) {
 					   build". Depending on the section, the icon either leads its heading (hold
 					   it for the next one) or follows it (write it onto the last one). */
 					if ( $icons_trail ) {
-						dq_landing_attach_icon( $blocks, $last_heading, $src );
+						dq_landing_attach_icon( $blocks, $last_heading, $src, 'data-icon' );
 					} else {
 						$pending_icon = $src;
+						$pending_attr = 'data-icon';
 					}
 					continue;
 				}
@@ -302,10 +304,15 @@ function dq_landing_parse( $slug, $html = '' ) {
 					   full-size illustration rather than a small icon ("Streamline Inventory
 					   Management" on the SAP provider page), so hold this for the card instead
 					   of dropping it — one photo per section, but the cards keep their art. */
+					/* Full-size art (>=200px) that belongs to a card, not a 60px icon: the live
+					   page gives each of these its own heading + copy + photo row, so it is
+					   tagged as a photo and the section builder lays it out that way instead of
+					   shrinking a 638x471 photograph into an icon badge. */
 					if ( $icons_trail ) {
-						dq_landing_attach_icon( $blocks, $last_heading, $src );
+						dq_landing_attach_icon( $blocks, $last_heading, $src, 'data-photo' );
 					} else {
 						$pending_icon = $src;
+						$pending_attr = 'data-photo';
 					}
 					continue;
 				}
@@ -357,9 +364,10 @@ function dq_landing_parse( $slug, $html = '' ) {
 			$body = 'p' === $name ? dq_landing_inline( $node ) : '';
 			$attr = '';
 			if ( ( 'h3' === $name || 'h4' === $name ) && '' !== $pending_icon ) {
-				$attr = ' data-icon="' . esc_url( $pending_icon ) . '"'; // the card icon that preceded it
+				$attr = ' ' . $pending_attr . '="' . esc_url( $pending_icon ) . '"'; // the card art that preceded it
 			}
 			$pending_icon = '';
+			$pending_attr = 'data-icon';
 			$blocks[]     = '<' . $name . $attr . '>' . dq_landing_fix_copy( $body ? $body : esc_html( $t ) ) . '</' . $name . '>';
 			if ( 'h3' === $name || 'h4' === $name ) {
 				$last_heading = count( $blocks ) - 1;
@@ -576,13 +584,15 @@ function dq_landing_fix_copy( $text ) {
  * @param string $src    Icon URL.
  * @return void
  */
-function dq_landing_attach_icon( array &$blocks, $index, $src ) {
-	if ( $index < 0 || ! isset( $blocks[ $index ] ) || false !== strpos( $blocks[ $index ], 'data-icon=' ) ) {
+function dq_landing_attach_icon( array &$blocks, $index, $src, $attr = 'data-icon' ) {
+	if ( $index < 0 || ! isset( $blocks[ $index ] )
+		|| false !== strpos( $blocks[ $index ], 'data-icon=' )
+		|| false !== strpos( $blocks[ $index ], 'data-photo=' ) ) {
 		return;
 	}
 	$blocks[ $index ] = preg_replace(
 		'/^<(h[34])>/',
-		'<$1 data-icon="' . esc_url( $src ) . '">',
+		'<$1 ' . $attr . '="' . esc_url( $src ) . '">',
 		$blocks[ $index ],
 		1
 	);
