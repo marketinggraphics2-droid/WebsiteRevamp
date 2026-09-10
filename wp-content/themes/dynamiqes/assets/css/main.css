@@ -1532,11 +1532,11 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   .home-page .loc-card{padding:16px 17px 18px;gap:9px}
 
   /* Product listing: one complete product row per viewport. */
-  .products-page{--products-nav-h:88px;--suite-head-h:clamp(166px,24dvh,180px)}
+  .products-page{--products-nav-h:var(--nav-h,88px);--suite-head-h:clamp(166px,24dvh,180px)}
   /* The top bar measures 44px here, not the 36px this assumed — that alone put
      the page 8px past the fold. The nav is subtracted too now that the hero no
      longer slides underneath it. */
-  .products-page .hero{min-height:calc(100dvh - 44px - var(--products-nav-h));align-items:center}
+  .products-page .hero{min-height:calc(100dvh - var(--hf-h,44px) - var(--products-nav-h));align-items:center}
   .products-page .hero::after{background:linear-gradient(180deg,transparent 0%,transparent 88%,rgba(255,255,255,.98) 100%),linear-gradient(90deg,rgba(15,14,15,.94) 0%,rgba(15,14,15,.76) 48%,rgba(15,14,15,.26) 78%,rgba(15,14,15,.42) 100%)}
   .products-page .hero .wrap{padding-block:clamp(76px,12dvh,112px) clamp(84px,13dvh,120px)}
   .products-page .hero-actions{opacity:1;transform:none;transition:none}
@@ -1581,8 +1581,8 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 
   /* Product detail: wide copy columns and height-aware media prevent wrapping
      from turning one thought into multiple screens. */
-  .product-detail-page .detail-hero{min-height:calc(100dvh - 107px)}
-  .product-detail-page main>section:not(.detail-hero){min-height:calc(100dvh - 63px);display:grid;align-items:center}
+  .product-detail-page .detail-hero{min-height:calc(100dvh - var(--hf-h,44px) - var(--nav-h,88px))}
+  .product-detail-page main>section:not(.detail-hero){min-height:calc(100dvh - var(--nav-h,88px));display:grid;align-items:center}
   .product-detail-page .breadcrumbs{padding-top:12px}
   .product-detail-page .hero-grid{grid-template-columns:1.08fr .92fr;gap:clamp(28px,4vw,58px);min-height:0;padding-block:18px 24px}
   .product-detail-page .hero-logo{margin-bottom:16px}
@@ -1609,7 +1609,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 }
 
 @media(min-width:981px) and (max-height:680px){
-  .product-detail-page .detail-hero{min-height:calc(100dvh - 107px)}
+  .product-detail-page .detail-hero{min-height:calc(100dvh - var(--hf-h,44px) - var(--nav-h,88px))}
   .product-detail-page .breadcrumbs{padding-top:8px;font-size:.75rem}
   .product-detail-page .hero-grid{padding-block:12px 18px;gap:28px}
   .product-detail-page .hero-logo{max-height:48px;margin-bottom:12px}
@@ -3068,3 +3068,368 @@ h4.post-share-label{margin:0}
 }
 .career-culture-media img{display:block;width:100%;height:100%;object-fit:cover}
 @media(max-width:640px){.career-culture-media{aspect-ratio:16/10}}
+
+/* ═══════════════════════════════════════════════════════════════
+   ONE-SCREEN COMPOSITIONS · landing / promo, application, thank-you
+   The composition rule from the homepage: on desktop each focused thought takes the
+   viewport left under the sticky nav. min-height (never height) so a section that
+   genuinely holds more grows instead of clipping copy, and the type/media inside is
+   height-aware so most sections land inside the one screen rather than just over it.
+   Narrow layouts keep their natural height (below the 901px breakpoint).
+   ═══════════════════════════════════════════════════════════════ */
+@media (min-width:901px){
+
+  /* hero: the screen under the top bar and the nav, copy centred in it */
+  .landing .landing-hero{
+    min-height:calc(100dvh - var(--hf-h,44px) - var(--nav-h,88px));
+    display:grid;align-items:center;
+  }
+  .landing .landing-hero-grid{padding-block:clamp(24px,4dvh,72px);width:100%}
+  .landing .landing-hero h1{font-size:clamp(2rem,1.2rem + 1.6vw + 1vh,3.9rem)}
+  .landing .landing-intro p{font-size:var(--fs-lede);line-height:1.55}
+  .landing .landing-hero-media{aspect-ratio:4/3;max-height:min(56dvh,520px)}
+
+  /* every built section takes one screen and centres its content in it */
+  .lp-section{
+    min-height:calc(100dvh - var(--nav-h,88px));
+    display:grid;align-content:center;
+    padding-block:clamp(28px,4.5dvh,56px);
+  }
+  .lp-section>.wrap{width:100%}
+
+  /* height-aware section head: on a short laptop the H2 and intro give height back */
+  .lp-head h2{font-size:clamp(1.75rem,1.1rem + 1.1vw + 1.1vh,3.25rem)}
+  .lp-head p{font-size:clamp(.95rem,.9rem + .18vh,1.125rem);line-height:clamp(1.45,1.3 + .5vh,1.7)}
+  .lp-head{margin-inline:0}
+
+  /* an illustration inside a card/copy section is supporting art — it gives height first */
+  .lp-inline-media img{max-height:min(32dvh,340px)}
+  .lp-split-media{max-height:min(58dvh,440px)}
+
+  /* cards: denser columns so a long set is 2 rows rather than 3, and dvh-aware padding */
+  .lp-cards .feature-grid{
+    grid-template-columns:repeat(auto-fit,minmax(clamp(215px,19vw,290px),1fr));
+    gap:clamp(12px,1.5dvh,18px);margin-top:clamp(18px,3dvh,40px);
+  }
+  .lp-cards .feature-group{padding:clamp(17px,2.1dvh,30px);gap:clamp(7px,1dvh,12px)}
+  .lp-cards .feature-group h3{font-size:clamp(1rem,.95rem + .35vh,1.375rem)}
+  .lp-cards .feature-group p{font-size:clamp(.85rem,.82rem + .16vh,1rem);line-height:clamp(1.4,1.28 + .42vh,1.6)}
+  .lp-cards .feature-icon{width:clamp(42px,5.2dvh,58px);height:clamp(42px,5.2dvh,58px);margin-bottom:0}
+  .lp-cards .feature-icon .item-icon{width:clamp(24px,3.2dvh,36px);height:clamp(24px,3.2dvh,36px)}
+
+  /* trust signals + checklist */
+  .lp-signals .trust-grid{gap:clamp(12px,1.6dvh,18px);margin-top:clamp(20px,3.4dvh,44px)}
+  .lp-signals .trust-signal{padding:clamp(14px,2dvh,22px)}
+  .lp-list-panel{margin-top:clamp(20px,3.4dvh,40px);padding:clamp(20px,3dvh,40px)}
+  .lp-checklist{gap:clamp(10px,1.5dvh,14px) 32px}
+
+  /* the FAQ column scrolls inside its own screen rather than pushing the section taller */
+  .lp-faq .faq-list summary{padding-block:clamp(12px,2dvh,20px)}
+
+  /* The CTA panels carry a form, so they need the most trimming. Same budget for the
+     landing CTA and the product page's "Ready To Get Started?" panel — one component. */
+  .lp-cta{min-height:calc(100dvh - var(--nav-h,88px));display:grid;align-content:center;padding-block:clamp(24px,4dvh,56px)}
+  .lp-cta .cta-panel,
+  .product-cta .cta-panel{padding-block:clamp(26px,4.2dvh,56px)}
+  .lp-cta .cta-panel h2,
+  .product-cta .cta-panel h2{font-size:clamp(1.6rem,1.1rem + 1vw + 1vh,3rem)}
+  .lp-cta .cta-panel p,
+  .product-cta .cta-panel p{font-size:clamp(.9rem,.86rem + .18vh,1.125rem);line-height:clamp(1.4,1.3 + .4vh,1.7);margin-top:10px}
+  .cta-form{margin-top:clamp(16px,2.6dvh,32px)}
+  .cta-form input,.cta-form select,.cta-form textarea{padding:clamp(9px,1.5dvh,13px) 14px}
+  .cta-form textarea{min-height:clamp(58px,7.5dvh,96px)}
+  .cta-form .row{gap:clamp(8px,1.3dvh,12px)}
+  .cta-form .submit-row{margin-top:2px}
+  .lp-cta-links{margin-top:clamp(14px,2.4dvh,30px)}
+  .product-cta .cta-panel .cta-kicker{margin-bottom:6px}
+  .product-cta .cta-panel .cta-kicker-text{margin-bottom:10px}
+  /* a 3-up field row on a wide panel: two fewer rows of fields */
+  .cta-form .row{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .cta-form .field.full,.cta-form .submit-row{grid-column:1 / -1}
+
+  /* Application Form: hero + the form beside the openings, one screen each */
+  .application-page .page-hero{padding-block:clamp(36px,6dvh,96px) clamp(24px,3.4dvh,48px)}
+  .application-body{
+    min-height:calc(100dvh - var(--nav-h,88px));
+    display:grid;align-content:center;padding-block:clamp(24px,4dvh,56px);
+  }
+  .application-body>.wrap{width:100%}
+  .application-form-side h2{margin-bottom:clamp(12px,2dvh,26px)}
+  .application-form .row{gap:clamp(8px,1.4dvh,12px)}
+  .application-form input,.application-form select,.application-form textarea{padding:clamp(9px,1.5dvh,13px) 14px}
+  .application-form textarea{min-height:clamp(70px,10dvh,120px)}
+  .application-aside{padding:clamp(20px,3dvh,38px)}
+  .application-openings a{padding-block:clamp(7px,1.2dvh,11px)}
+
+  /* Thank-you: the panel and its next steps share one screen */
+  .thankyou{
+    min-height:calc(100dvh - var(--nav-h,88px));
+    display:grid;align-content:center;padding-block:clamp(28px,4.5dvh,64px);
+  }
+  .thankyou>.wrap{width:100%}
+  .thankyou-panel{padding:clamp(28px,4.4dvh,68px) clamp(24px,3.4vw,52px)}
+  .thankyou-panel h1{font-size:clamp(1.9rem,1.3rem + 1.2vw + 1.2vh,3.625rem)}
+  .thankyou-mark{width:clamp(48px,7dvh,66px);height:clamp(48px,7dvh,66px);margin-bottom:clamp(12px,2.2dvh,22px)}
+  .thankyou-mark svg{width:clamp(26px,3.6dvh,34px);height:clamp(26px,3.6dvh,34px)}
+  .thankyou-next{margin-top:clamp(24px,4dvh,72px)}
+  .thankyou-next-card{padding:clamp(15px,2.4dvh,22px) clamp(18px,1.8vw,24px)}
+}
+
+@media (min-width:901px){
+  /* A card section's illustration is supporting art, so it shares a row with the section
+     head instead of stacking above the cards and pushing the section past one screen. */
+  .lp-cards:has(>.wrap>.lp-inline-media)>.wrap,
+  .lp-signals:has(>.wrap>.lp-inline-media)>.wrap,
+  .lp-list:has(>.wrap>.lp-inline-media)>.wrap{
+    display:grid;grid-template-columns:minmax(0,1.02fr) minmax(0,.98fr);
+    column-gap:clamp(28px,3.5vw,64px);align-items:center;
+  }
+  .lp-cards:has(>.wrap>.lp-inline-media)>.wrap>.lp-head,
+  .lp-signals:has(>.wrap>.lp-inline-media)>.wrap>.lp-head,
+  .lp-list:has(>.wrap>.lp-inline-media)>.wrap>.lp-head{grid-column:1;grid-row:1;max-width:none}
+  .lp-cards>.wrap>.lp-inline-media,
+  .lp-signals>.wrap>.lp-inline-media,
+  .lp-list>.wrap>.lp-inline-media{grid-column:2;grid-row:1;margin-top:0}
+  .lp-cards>.wrap>.lp-inline-media img,
+  .lp-signals>.wrap>.lp-inline-media img,
+  .lp-list>.wrap>.lp-inline-media img{max-height:min(46dvh,420px)}
+  .lp-cards:has(>.wrap>.lp-inline-media)>.wrap>.feature-grid,
+  .lp-cards:has(>.wrap>.lp-inline-media)>.wrap>.trust-grid,
+  .lp-signals:has(>.wrap>.lp-inline-media)>.wrap>.trust-grid,
+  .lp-list:has(>.wrap>.lp-inline-media)>.wrap>.lp-list-panel{grid-column:1 / -1}
+
+  /* one more column on a wide screen keeps a six- or seven-card set to a single row */
+  .lp-cards .feature-grid{grid-template-columns:repeat(auto-fit,minmax(clamp(198px,16.5vw,270px),1fr))}
+
+  /* the CTA form: the last of the over-tall sections */
+  .lp-cta .cta-panel p{margin-top:10px}
+  .lp-cta .cta-form textarea{min-height:clamp(58px,7.5dvh,96px)}
+  .lp-cta .cta-panel .cta-kicker{margin-bottom:6px}
+  .lp-cta .cta-panel .cta-kicker-text{margin-bottom:10px}
+}
+
+@media (min-width:901px){
+  /* In one-screen mode a card's icon sits on the title's line rather than above it: that is
+     ~58px of height back per row, which is what decides whether a long card set fits. The
+     copy itself is never shrunk past the shared scale, so a section holding genuinely more
+     than a screen still grows (min-height, not height). */
+  .lp-cards .feature-group{display:grid;grid-template-columns:auto minmax(0,1fr);align-content:start;column-gap:14px}
+  .lp-cards .feature-group .feature-icon{grid-row:1;grid-column:1;align-self:start}
+  .lp-cards .feature-group h3{grid-row:1;grid-column:2;align-self:center}
+  .lp-cards .feature-group>p,
+  .lp-cards .feature-group>ul{grid-column:1 / -1}
+  .lp-cards .feature-group:not(:has(.feature-icon)) h3{grid-column:1 / -1}
+  .lp-cards .feature-grid{align-content:start}
+}
+
+@media (min-width:901px){
+  /* Four wide columns beat five narrow ones: a wider card wraps its copy in fewer lines, so
+     the row is shorter even though there are more rows. */
+  .lp-cards .feature-grid{grid-template-columns:repeat(auto-fit,minmax(clamp(235px,19.5vw,318px),1fr))}
+  /* the head-row art is an inset, not a feature: it gives the card rows their height back */
+  .lp-cards>.wrap>.lp-inline-media img{max-height:min(30dvh,272px)}
+  .lp-cards:has(>.wrap>.lp-inline-media)>.wrap{grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr)}
+}
+
+/* Product detail · the cards row spans the section, under the head + illustration. */
+.portal-features-items{grid-column:1 / -1}
+.portal-features-items .closing{margin-top:clamp(18px,2.4vw,28px);font-weight:600}
+
+@media (min-width:901px){
+  /* ONE SCREEN · product detail. The min-height already comes from
+     `.product-detail-page main>section:not(.detail-hero)` further up (now fed by the
+     measured --nav-h); these are the refinements that make the content actually fit it. */
+  .product-detail-page main>section:not(.detail-hero){align-content:center}
+  .product-detail-page .overview>.wrap,
+  .product-detail-page .portal-features>.wrap,
+  .product-detail-page .faq>.wrap,
+  .product-detail-page .cta-section>.wrap{width:100%}
+
+  /* head + illustration on one row, cards beneath */
+  .product-detail-page .portal-features-layout{
+    grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);
+    column-gap:clamp(28px,3.5vw,64px);row-gap:clamp(18px,3dvh,40px);
+    align-items:center;
+  }
+  .product-detail-page .features:not(.has-showcase) .portal-features-layout{grid-template-columns:1fr}
+  .product-detail-page .portal-features .showcase-frame img{max-height:min(34dvh,320px);width:auto;margin-inline:auto}
+  .product-detail-page .portal-features-head{max-width:none}
+  .product-detail-page .portal-features-copy h2{font-size:clamp(1.75rem,1.1rem + 1.1vw + 1.1vh,3.25rem)}
+  .product-detail-page .portal-features-copy .portal-features-head>p{
+    font-size:clamp(.95rem,.9rem + .18vh,1.125rem);line-height:clamp(1.45,1.3 + .5vh,1.65);
+  }
+
+  /* the cards themselves: four wide columns, icon inline with the title */
+  .product-detail-page .portal-features .feature-grid{
+    grid-template-columns:repeat(auto-fit,minmax(clamp(235px,19.5vw,318px),1fr));
+    gap:clamp(12px,1.5dvh,18px);margin-top:0;align-content:start;
+  }
+  .product-detail-page .portal-features .feature-group{
+    display:grid;grid-template-columns:auto minmax(0,1fr);align-content:start;
+    column-gap:14px;gap:clamp(7px,1dvh,12px);padding:clamp(17px,2.1dvh,30px);
+  }
+  .product-detail-page .portal-features .feature-group .feature-icon{
+    grid-row:1;grid-column:1;align-self:start;margin-bottom:0;
+    width:clamp(42px,5.2dvh,58px);height:clamp(42px,5.2dvh,58px);
+  }
+  .product-detail-page .portal-features .feature-group .feature-icon .item-icon{
+    width:clamp(24px,3.2dvh,36px);height:clamp(24px,3.2dvh,36px);
+  }
+  .product-detail-page .portal-features .feature-group h3{
+    grid-row:1;grid-column:2;align-self:center;font-size:clamp(1rem,.95rem + .35vh,1.375rem);
+  }
+  .product-detail-page .portal-features .feature-group:not(:has(.feature-icon)) h3{grid-column:1 / -1}
+  .product-detail-page .portal-features .feature-group>p,
+  .product-detail-page .portal-features .feature-group>ul{grid-column:1 / -1}
+  .product-detail-page .portal-features .feature-group p{
+    font-size:clamp(.85rem,.82rem + .16vh,1rem);line-height:clamp(1.4,1.28 + .42vh,1.6);
+  }
+  .product-detail-page .trust-grid{gap:clamp(12px,1.6dvh,18px);margin-top:0}
+  .product-detail-page .trust-signal{padding:clamp(14px,2dvh,22px)}
+
+  /* the overview and FAQ give height back the same way */
+  .product-detail-page .overview-grid{align-items:center}
+  .product-detail-page .overview-media img{max-height:min(52dvh,480px)}
+  .product-detail-page .overview-copy p{font-size:clamp(.95rem,.9rem + .18vh,1.125rem);line-height:clamp(1.45,1.3 + .5vh,1.7)}
+  .product-detail-page .faq-list summary{padding-block:clamp(12px,2dvh,20px)}
+}
+
+@media (min-width:901px){
+  /* ONE SCREEN · Careers. The culture band carried two heads, a photo and the four values,
+     which ran to two screens; the photo and the type are height-aware and the values sit in
+     one row. The openings and the HR block each take their own screen. */
+  .career-page .career-jobs,
+  .career-page .career-join,
+  .career-page .career-culture,
+  .career-page .career-hr{
+    min-height:calc(100dvh - var(--nav-h,88px));
+    display:grid;align-content:center;
+    padding-block:clamp(28px,4.5dvh,56px);
+  }
+  .career-page .career-jobs>.wrap,
+  .career-page .career-culture>.wrap{width:100%}
+  .career-page .sec-head h2,
+  .career-page .career-values-head h2{font-size:clamp(1.6rem,1.05rem + 1vw + 1vh,3rem)}
+  .career-page .sec-head{margin-bottom:clamp(16px,2.6dvh,34px)}
+  .career-page .career-culture-media{
+    aspect-ratio:auto;height:clamp(140px,22dvh,240px);margin-block:clamp(14px,2.4dvh,32px);
+  }
+  .career-page .career-values-head{margin-bottom:clamp(12px,2dvh,24px)}
+  .career-page .career-values{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6dvh,18px)}
+  .career-page .career-values .feature-group{padding:clamp(16px,2.2dvh,28px);min-height:0}
+  .career-page .career-values .feature-group h3{font-size:clamp(1rem,.95rem + .35vh,1.375rem);margin-bottom:0}
+  .career-page .career-values .feature-group p{
+    font-size:clamp(.85rem,.82rem + .16vh,1rem);line-height:clamp(1.4,1.28 + .42vh,1.6);margin-top:8px;
+  }
+  .career-page .career-values .feature-icon{
+    width:clamp(42px,5.2dvh,58px);height:clamp(42px,5.2dvh,58px);margin-bottom:clamp(8px,1.4dvh,14px);
+  }
+  .career-page .career-values .feature-icon .item-icon{width:clamp(24px,3.2dvh,36px);height:clamp(24px,3.2dvh,36px)}
+  /* the openings grid: four columns and height-aware cards, so eight roles are two rows */
+  .career-page .career-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,1.6dvh,18px)}
+  .career-page .career-card{padding:clamp(16px,2.2dvh,26px)}
+  .career-page .career-filter{margin-bottom:clamp(12px,2dvh,22px)}
+}
+
+@media (min-width:901px){
+  /* The shared closing band and contact section are chunks too, so on sub-pages they take a
+     screen like every other band (the home page and Our Services already do this). */
+  .sub-page .cta-section:not(.product-cta):not(.lp-cta),
+  .sub-page .contact-us{
+    min-height:calc(100dvh - var(--nav-h,88px));
+    display:grid;align-content:center;
+    padding-block:clamp(28px,4.5dvh,56px);
+  }
+  .sub-page .cta-section:not(.product-cta):not(.lp-cta)>.wrap,
+  .sub-page .contact-us>.wrap{width:100%}
+}
+
+/* The CTA panel now has a form, so its submit is the primary action and the standing
+   "free business analysis" link beside it becomes the secondary one — two solid orange
+   buttons stacked on mobile read as competing calls to action. */
+.lp-cta-links .dynamiq-cta a{
+  background:transparent;color:var(--color-on-accent);
+  border:1.5px solid rgba(var(--rgb-white),.42);box-shadow:none;
+}
+.lp-cta-links .dynamiq-cta a:hover{
+  background:rgba(var(--rgb-brand),.16);border-color:var(--orange);
+  color:var(--color-on-accent);box-shadow:none;transform:translateY(-2px);
+}
+@media(max-width:620px){
+  .lp-cta-links{flex-direction:column;align-items:stretch;gap:12px}
+  .lp-cta-links .dynamiq-cta a{justify-content:center;width:100%}
+  .lp-cta-links .cta-phone{justify-content:center}
+}
+
+/* Tablet and phone: the section art is capped against the viewport too, so a portrait
+   illustration cannot take most of the screen before the copy it belongs to. */
+@media (max-width:900px){
+  .product-detail-page .portal-features .showcase-frame img{max-height:min(420px,40dvh)}
+  .product-detail-page .overview-media img{max-height:min(400px,38dvh)}
+  .lp-inline-media img{max-height:min(320px,34dvh)}
+  .lp-split-media{aspect-ratio:16/10;max-height:min(340px,36dvh)}
+  .career-culture-media{aspect-ratio:16/9;max-height:min(300px,32dvh)}
+}
+@media (max-width:600px){
+  .product-detail-page .portal-features .showcase-frame img,
+  .product-detail-page .overview-media img{max-height:min(300px,32dvh)}
+  .lp-inline-media img{max-height:min(240px,28dvh)}
+  .lp-split-media{max-height:min(260px,30dvh)}
+  /* the mobile floors from the design guide: 13px copy, 44px touch targets */
+  .lp-cards .feature-group p,
+  .career-page .career-values .feature-group p{font-size:.8125rem;line-height:1.55}
+  .lp-head p{font-size:.9375rem;line-height:1.6}
+  .lp-checklist li{font-size:.9375rem}
+  .trust-signal h3{font-size:.9375rem}
+  .application-openings a,
+  .lp-faq .faq-list summary{min-height:44px}
+  .thankyou-next-card{min-height:44px}
+}
+
+@media (max-width:600px){
+  /* the fields are full width, so the submit should be too */
+  .cta-form .submit-row .btn,
+  .application-form .submit-row .btn{width:100%;justify-content:center}
+}
+
+/* Short laptops (1280x720, 1366x768): the height budget drops to ~630-680px, so the
+   remaining give has to come from padding, gaps and the supporting art — the type is
+   already at the 13px floor from the design guide and must not go below it. */
+@media (min-width:901px) and (max-height:820px){
+  .lp-section,
+  .lp-cta,
+  .product-detail-page main>section:not(.detail-hero),
+  .career-page .career-jobs,
+  .career-page .career-join,
+  .career-page .career-culture,
+  .career-page .career-hr,
+  .sub-page .cta-section:not(.product-cta):not(.lp-cta),
+  .sub-page .contact-us{padding-block:clamp(20px,3.2dvh,34px)}
+
+  .lp-cards>.wrap>.lp-inline-media img{max-height:min(26dvh,210px)}
+  .lp-split-media{max-height:min(50dvh,340px)}
+  .product-detail-page .portal-features .showcase-frame img{max-height:min(28dvh,240px)}
+  .product-detail-page .overview-media img{max-height:min(44dvh,360px)}
+
+  .lp-head p,
+  .product-detail-page .portal-features-copy .portal-features-head>p{margin-top:10px}
+  .lp-cards .feature-grid,
+  .product-detail-page .portal-features .feature-grid,
+  .lp-signals .trust-grid,
+  .product-detail-page .trust-grid{gap:10px}
+  .lp-cards .feature-group,
+  .product-detail-page .portal-features .feature-group{padding:15px 16px;gap:6px}
+  .lp-cards .feature-icon,
+  .product-detail-page .portal-features .feature-group .feature-icon{width:38px;height:38px}
+  .lp-cards .feature-icon .item-icon,
+  .product-detail-page .portal-features .feature-group .feature-icon .item-icon{width:22px;height:22px}
+
+  .cta-form{margin-top:14px}
+  .cta-form .row{gap:8px}
+  .cta-form input,.cta-form select,.cta-form textarea{padding:8px 12px}
+  .cta-form textarea{min-height:54px}
+  .lp-cta-links{margin-top:12px}
+  .career-page .career-culture-media{height:clamp(110px,16dvh,170px);margin-block:12px}
+  .career-page .career-values .feature-group,
+  .career-page .career-card{padding:14px 15px}
+}

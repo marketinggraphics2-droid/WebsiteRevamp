@@ -121,6 +121,45 @@ Residual, deliberately or knowingly left:
 - Product hero and overview art differs from live by design (our own mockups), as do the
   testimonial logos (`.webp` renditions of the same brands).
 
+## I. One-screen compositions (raised by the client, 2026-09-10)
+
+"Use 100dvh for better viewing per chunk of information per section so that all information is
+viewed in just one view", plus a pass over smaller viewports. This extends the composition rule
+the homepage and Our Services already follow to everything built in this round: on desktop
+(>=901px) each band takes the viewport left under the sticky nav, `min-height` never `height`,
+content grid-centred, and the type and supporting art are height-aware so the content actually
+fits rather than merely being given a taller box. Narrow layouts keep their natural height.
+
+- [x] **I1** A stale hardcoded chrome height was making *every* one-screen section on the
+      product pages ~26px too tall: `min-height:calc(100dvh - 63px)` while the nav measures
+      89px. All the hardcoded numbers now use the measured `--nav-h` / `--hf-h`, including
+      `--products-nav-h` on the listing. This also fixed Our Services and the products page,
+      which were 25px over.
+- [x] **I2** Landing / promo sections (`.lp-*`), the landing hero, and the in-page CTA panels.
+- [x] **I3** Product detail: the cards row moved out of the narrow copy column to span the
+      section under the head + illustration row — eight benefit cards in a 2-up column ran to
+      2.5 screens. Four wide columns, icon inline with the title.
+- [x] **I4** Careers: the culture band (two heads + photo + four values) went from 2.0 screens
+      to 1.3; the openings grid is four columns of height-aware cards.
+- [x] **I5** Application Form, Thank You pages, and the shared closing CTA / contact bands on
+      sub-pages.
+- [x] **I6** Short laptops (1280x720, 1366x768): a `max-height:820px` refinement gives height
+      back through padding, gaps and art only — the type is already at the 13px floor from the
+      design guide and is not reduced below it.
+- [x] **I7** Smaller viewports: media capped against the viewport below 901px and again below
+      600px so a portrait illustration cannot take the screen before its copy; 13px copy floor
+      and 44px touch targets on the new components; the CTA panel's secondary link became a
+      ghost button so two solid orange buttons no longer stack on mobile; full-width submit.
+      No horizontal scroll at 1440, 1366, 1280, 1024, 820, 768, 390 or 360.
+
+Where a section still exceeds one screen it is because the copy genuinely does not fit — the
+worst cases are the 7-9 card sections at ~1.3 screens on a 900px-tall window. The rule is
+`min-height`, so those grow rather than clip, which is what the design guide requires.
+
+**Not changed: the homepage.** Its sections measure 0.3-1.5 screens and it is the locked
+benchmark every other page is judged against, so it was left alone. Say the word if you want
+the same treatment applied there.
+
 ---
 
 ## Re-import required on staging

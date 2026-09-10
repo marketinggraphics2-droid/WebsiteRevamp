@@ -141,11 +141,18 @@ $render_items = function ( $items ) {
 				<?php if ( ! empty( $s['list'] ) ) : ?>
 				<ul class="feature-list"<?php dq_reveal(); ?>><?php foreach ( $s['list'] as $li ) : ?><li><?php echo dq_inline_html( $li ); // phpcs:ignore WordPress.Security.EscapeOutput ?></li><?php endforeach; ?></ul>
 				<?php endif; ?>
-				<?php if ( ! empty( $s['items'] ) ) { $render_items( $s['items'] ); } ?>
-				<?php foreach ( $s['closing'] as $para ) : ?><p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 			</div>
 			<?php if ( $sec_img ) : ?>
 			<div class="showcase-frame"<?php dq_reveal(); ?>><img src="<?php echo esc_url( $sec_img ); ?>" alt="<?php echo esc_attr( $s['title'] ? $s['title'] : $p['name'] . ' feature interface' ); ?>" loading="lazy"></div>
+			<?php endif; ?>
+			<?php if ( ! empty( $s['items'] ) || $s['closing'] ) : ?>
+			<?php /* The cards run the full width beneath the head + illustration row rather than
+			   stacking two-up inside the copy column: eight benefit cards in a narrow column ran
+			   to two and a half screens. Reading order is unchanged. */ ?>
+			<div class="portal-features-items">
+				<?php if ( ! empty( $s['items'] ) ) { $render_items( $s['items'] ); } ?>
+				<?php foreach ( $s['closing'] as $para ) : ?><p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
+			</div>
 			<?php endif; ?>
 		</div>
 	</section>
