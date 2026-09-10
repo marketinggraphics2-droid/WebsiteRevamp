@@ -3486,3 +3486,17 @@ h4.post-share-label{margin:0}
   .lp-photo-media{max-height:min(46dvh,420px)}
   .lp-photo-rows{gap:clamp(20px,3dvh,44px)}
 }
+
+/* ═══ Card grids: no card left alone on its own row ═══
+   The four-column grid leaves an orphan whenever the count is 4n+1 — five cards render 4 + 1,
+   nine render 4 + 4 + 1. Those counts take five columns instead, so five sit in one row and
+   nine in 5 + 4. Selected by exact child count, so every other count keeps the four-column
+   measure the one-screen work is tuned around. Only where the columns stay wide enough. */
+@media (min-width:1180px){
+  .lp-cards .feature-grid:has(> :last-child:nth-child(5)),
+  .lp-cards .feature-grid:has(> :last-child:nth-child(9)),
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(5)),
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(9)){
+    grid-template-columns:repeat(5,minmax(0,1fr));
+  }
+}
