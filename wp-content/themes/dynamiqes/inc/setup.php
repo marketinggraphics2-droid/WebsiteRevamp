@@ -215,3 +215,47 @@ function dq_localize_theme_asset_urls( $html ) {
 		$html
 	);
 }
+
+/**
+ * Carry the Customizer settings over when the theme is installed under a new folder name.
+ *
+ * WordPress keys theme mods to the stylesheet folder (`theme_mods_dynamiqes`), so installing
+ * this theme as e.g. `dynamiqes-theme` would start from defaults — losing the contact email,
+ * the CTA copy, the Content sources that separate Blogs from News & Events, and, because they
+ * live in the same option, the nav menu assignments.
+ *
+ * This runs once on the first load under a new folder, not on `after_switch_theme`: that hook
+ * fires in the request where the *outgoing* theme's code is loaded, so on a first activation
+ * this theme's own callback would never be registered to hear it.
+ *
+ * The merge never overwrites a key the new folder already has, because switch_theme() populates
+ * nav_menu_locations for the incoming theme before anything here runs.
+ */
+add_action( 'after_setup_theme', 'dq_inherit_theme_mods', 5 );
+
+function dq_inherit_theme_mods() {
+	$current = get_stylesheet();
+	$done    = 'dq_mods_inherited_' . md5( $current );
+	if ( get_option( $done ) ) {
+		return;
+	}
+	/** Folder names this theme has shipped under, newest first. */
+	$previous = apply_filters( 'dq_previous_theme_folders', array( 'dynamiqes' ) );
+	foreach ( $previous as $folder ) {
+		if ( $folder === $current ) {
+			break; // installed under its original name: nothing to carry over
+		}
+		$mods = get_option( 'theme_mods_' . $folder );
+		if ( empty( $mods ) || ! is_array( $mods ) ) {
+			continue;
+		}
+		$now  = get_option( 'theme_mods_' . $current );
+		$now  = is_array( $now ) ? $now : array();
+		$next = $now + $mods; // existing keys win
+		if ( $next !== $now ) {
+			update_option( 'theme_mods_' . $current, $next );
+		}
+		break;
+	}
+	update_option( $done, 1, false );
+}
