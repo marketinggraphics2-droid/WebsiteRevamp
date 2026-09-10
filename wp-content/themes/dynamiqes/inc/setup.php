@@ -180,3 +180,38 @@ add_filter( 'the_excerpt', 'dq_balance_content_tags', 5 );
 function dq_balance_content_tags( $content ) {
 	return is_string( $content ) && '' !== $content ? force_balance_tags( $content ) : $content;
 }
+
+/**
+ * Point the imported pages' theme-asset URLs at this theme's own copy.
+ *
+ * The landing and promo pages reference their section photos and card icons on the live site,
+ * e.g. https://dynamiqes.com/wp-content/themes/dynamiqes/assets/images/sem/…. Those files belong
+ * to the theme this one replaces, so they resolve while the old theme is still live and 404 the
+ * moment it is not — which would take out 95 images, the section art and card icons included.
+ *
+ * The files are mirrored into this theme at the same relative path, so only the host has to
+ * change. A URL whose file this theme does not ship is left alone, so nothing is broken by
+ * rewriting to something that is not there.
+ */
+add_filter( 'the_content', 'dq_localize_theme_asset_urls', 6 ); // after force_balance_tags (5)
+
+/**
+ * @param string $html Content.
+ * @return string
+ */
+function dq_localize_theme_asset_urls( $html ) {
+	if ( ! is_string( $html ) || false === strpos( $html, '/wp-content/themes/dynamiqes/' ) ) {
+		return $html;
+	}
+	return preg_replace_callback(
+		'#https?://[^"\'\s]*?/wp-content/themes/dynamiqes/([^"\'\s]+)#i',
+		function ( $m ) {
+			$rel = rawurldecode( $m[1] );
+			if ( false !== strpos( $rel, '..' ) || ! file_exists( DQ_DIR . '/' . $rel ) ) {
+				return $m[0]; // not shipped here — leave the original URL
+			}
+			return DQ_URI . '/' . $m[1];
+		},
+		$html
+	);
+}

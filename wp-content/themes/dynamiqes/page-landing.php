@@ -34,6 +34,15 @@ if ( ! $intro && has_excerpt() ) {
 	$intro = '<p>' . esc_html( get_the_excerpt() ) . '</p>';
 }
 
+/* The section builder parses post_content itself rather than going through the_content, so the
+   theme-asset localiser has to be applied here too: the imported art is referenced on the live
+   site and would 404 once this theme replaces it (see inc/setup.php). */
+if ( function_exists( 'dq_localize_theme_asset_urls' ) ) {
+	$body     = dq_localize_theme_asset_urls( $body );
+	$intro    = dq_localize_theme_asset_urls( (string) $intro );
+	$hero_img = dq_localize_theme_asset_urls( (string) $hero_img ); // the hero comes from meta, not the body
+}
+
 /* Designed sections. Un-imported markup (typed straight into the editor) has no H2 rhythm to
    group on, so it falls back to the plain content column. */
 $sections = array( '', false );
