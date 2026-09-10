@@ -156,3 +156,27 @@ add_action( 'pre_get_posts', function ( $q ) {
 	}
 	$q->set( 'posts_per_page', 9 );
 } );
+
+/**
+ * Balance the tags in article bodies before they are rendered.
+ *
+ * The live site's articles carry stray closing tags — the imported "Cloud-Based vs On-Premises
+ * ERP" post has two orphan </div> and one </section>, and three of the news items have two each.
+ * Each stray closer unwound one more of the template's wrappers (.entry-content, then .post-main,
+ * .post-layout and .post-body), so the sticky article rail escaped its grid column and rendered
+ * full width and the article footer lost the page gutter — the broken blog controls.
+ *
+ * force_balance_tags() is WordPress's own repair for this and is what the `use_balanceTags`
+ * option applies; running it here fixes every post, including any imported later, without
+ * rewriting what is stored. Priority 5 puts it ahead of wpautop.
+ */
+add_filter( 'the_content', 'dq_balance_content_tags', 5 );
+add_filter( 'the_excerpt', 'dq_balance_content_tags', 5 );
+
+/**
+ * @param string $content Post content.
+ * @return string
+ */
+function dq_balance_content_tags( $content ) {
+	return is_string( $content ) && '' !== $content ? force_balance_tags( $content ) : $content;
+}

@@ -2212,7 +2212,9 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .post-layout{display:grid;grid-template-columns:minmax(0,1fr);gap:clamp(28px,4vw,56px);align-items:start}
 .post-main{min-width:0}
 .post-main .entry-content{max-width:76ch}
-.post-rail{display:grid;gap:22px}
+/* minmax(0,1fr) so a wide child cannot push the 280px rail track wider than its column —
+   the share row's label-plus-five-tiles min-content did exactly that. */
+.post-rail{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
 @media(min-width:1024px){
   .post-layout{grid-template-columns:minmax(0,1fr) 280px}
   .post-rail{order:2;position:sticky;top:calc(var(--nav-h,88px) + 24px)}
@@ -2707,7 +2709,12 @@ h4.post-share-label{margin:0}
    the tiles shrink rather than wrap. */
 .post-share-links{display:flex;flex-wrap:nowrap;align-items:center;gap:8px;min-width:0}
 .post-share-links>a,.post-share-links>.post-copy{flex:0 1 42px;min-width:34px}
-@media(min-width:1024px){.post-share{flex-wrap:nowrap}}
+/* The icons stay on one row (that was the review's ask); the label keeps its own line inside
+   the article rail, which is only 280px wide — inline it would not fit beside five tiles. */
+@media(min-width:1024px){
+  .post-share{flex-wrap:wrap}
+  .post-rail .post-share-label{flex:0 0 100%;margin:0 0 2px}
+}
 
 /* A4 · in-page CTA panels (product pages, Our Services): the 20ch heading measure left
    a very wide empty margin either side of a long headline. Wider measure + tighter
