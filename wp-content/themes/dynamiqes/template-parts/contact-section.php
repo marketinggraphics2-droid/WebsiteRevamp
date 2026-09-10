@@ -37,43 +37,7 @@ $aside_heading = array_key_exists( 'aside_heading', $args ) ? $args['aside_headi
 			<div class="contact-grid">
 				<div class="contact-form-side">
 					<?php if ( $heading ) : ?><h2><?php echo esc_html( $heading ); ?></h2><?php endif; ?>
-					<form class="contact--us" id="contactForm" method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate<?php dq_reveal( '', 80 ); ?>>
-						<input type="hidden" name="action" value="dq_contact">
-						<?php wp_nonce_field( 'dq_contact', 'dq_contact_nonce' ); ?>
-						<div class="hp-field" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
-						<div class="row">
-							<div class="field"><label class="screen-reader-text" for="cf-first"><?php esc_html_e( 'First Name', 'dynamiqes' ); ?></label><input id="cf-first" type="text" name="first-name" placeholder="<?php esc_attr_e( 'First Name', 'dynamiqes' ); ?>" autocomplete="given-name" required></div>
-							<div class="field"><label class="screen-reader-text" for="cf-last"><?php esc_html_e( 'Last Name', 'dynamiqes' ); ?></label><input id="cf-last" type="text" name="last-name" placeholder="<?php esc_attr_e( 'Last Name', 'dynamiqes' ); ?>" autocomplete="family-name" required></div>
-							<div class="field"><label class="screen-reader-text" for="cf-email"><?php esc_html_e( 'Email', 'dynamiqes' ); ?></label><input id="cf-email" type="email" name="your-email" placeholder="<?php esc_attr_e( 'Email', 'dynamiqes' ); ?>" autocomplete="email" required></div>
-							<div class="field"><label class="screen-reader-text" for="cf-mobile"><?php esc_html_e( 'Mobile No.', 'dynamiqes' ); ?></label><input id="cf-mobile" type="tel" name="mobile" placeholder="<?php esc_attr_e( 'Mobile No.', 'dynamiqes' ); ?>" autocomplete="tel" required></div>
-							<div class="field"><label class="screen-reader-text" for="cf-company"><?php esc_html_e( 'Company Name', 'dynamiqes' ); ?></label><input id="cf-company" type="text" name="company-name" placeholder="<?php esc_attr_e( 'Company Name', 'dynamiqes' ); ?>" autocomplete="organization" required></div>
-							<div class="field"><label class="screen-reader-text" for="cf-designation"><?php esc_html_e( 'Designation', 'dynamiqes' ); ?></label><input id="cf-designation" type="text" name="designation" placeholder="<?php esc_attr_e( 'Designation', 'dynamiqes' ); ?>" autocomplete="organization-title" required></div>
-							<div class="field field--select">
-								<label class="screen-reader-text" for="cf-industry"><?php esc_html_e( 'Industry', 'dynamiqes' ); ?></label>
-								<select id="cf-industry" name="industry" required>
-									<option value="" selected disabled><?php esc_html_e( 'Industry', 'dynamiqes' ); ?></option>
-									<?php foreach ( array( 'Services / BPO', 'Real Estate / Construction', 'Water / Telco / Electricity / Energy', 'Food and Beverage', 'Pharmaceutical / Healthcare Industry', 'Transport', 'Agriculture', 'Finance', 'Trading / Distribution', 'Manufacturing', 'Hospitality / Tourism', 'Media', 'Others' ) as $o ) : ?>
-										<option value="<?php echo esc_attr( $o ); ?>"><?php echo esc_html( $o ); ?></option>
-									<?php endforeach; ?>
-								</select>
-							</div>
-							<div class="field field--select">
-								<label class="screen-reader-text" for="howFound"><?php esc_html_e( 'How did you find us?', 'dynamiqes' ); ?></label>
-								<select name="how-did-you-find" id="howFound" required>
-									<option value="" selected disabled><?php esc_html_e( 'How did you find us?', 'dynamiqes' ); ?></option>
-									<?php foreach ( array( 'Google', 'Facebook', 'LinkedIn', 'Events', 'Referral', 'Newspaper', 'Email', 'Others' ) as $o ) : ?>
-										<option value="<?php echo esc_attr( $o ); ?>"><?php echo esc_html( $o ); ?></option>
-									<?php endforeach; ?>
-								</select>
-							</div>
-							<div class="field full"><label class="screen-reader-text" for="cf-budget"><?php esc_html_e( 'Accounting System budget', 'dynamiqes' ); ?></label><input id="cf-budget" type="text" name="how-much-budget" placeholder="<?php esc_attr_e( 'Accounting System budget', 'dynamiqes' ); ?>"></div>
-							<div class="field full" id="otherField"><label class="screen-reader-text" for="cf-other"><?php esc_html_e( 'Other', 'dynamiqes' ); ?></label><input id="cf-other" type="text" name="other-found" placeholder="<?php esc_attr_e( 'Other', 'dynamiqes' ); ?>"></div>
-							<div class="field full"><label class="screen-reader-text" for="cf-message"><?php esc_html_e( 'Message', 'dynamiqes' ); ?></label><textarea id="cf-message" name="message-area" placeholder="<?php esc_attr_e( 'Message', 'dynamiqes' ); ?>" required></textarea></div>
-							<div class="full submit-row"><button type="submit" class="btn btn-orange"><?php esc_html_e( 'SUBMIT', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></button></div>
-						</div>
-						<div class="form-msg" role="status" aria-live="polite"></div>
-						<?php echo dq_contact_flash(); // phpcs:ignore WordPress.Security.EscapeOutput ?>
-					</form>
+					<?php get_template_part( 'template-parts/enquiry-form' ); ?>
 				</div>
 				<div class="get-in-touch"<?php dq_reveal( 'right' ); ?>>
 					<?php if ( $aside_heading ) : ?><h3><?php echo esc_html( $aside_heading ); ?></h3><?php endif; ?>

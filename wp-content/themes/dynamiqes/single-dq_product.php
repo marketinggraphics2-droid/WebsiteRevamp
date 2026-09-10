@@ -24,8 +24,33 @@ foreach ( $sections as $s ) {
 $demo_url = dq_book_demo_url();
 $showcase = $p['feature_image']; // mockup shown beside the first feature group section
 
-/** One H3 item group: title, optional paragraph, optional list. */
+/**
+ * One H3 item group: title, optional paragraph, optional list.
+ *
+ * Two shapes come out of the live copy. Groups that carry only a title are the partner
+ * credentials on the SAP page — the review asked for those to read as trust signals with
+ * icons rather than a bare list (item C1). Everything else keeps the card treatment the
+ * review asked us to restore (item D2).
+ */
 $render_items = function ( $items ) {
+	$titles_only = true;
+	foreach ( $items as $g ) {
+		if ( ! empty( $g['text'] ) || ! empty( $g['items'] ) ) {
+			$titles_only = false;
+			break;
+		}
+	}
+	if ( $titles_only && count( $items ) > 1 ) {
+		echo '<ul class="trust-grid">';
+		foreach ( $items as $g ) {
+			echo '<li class="trust-signal"' . dq_reveal_attr() . '>';
+			echo '<span class="trust-badge">' . dq_trust_icon( $g['title'] ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo '<h3>' . esc_html( $g['title'] ) . '</h3>';
+			echo '</li>';
+		}
+		echo '</ul>';
+		return;
+	}
 	echo '<div class="feature-grid">';
 	foreach ( $items as $g ) {
 		echo '<article class="feature-group"' . dq_reveal_attr() . '>';
@@ -95,9 +120,13 @@ $render_items = function ( $items ) {
 	<section class="features portal-features<?php echo $showcase ? ' has-showcase' : ''; ?>" id="<?php echo esc_attr( 'section-' . sanitize_title( $s['title'] ) ); ?>">
 		<div class="wrap portal-features-layout">
 			<div class="portal-features-copy">
-				<span class="eyebrow"<?php dq_reveal(); ?>><?php echo esc_html( $p['name'] ); ?></span>
-				<h2<?php dq_reveal(); ?>><?php echo esc_html( $s['title'] ); ?></h2>
-				<?php foreach ( $s['intro'] as $para ) : ?><p<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
+				<?php /* one shared measure for the eyebrow, H2 and intro: the copy under a heading
+				   now wraps to the same width and left edge as the heading itself (review item D1). */ ?>
+				<div class="portal-features-head">
+					<span class="eyebrow"<?php dq_reveal(); ?>><?php echo esc_html( $p['name'] ); ?></span>
+					<h2<?php dq_reveal(); ?>><?php echo esc_html( $s['title'] ); ?></h2>
+					<?php foreach ( $s['intro'] as $para ) : ?><p<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
+				</div>
 				<?php if ( ! empty( $s['list'] ) ) : ?>
 				<ul class="feature-list"<?php dq_reveal(); ?>><?php foreach ( $s['list'] as $li ) : ?><li><?php echo dq_inline_html( $li ); // phpcs:ignore WordPress.Security.EscapeOutput ?></li><?php endforeach; ?></ul>
 				<?php endif; ?>
@@ -119,7 +148,13 @@ $render_items = function ( $items ) {
 				<?php endif; ?>
 				<h2><?php echo esc_html( $s['title'] ); ?></h2>
 				<?php foreach ( array_merge( $s['intro'], $s['closing'] ) as $para ) : ?><p><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
+				<?php if ( ! empty( $s['kicker'] ) ) : /* on the live page this "Ready To Get Started?" block wraps the enquiry form — the review flagged it as missing (item C2) */ ?>
+				<div class="cta-form">
+					<?php get_template_part( 'template-parts/enquiry-form', null, array( 'id' => 'ctaForm-' . sanitize_title( $s['title'] ), 'compact' => true, 'submit' => __( 'SEND ENQUIRY', 'dynamiqes' ) ) ); ?>
+				</div>
+				<?php else : ?>
 				<div class="dynamiq-cta"><a href="<?php echo esc_url( $demo_url ); ?>"><?php esc_html_e( 'Get Your Free Business Analysis', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></a></div>
+				<?php endif; ?>
 			</div>
 		</div>
 	</section>

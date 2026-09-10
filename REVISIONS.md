@@ -25,22 +25,22 @@ Legend: `[ ]` open · `[x]` done · `[?]` blocked on input from IQ/client
 
 ## B. Our Products (`/products/`)
 
-- [ ] **B1** "Make your business Run Easier with SAP Business One 10.0" — section too empty. Row 1.
-- [ ] **B2** "SAP Business One" — right column empty. Row 2.
-- [ ] **B3** "The IQ Suite" — header bleeds into card section; no left padding on text. Row 3.
+- [x] **B1** "Make your business Run Easier with SAP Business One 10.0" — section too empty. Row 1.
+- [x] **B2** "SAP Business One" — right column empty. Row 2.
+- [x] **B3** "The IQ Suite" — header bleeds into card section; no left padding on text. Row 3.
 
 ## C. SAP Business One (`/products/sap-business-one-philippines/`)
 
-- [ ] **C1** "Why Choose DynamIQ as your SAP Premier Partner?" — trust signals need icons and a
+- [x] **C1** "Why Choose DynamIQ as your SAP Premier Partner?" — trust signals need icons and a
       trust-signal design, not a plain list. Row 4.
-- [ ] **C2** "Contact Us Today!" — missing contact form. Row 5.
+- [x] **C2** "Contact Us Today!" — missing contact form. Row 5.
 
 ## D. Product page template (screenshots filed under IQ Tax Module)
 
-- [ ] **D1** Copy under H2s must align with the placement and length of the heading above —
+- [x] **D1** Copy under H2s must align with the placement and length of the heading above —
       not just left-aligned. Rows 6-10 (5 sections).
-- [ ] **D2** H3 subsections must be cards (as in the previous design), not listed out. Rows 6-10.
-- [ ] **D3** Closing CTA section side padding too big. Row 11. (same as A4)
+- [x] **D2** H3 subsections must be cards (as in the previous design), not listed out. Rows 6-10.
+- [x] **D3** Closing CTA section side padding too big. Row 11. (same as A4)
 
 ## E. Product pages awaiting approved copy
 

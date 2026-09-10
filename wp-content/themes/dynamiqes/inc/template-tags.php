@@ -701,3 +701,44 @@ function dq_cta_band( $args = array() ) {
 function dq_icon_phone() {
 	return '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15 15 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.24 11 11 0 0 0 3.5.56 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1 11 11 0 0 0 .56 3.5 1 1 0 0 1-.24 1l-2.2 2.3z"/></svg>';
 }
+
+/**
+ * Icon for a trust signal ("Certified SAP Premier Partner", "5.0-Star Customer Rating" …).
+ *
+ * The review asked for the SAP page's partner credentials to be designed as trust signals
+ * rather than a bare list (item C1), so each one gets an icon picked from its own wording.
+ * Unrecognised labels fall back to the verified badge.
+ *
+ * @param string $label Trust-signal title.
+ * @return string Inline SVG.
+ */
+function dq_trust_icon( $label ) {
+	$paths = array(
+		/* certificate / partner badge */
+		'badge'  => 'M12 1.5 14.6 4l3.5-.3.9 3.4 2.9 2-1.6 3.1 1.6 3.1-2.9 2-.9 3.4-3.5-.3L12 22.5 9.4 20l-3.5.3-.9-3.4-2.9-2L3.7 11.8 2.1 8.7l2.9-2 .9-3.4L9.4 4 12 1.5Zm-1.3 13.4 5-5-1.4-1.4-3.6 3.6-1.8-1.8-1.4 1.4 3.2 3.2Z',
+		/* ranking / award */
+		'award'  => 'M8 2h8v6a4 4 0 1 1-8 0V2Zm-4 1h2.5v3.5A5.5 5.5 0 0 1 4 3Zm13.5 0H20a5.5 5.5 0 0 1-2.5 3.5V3ZM10.6 13.7h2.8l.8 3.1 2.8 4.7-4-1.2-4 1.2 2.8-4.7.8-3.1Z',
+		/* star rating */
+		'star'   => 'M12 2.6l2.9 5.9 6.5.9-4.7 4.6 1.1 6.5-5.8-3.1-5.8 3.1 1.1-6.5L2.6 9.4l6.5-.9L12 2.6Z',
+		/* growth / success rate */
+		'growth' => 'M3 20h18v2H3v-2Zm1-3V9h4v8H4Zm6 0V4h4v13h-4Zm6 0v-6h4v6h-4Z',
+		/* people / support */
+		'people' => 'M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Zm7 0a3 3 0 1 0 0-6 3 3 0 0 0 0 6ZM2 19c0-3 3.1-5 7-5s7 2 7 5v1H2v-1Zm15.6-4.6c2.6.5 4.4 2.1 4.4 4.6v1h-4.4v-1c0-1.4-.5-2.6-1.4-3.6l1.4-1Z',
+		/* shield / compliance */
+		'shield' => 'M12 2 4 5v6.5c0 5 3.4 9.2 8 10.5 4.6-1.3 8-5.5 8-10.5V5l-8-3Zm-1.3 14-3.2-3.2 1.4-1.4 1.8 1.8 4.4-4.4 1.4 1.4-5.8 5.8Z',
+	);
+	$l   = strtolower( $label );
+	$key = 'badge';
+	if ( false !== strpos( $l, 'star' ) || false !== strpos( $l, 'rating' ) || false !== strpos( $l, 'review' ) ) {
+		$key = 'star';
+	} elseif ( false !== strpos( $l, 'top ' ) || false !== strpos( $l, 'award' ) || false !== strpos( $l, 'provider' ) ) {
+		$key = 'award';
+	} elseif ( false !== strpos( $l, 'success' ) || false !== strpos( $l, 'growth' ) || false !== strpos( $l, 'rate' ) ) {
+		$key = 'growth';
+	} elseif ( false !== strpos( $l, 'support' ) || false !== strpos( $l, 'training' ) || false !== strpos( $l, 'team' ) || false !== strpos( $l, 'client' ) ) {
+		$key = 'people';
+	} elseif ( false !== strpos( $l, 'complian' ) || false !== strpos( $l, 'secure' ) || false !== strpos( $l, 'localis' ) || false !== strpos( $l, 'localiz' ) ) {
+		$key = 'shield';
+	}
+	return '<svg class="trust-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="' . esc_attr( $paths[ $key ] ) . '"/></svg>';
+}

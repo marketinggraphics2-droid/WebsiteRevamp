@@ -25,8 +25,13 @@ $suite    = array_values( array_filter( $products, function ( $p ) { return 'sap
 	<section class="sap-feature" id="sap-business-one">
 		<div class="wrap">
 			<article class="sap-panel"<?php dq_reveal(); ?>>
-				<div class="sap-media"><img src="<?php echo esc_url( $sap['hero'] ); ?>" alt="<?php echo esc_attr( $sap['name'] . ' interface' ); ?>" loading="lazy"></div>
-				<p class="sap-caption"><?php esc_html_e( 'Make your business Run Easier with SAP Business One 10.0', 'dynamiqes' ); ?></p><?php /* caption under the SAP media, as on the live /products/ page */ ?>
+				<?php /* the caption belongs inside the media column: as a sibling it took the panel's
+				   second grid cell, which pushed the copy onto an empty second row and left the
+				   section looking half-finished (review items B1/B2). */ ?>
+				<div class="sap-media">
+					<img src="<?php echo esc_url( $sap['hero'] ); ?>" alt="<?php echo esc_attr( $sap['name'] . ' interface' ); ?>" loading="lazy">
+					<p class="sap-caption"><?php esc_html_e( 'Make your business Run Easier with SAP Business One 10.0', 'dynamiqes' ); ?></p>
+				</div>
 				<div class="sap-copy">
 					<img class="sap-logo" src="<?php echo esc_url( $sap['logo'] ); ?>" alt="<?php echo esc_attr( $sap['name'] ); ?>" loading="lazy">
 					<h2><?php echo esc_html( $sap['name'] ); ?></h2>

@@ -442,13 +442,15 @@
     sel.addEventListener('blur', function () { set(false); });
   });
 
-  var howFound = document.getElementById('howFound');
-  var otherField = document.getElementById('otherField');
-  if (howFound && otherField) {
-    howFound.addEventListener('change', function () { otherField.classList.toggle('show', howFound.value === 'Others'); });
-  }
-  var form = document.getElementById('contactForm');
-  if (form) {
+  /* A page can now carry more than one enquiry form (an in-page product/landing CTA
+     alongside the closing contact section), so the reveal and the submit handler are
+     bound per form instead of by a single element id. */
+  document.querySelectorAll('form.contact--us').forEach(function (form) {
+    var howFound = form.querySelector('.dq-how-found');
+    var otherField = form.querySelector('.dq-other-field');
+    if (howFound && otherField) {
+      howFound.addEventListener('change', function () { otherField.classList.toggle('show', howFound.value === 'Others'); });
+    }
     var msg = form.querySelector('.form-msg');
     var say = function (text, ok) {
       if (!msg) { return; }
@@ -487,7 +489,7 @@
           if (btn) { btn.disabled = false; btn.innerHTML = orig; }
         });
     });
-  }
+  });
 })();
 
 /* Careers listing · location filter (page-career.php). Buttons carry data-location (slug, '' = all);
