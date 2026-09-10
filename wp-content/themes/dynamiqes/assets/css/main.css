@@ -2793,7 +2793,8 @@ h4.post-share-label{margin:0}
 /* C1 · trust signals: the SAP partner credentials read as badges with icons rather than a
    bare bordered list. */
 .trust-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;
+  /* 280px min caps the row at four, so six signals read as 4 + 2 rather than 5 + 1 orphan */
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;
   list-style:none;padding:0;margin-top:clamp(28px,4vw,44px);
 }
 .trust-signal{
@@ -2842,3 +2843,123 @@ h4.post-share-label{margin:0}
 .cta-form .submit-row{display:flex;justify-content:center;margin-top:6px}
 .cta-form .form-msg{margin-top:14px;text-align:center;color:rgba(var(--rgb-white),.86)}
 @media(max-width:620px){.cta-form .row{grid-template-columns:1fr}}
+
+/* ═══════════════════════════════════════════════════════════════
+   F1 · Landing / promo page sections (inc/landing-sections.php)
+
+   The SEO and SEM landing pages used to render as one 80ch article column, which the
+   review rejected on all eleven of them. Each imported H2 group is now its own designed
+   section, built from the components the rest of the site already uses — the product
+   pages' card grid and FAQ, the trust signals, the home page's logo marquee — so the
+   pages read as designed pages without a word of copy changing.
+   ═══════════════════════════════════════════════════════════════ */
+
+.lp-section{padding-block:clamp(48px,6vw,88px)}
+.lp-section.is-alt{background:var(--bg-2)}
+.lp-section+.lp-section{padding-top:clamp(48px,6vw,88px)}
+
+/* section head · eyebrow, H2 and copy on one measure, as on the product pages (item D1) */
+.lp-head{max-width:min(100%,54rem)}
+.lp-head .eyebrow{display:block;margin-bottom:12px}
+.lp-head h2{font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.035em;text-wrap:balance}
+.lp-head p{margin-top:16px;color:var(--soft);font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
+.lp-head p+p{margin-top:.9em}
+.lp-head.is-centred{max-width:min(100%,44rem);margin-inline:auto;text-align:center}
+.lp-head a{color:var(--orange-deep);font-weight:600;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.lp-head a:hover{color:var(--orange)}
+
+/* split · copy beside one image, sides alternating down the page */
+.lp-split-grid{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(32px,4.5vw,72px);align-items:center}
+.lp-split.is-flipped .lp-split-media{order:-1}
+/* the figures reserve their box: these images are lazy-loaded and remote, and without an
+   aspect-ratio the figure collapsed to its own border until the image arrived. */
+.lp-split-media{margin:0;width:100%;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--bg-2);aspect-ratio:4/3;max-height:440px}
+.lp-split-media img{display:block;width:100%;height:100%;object-fit:cover}
+@media(max-width:900px){
+  .lp-split-grid{grid-template-columns:1fr;gap:26px}
+  .lp-split.is-flipped .lp-split-media{order:0}
+  .lp-split-media{aspect-ratio:16/10;max-height:300px}
+  .lp-inline-media img{max-height:300px}
+}
+
+/* an image inside a card / copy / list section sits under the head, full width */
+/* An inline illustration is never upscaled: the imported stream mixes real section photos
+   (~640px wide) with 54px icons the importer's size filter missed, and stretching those to
+   the full column produced the huge blurred graphics the review saw. The image keeps its own
+   size, capped to the column. */
+.lp-inline-media{margin:clamp(24px,3vw,36px) 0 0;width:100%;display:flex;justify-content:center}
+.lp-inline-media img{display:block;width:auto;max-width:100%;height:auto;max-height:420px;border-radius:16px}
+
+/* cards · reuse the product pages' feature cards */
+.lp-cards .feature-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:clamp(28px,4vw,44px)}
+.lp-cards .feature-group{
+  position:relative;display:flex;flex-direction:column;gap:12px;min-height:0;overflow:hidden;
+  padding:clamp(24px,2.6vw,34px);border:1px solid var(--line);border-radius:16px;
+  background:var(--color-surface);
+  transition:transform .4s cubic-bezier(.16,1,.3,1),border-color .4s,box-shadow .4s;
+}
+.lp-cards .is-alt .feature-group,.lp-section.is-alt .feature-group{background:var(--color-surface)}
+.lp-cards .feature-group::before{
+  content:"";position:absolute;width:160px;height:160px;right:-70px;top:-70px;border-radius:50%;
+  background:rgba(var(--rgb-brand),.16);filter:blur(28px);pointer-events:none;
+}
+.lp-cards .feature-group:hover{
+  transform:translateY(-4px);border-color:rgba(var(--rgb-brand),.4);
+  box-shadow:0 24px 50px -26px rgba(var(--rgb-ink),.24);
+}
+.lp-cards .feature-group h3{position:relative;margin:0;font-size:var(--fs-card);line-height:var(--lh-heading);letter-spacing:-.015em}
+.lp-cards .feature-group p{position:relative;color:var(--soft);font-size:var(--fs-sm);line-height:var(--lh-body)}
+.lp-cards .feature-group ul{position:relative;display:grid;gap:8px;list-style:none;color:var(--soft);font-size:var(--fs-sm)}
+.lp-cards .feature-group li{display:flex;gap:9px}
+.lp-cards .feature-group li::before{content:"\2713";flex:0 0 auto;color:var(--orange-deep);font-weight:900}
+.lp-cards .feature-group a{color:var(--orange-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+@media(max-width:980px){.lp-cards .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:640px){.lp-cards .feature-grid{grid-template-columns:1fr}}
+
+/* signals · the four credentials that were four bare stacked H3s (item F6) */
+.lp-signals .trust-grid{margin-top:clamp(28px,4vw,44px)}
+
+/* list · a bullet list as a checklist panel instead of a run of loose lines */
+.lp-list-panel{
+  margin-top:clamp(28px,4vw,40px);padding:clamp(26px,3vw,40px);
+  border:1px solid var(--line);border-radius:18px;background:var(--card-grad);
+}
+.lp-checklist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px 32px;list-style:none;padding:0}
+.lp-checklist li{position:relative;padding-left:1.9em;color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body)}
+.lp-checklist li::before{
+  content:"\2713";position:absolute;left:0;top:.05em;display:grid;place-items:center;
+  width:1.35em;height:1.35em;border-radius:50%;font-size:.72em;font-weight:900;
+  color:var(--orange-deep);background:rgba(var(--rgb-brand),.14);border:1px solid rgba(var(--rgb-brand),.3);
+}
+.lp-checklist a{color:var(--orange-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px}
+.lp-split-copy .lp-checklist,.lp-cards .lp-checklist{grid-template-columns:1fr;margin-top:clamp(20px,2.6vw,30px)}
+@media(max-width:760px){.lp-checklist{grid-template-columns:1fr}}
+
+/* faq · the product pages' accordion */
+.lp-faq .faq-head{align-self:start}
+.lp-faq .lp-head{max-width:none}
+.lp-faq .faq-list{margin-top:0}
+
+/* copy · prose sections keep the shared measure and the link styling */
+.lp-copy .lp-head,.lp-list .lp-head{max-width:min(100%,58rem)}
+.lp-extra{margin-top:clamp(20px,2.6vw,32px);color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body)}
+.lp-extra img{width:100%;border-radius:16px;border:1px solid var(--line)}
+
+/* logos · the promo pages' client-logo bands (item F8) */
+.lp-logos{padding-bottom:clamp(36px,4.5vw,64px)}
+.lp-logos .lp-head{margin-bottom:clamp(24px,3vw,40px)}
+
+/* F7 · the hero's call to action */
+.landing-hero .hero-actions .btn-ghost{display:inline-flex;align-items:center;gap:10px}
+.landing-hero .hero-actions .btn-ghost svg{width:18px;height:18px;fill:currentColor}
+
+/* F2/F3 · the page's own CTA panel, carrying the enquiry form */
+.lp-cta .cta-panel{padding-inline:clamp(24px,3.2vw,48px)}
+.lp-cta .cta-panel h2{max-width:44ch}
+.lp-cta .cta-panel p{max-width:78ch}
+.lp-cta-links{
+  position:relative;display:flex;flex-wrap:wrap;align-items:center;justify-content:center;
+  gap:14px 28px;margin-top:clamp(22px,3vw,32px);
+}
+.lp-cta-links .dynamiq-cta{margin-top:0}
+.lp-cta-links .cta-phone{margin:0}

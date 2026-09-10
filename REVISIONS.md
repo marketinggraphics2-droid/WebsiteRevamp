@@ -55,16 +55,16 @@ sap-business-one-provider-philippines, accounting-system-philippines,
 erp-solutions-philippines, barcode-inventory-system-philippines, sap-software-philippines,
 bir-cas-philippines, promo/bir-cas-solution, promo/accounting-inventory-system, promo/erp-system.
 
-- [ ] **F1** "This has no proper design" — landing pages need a real designed template covering
+- [x] **F1** "This has no proper design" — landing pages need a real designed template covering
       every content section, not long-form article body. Rows 25, 29, 32, 37, 41, 45, 49, 53, 57, 62, 67.
-- [ ] **F2** Missing mid-page contact form / CTA section. Rows 27, 30, 33, 39, 43, 47, 51, 55.
-- [ ] **F3** Original SEO/SEM landing CTA heading + copy must be retained (the two CTA links —
+- [x] **F2** Missing mid-page contact form / CTA section. Rows 27, 30, 33, 39, 43, 47, 51, 55.
+- [x] **F3** Original SEO/SEM landing CTA heading + copy must be retained (the two CTA links —
       free business analysis + phone — may stay). Rows 40, 44, 48, 52, 56, 61, 66, 71.
-- [ ] **F4** Copy missing in-text internal links. Rows 26, 38, 42, 46, 50, 54.
-- [ ] **F5** "SAP Business One - Gold Partner" → "SAP Business One Premier Partner". Rows 34, 36.
-- [ ] **F6** Fix run-together words in "Why Choose DynamIQ as Your IT Solutions Provider…". Row 28.
-- [ ] **F7** Promo pages: missing CTA buttons in the H1 section. Rows 58, 63, 68.
-- [ ] **F8** Promo pages: missing client logos. Rows 60, 65, 70.
+- [x] **F4** Copy missing in-text internal links. Rows 26, 38, 42, 46, 50, 54.
+- [x] **F5** "SAP Business One - Gold Partner" → "SAP Business One Premier Partner". Rows 34, 36.
+- [x] **F6** Fix run-together words in "Why Choose DynamIQ as Your IT Solutions Provider…". Row 28.
+- [x] **F7** Promo pages: missing CTA buttons in the H1 section. Rows 58, 63, 68.
+- [x] **F8** Promo pages: missing client logos. Rows 60, 65, 70.
 
 ## G. Utility pages
 
@@ -76,3 +76,12 @@ bir-cas-philippines, promo/bir-cas-solution, promo/accounting-inventory-system, 
 - [ ] **G6** Thank You (Accounting) — remove the bottom CTA band. Row 77.
 - [x] **G7** 404 — fix padding between the two buttons. Row 78.
 - [x] **G8** 404 — centre-align all elements. Row 79.
+
+---
+
+## Re-import required on staging
+
+The importer changes (F4 in-text links, F5 the partner tier, F6 word spacing, and the icon
+size probe) rewrite what is *stored* for each landing page, so they only take effect after
+**Appearance → DynamIQ Setup → Import landing pages** is run again on staging. The section
+design (F1/F2/F3/F7/F8) is template-side and applies immediately.

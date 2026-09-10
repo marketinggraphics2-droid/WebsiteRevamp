@@ -157,7 +157,7 @@ function dq_landing_parse( $slug, $html = '' ) {
 					}
 					$t = dq_landing_text( $node );
 					if ( '' !== $t ) {
-						$cta .= '<' . strtolower( $node->nodeName ) . '>' . esc_html( $t ) . '</' . strtolower( $node->nodeName ) . '>';
+						$cta .= '<' . strtolower( $node->nodeName ) . '>' . dq_landing_fix_copy( esc_html( $t ) ) . '</' . strtolower( $node->nodeName ) . '>';
 					}
 				}
 				if ( $cta ) {
@@ -225,6 +225,14 @@ function dq_landing_parse( $slug, $html = '' ) {
 					|| ( $w && $w < 200 ) || ( $h && $h < 200 ) ) {
 					continue;
 				}
+				/* The old pages often ship the icons with no width/height attributes and a name
+				   the filter above cannot tell from a photo ("top-finance.png" is 54x60), so a
+				   54px icon became a section image and got stretched across the column. Measure
+				   it. A probe that fails leaves the image in — the size cap in the CSS covers it. */
+				$dims = dq_landing_image_size( $src );
+				if ( $dims && ( $dims[0] < 200 || $dims[1] < 200 ) ) {
+					continue;
+				}
 				$section_images++;
 				$seen[ $src ] = true;
 				$alt = trim( $node->getAttribute( 'alt' ) );
@@ -239,7 +247,8 @@ function dq_landing_parse( $slug, $html = '' ) {
 				foreach ( $xp->query( './li', $node ) as $li ) {
 					$t = dq_landing_text( $li );
 					if ( $t ) {
-						$items .= '<li>' . esc_html( $t ) . '</li>';
+						$inline = dq_landing_inline( $li );
+						$items .= '<li>' . dq_landing_fix_copy( $inline ? $inline : esc_html( $t ) ) . '</li>';
 					}
 				}
 				if ( $items ) {
@@ -268,12 +277,19 @@ function dq_landing_parse( $slug, $html = '' ) {
 				$blocks[]     = '<ul>' . implode( '', $caption_list ) . '</ul>';
 				$caption_list = array();
 			}
-			$blocks[] = '<' . $name . '>' . esc_html( $t ) . '</' . $name . '>';
+			/* paragraphs keep their in-text links (item F4); headings stay plain text */
+			$body     = 'p' === $name ? dq_landing_inline( $node ) : '';
+			$blocks[] = '<' . $name . '>' . dq_landing_fix_copy( $body ? $body : esc_html( $t ) ) . '</' . $name . '>';
 		}
 		if ( $caption_list ) {
 			$blocks[] = '<ul>' . implode( '', $caption_list ) . '</ul>';
 		}
 	}
+
+	$title       = dq_landing_fix_copy( $title );
+	$seo_title   = dq_landing_fix_copy( $seo_title );
+	$description = dq_landing_fix_copy( $description );
+	$intro       = dq_landing_fix_copy( $intro );
 
 	return array(
 		'title'       => $title,
@@ -325,7 +341,8 @@ function dq_landing_rich( DOMNode $node ) {
 			}
 			$t = dq_landing_text( $n );
 			if ( '' !== $t ) {
-				$out .= '<p>' . esc_html( $t ) . '</p>';
+				$inline = dq_landing_inline( $n );
+				$out   .= '<p>' . dq_landing_fix_copy( $inline ? $inline : esc_html( $t ) ) . '</p>';
 			}
 			continue;
 		}
@@ -336,7 +353,8 @@ function dq_landing_rich( DOMNode $node ) {
 		foreach ( $xp->query( './li', $n ) as $li ) {
 			$t = dq_landing_text( $li );
 			if ( '' !== $t ) {
-				$items .= '<li>' . esc_html( $t ) . '</li>';
+				$inline = dq_landing_inline( $li );
+				$items .= '<li>' . dq_landing_fix_copy( $inline ? $inline : esc_html( $t ) ) . '</li>';
 			}
 		}
 		if ( $items ) {
@@ -364,7 +382,134 @@ function dq_landing_text( DOMNode $node ) {
 			$rm->parentNode->removeChild( $rm );
 		}
 	}
-	return trim( preg_replace( '/\s+/u', ' ', html_entity_decode( $doc->textContent, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+	/* textContent concatenates descendants with no separator, so a page builder that splits
+	   a headline across <span>s or stacks <option>s came out run together — "Why
+	   ChooseDynamIQ" on the IT Solutions landing page and "PositionTechnical
+	   ConsultantFunctional Consultant" on the Application Form (review items F6 and G1).
+	   Give every non-inline element boundary an explicit space before extracting. */
+	$inline = array( 'a', 'span', 'strong', 'b', 'em', 'i', 'u', 's', 'small', 'sub', 'sup', 'code',
+		'abbr', 'mark', 'font', 'time', 'q', 'cite', 'var', 'kbd', 'samp', 'bdi', 'bdo', 'wbr' );
+	foreach ( iterator_to_array( $xp->query( '//*' ) ) as $el ) {
+		if ( $el === $doc->documentElement || in_array( strtolower( $el->nodeName ), $inline, true ) || ! $el->parentNode ) {
+			continue;
+		}
+		$el->parentNode->insertBefore( $doc->createTextNode( ' ' ), $el );
+		if ( $el->nextSibling ) {
+			$el->parentNode->insertBefore( $doc->createTextNode( ' ' ), $el->nextSibling );
+		} else {
+			$el->parentNode->appendChild( $doc->createTextNode( ' ' ) );
+		}
+	}
+	$text = trim( preg_replace( '/\s+/u', ' ', html_entity_decode( $doc->textContent, ENT_QUOTES | ENT_HTML5, 'UTF-8' ) ) );
+	$text = preg_replace( '/\s+([,.;:!?%)\]])/u', '$1', $text ); // the inserted spaces must not push punctuation off its word
+	$text = preg_replace( '/([(\[])\s+/u', '$1', $text );
+	return trim( $text );
+}
+
+/**
+ * A node's copy as inline HTML, keeping its in-text links.
+ *
+ * dq_landing_text() flattens everything to plain text, which is why the imported landing
+ * pages lost the in-text internal links the review asked for (item F4). This keeps <a>,
+ * <strong>/<em> and <br>, drops everything else, and rewrites dynamiqes.com URLs to this
+ * site so the links resolve on staging and after go-live.
+ *
+ * @param DOMNode $node Source node.
+ * @return string Inline HTML (already sanitised through dq_inline_html()).
+ */
+function dq_landing_inline( DOMNode $node ) {
+	$clone = $node->cloneNode( true );
+	$doc   = new DOMDocument();
+	$doc->appendChild( $doc->importNode( $clone, true ) );
+	$xp = new DOMXPath( $doc );
+	foreach ( $xp->query( '//script|//style|//svg|//button|//noscript|//select|//input|//textarea' ) as $rm ) {
+		if ( $rm->parentNode && $rm !== $doc->documentElement ) {
+			$rm->parentNode->removeChild( $rm );
+		}
+	}
+	$live = dq_landing_source_base();
+	foreach ( iterator_to_array( $xp->query( '//a[@href]' ) ) as $a ) {
+		$href = trim( $a->getAttribute( 'href' ) );
+		if ( 0 === strpos( $href, $live ) ) {
+			$href = home_url( substr( $href, strlen( $live ) ) ); // internal: point at this site
+		}
+		if ( '' === $href || 0 === strpos( $href, '#' ) || preg_match( '/^javascript:/i', $href ) ) {
+			/* not a real destination — unwrap, keeping the words */
+			while ( $a->firstChild ) {
+				$a->parentNode->insertBefore( $a->firstChild, $a );
+			}
+			$a->parentNode->removeChild( $a );
+			continue;
+		}
+		$a->setAttribute( 'href', $href );
+		foreach ( array( 'class', 'id', 'style', 'onclick', 'data-wpel-link' ) as $attr ) {
+			$a->removeAttribute( $attr );
+		}
+		if ( 0 !== strpos( $href, home_url() ) ) {
+			$a->setAttribute( 'target', '_blank' );
+			$a->setAttribute( 'rel', 'noopener' );
+		}
+	}
+	$html = '';
+	foreach ( $doc->documentElement->childNodes as $child ) {
+		$html .= $doc->saveHTML( $child );
+	}
+	$html = html_entity_decode( $html, ENT_QUOTES | ENT_HTML5, 'UTF-8' );
+	$html = trim( preg_replace( '/\s+/u', ' ', $html ) );
+	$html = preg_replace( '/\s+([,.;:!?%)\]])/u', '$1', $html );
+	$out  = trim( dq_inline_html( $html ) );
+	/* If nothing but whitespace survived, or the markup carried no link worth keeping,
+	   fall back to the plain-text path so the copy is never lost. */
+	return '' === trim( wp_strip_all_tags( $out ) ) ? '' : $out;
+}
+
+/**
+ * Copy corrections applied to every imported landing page.
+ *
+ * The review asked for the SAP partner tier to read "Premier Partner" everywhere (item F5);
+ * "Gold Partner" is the old tier and still appears in the live copy.
+ *
+ * @param string $text Copy (plain text or inline HTML).
+ * @return string
+ */
+function dq_landing_fix_copy( $text ) {
+	$text = (string) $text;
+	/* "SAP Business One - Gold Partner in the Philippines" should read as one phrase, so the
+	   dash goes with the tier rather than leaving "SAP Business One - Premier Partner". */
+	$text = preg_replace( '/SAP Business One\s*[-\x{2010}-\x{2015}]\s*Gold Partner/u', 'SAP Business One Premier Partner', $text );
+	return str_replace( 'Gold Partner', 'Premier Partner', $text );
+}
+
+/**
+ * Pixel size of a remote image, memoised per request.
+ *
+ * The importer needs this to tell a section photo from an icon (see the image filter above);
+ * the old pages' markup carries no reliable width/height. Failures return null so a probe that
+ * cannot reach the file never drops an image.
+ *
+ * @param string $url Image URL.
+ * @return array{0:int,1:int}|null [ width, height ]
+ */
+function dq_landing_image_size( $url ) {
+	static $cache = array();
+	if ( array_key_exists( $url, $cache ) ) {
+		return $cache[ $url ];
+	}
+	$cache[ $url ] = null;
+	$res = wp_remote_get( $url, array( 'timeout' => 15, 'user-agent' => 'Mozilla/5.0 (DynamIQ theme importer)' ) );
+	if ( is_wp_error( $res ) || 200 !== wp_remote_retrieve_response_code( $res ) ) {
+		return null;
+	}
+	$body = wp_remote_retrieve_body( $res );
+	if ( '' === $body ) {
+		return null;
+	}
+	$info = @getimagesizefromstring( $body ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
+	if ( ! $info || empty( $info[0] ) || empty( $info[1] ) ) {
+		return null;
+	}
+	$cache[ $url ] = array( (int) $info[0], (int) $info[1] );
+	return $cache[ $url ];
 }
 
 /** Real image URL (handles lazy-load attributes). */
@@ -414,7 +559,14 @@ function dq_import_landing_pages( $sideload = false ) {
 		$prev_tpl = $existing ? get_post_meta( $existing->ID, '_wp_page_template', true ) : '';
 		if ( $existing ) {
 			/* An existing page keeps its own title (it feeds <title>, Yoast and the menus);
-			   the article headline goes to _dq_landing_h1 and the template shows that. */
+			   the article headline goes to _dq_landing_h1 and the template shows that.
+			   The one exception is the retired partner tier: the review asked for "Premier
+			   Partner" everywhere (item F5), and the title feeds the breadcrumb and the
+			   image alt text as well as <title>. */
+			$fixed_title = dq_landing_fix_copy( $existing->post_title );
+			if ( $fixed_title !== $existing->post_title ) {
+				$args['post_title'] = $fixed_title;
+			}
 			$args['ID'] = $existing->ID;
 			$id         = wp_update_post( $args );
 		} else {
