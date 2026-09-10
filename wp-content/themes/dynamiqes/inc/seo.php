@@ -229,16 +229,41 @@ add_filter( 'wp_robots', function ( $robots ) {
 	return $robots;
 } );
 
+/**
+ * Does the theme shape the sitemap at all?
+ *
+ * Off by default: the sitemap belongs to the site (Yoast, or WordPress core), and the theme
+ * silently dropping entries from it is surprising. Turn it on with
+ * add_filter( 'dq_manage_sitemap', '__return_true' ) to get the tuning described below —
+ * internal post types and attachments out, and the pages that share a URL with a product
+ * de-duplicated so each URL is listed once.
+ *
+ * The one thing that applies either way is dq_inquiry: those posts are contact-form
+ * submissions, they are private, and they must never appear in a sitemap.
+ *
+ * @return bool
+ */
+function dq_manages_sitemap() {
+	return (bool) apply_filters( 'dq_manage_sitemap', false );
+}
+
 /* Sitemap: products in, internal types out. The theme's testimonials stay in only when they
    are the site's testimonial source (the live install lists its customer_testimonial posts). */
 add_filter( 'wp_sitemaps_post_types', function ( $types ) {
-	unset( $types['dq_inquiry'], $types['attachment'] );
+	unset( $types['dq_inquiry'] ); // contact-form submissions — never indexable
+	if ( ! dq_manages_sitemap() ) {
+		return $types;
+	}
+	unset( $types['attachment'] );
 	if ( 'dq_testimonial' !== dq_source_post_type( 'testimonial' ) ) {
 		unset( $types['dq_testimonial'] );
 	}
 	return $types;
 } );
 add_filter( 'wp_sitemaps_add_provider', function ( $provider, $name ) {
+	if ( ! dq_manages_sitemap() ) {
+		return $provider;
+	}
 	return 'users' === $name ? false : $provider;
 }, 10, 2 );
 

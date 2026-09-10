@@ -136,14 +136,17 @@ add_filter( 'wpseo_opengraph_desc', function ( $desc ) {
 /* Yoast: the copied live pages keep their entries (page-sitemap.xml, as on dynamiqes.com); the
    products rendering at those URLs stay out, so the index matches the live one. */
 add_filter( 'wpseo_exclude_from_sitemap_by_post_ids', function ( $ids ) {
+	if ( ! function_exists( 'dq_manages_sitemap' ) || ! dq_manages_sitemap() ) {
+		return $ids; // the sitemap is the site's, not the theme's — see dq_manages_sitemap()
+	}
 	return array_merge( (array) $ids, array_keys( dq_shadowed_product_pages() ) );
 } );
 
 /* Core sitemap (no SEO plugin): products are listed under dq_product, so drop the shadowed pages —
    the /products/ page (behind the archive) and the product pages. */
 add_filter( 'wp_sitemaps_posts_query_args', function ( $args, $type ) {
-	if ( 'page' !== $type ) {
-		return $args;
+	if ( 'page' !== $type || ! function_exists( 'dq_manages_sitemap' ) || ! dq_manages_sitemap() ) {
+		return $args; // leave the page sitemap exactly as WordPress built it
 	}
 	$exclude  = array_values( dq_shadowed_product_pages() );
 	$products = dq_page_at_path( 'products' );
