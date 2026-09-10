@@ -207,9 +207,40 @@ function dq_landing_parse( $slug, $html = '' ) {
 		   test is an exact count: one image per card and nothing spare means there is no section
 		   photo. A section with a photo *and* a set of card icons has one image more than it has
 		   cards, and keeps its photo. */
-		$owned_imgs    = count( dq_landing_owned_nodes( $xp->query( './/img', $section ), $section ) );
-		$owned_cards   = count( dq_landing_owned_nodes( $xp->query( './/h3|.//h4', $section ), $section ) );
+		$img_nodes   = dq_landing_owned_nodes( $xp->query( './/img', $section ), $section );
+		$card_nodes  = dq_landing_owned_nodes( $xp->query( './/h3|.//h4', $section ), $section );
+		$owned_cards = count( $card_nodes );
+		/* Count *distinct* sources: the old pages repeat each image for their desktop and mobile
+		   layouts, so a three-card section can carry six <img> tags and fail an exact count. */
+		$srcs = array();
+		foreach ( $img_nodes as $n ) {
+			$u = dq_landing_img_src( $n );
+			if ( $u ) {
+				$srcs[ $u ] = true;
+			}
+		}
+		$owned_imgs    = count( $srcs );
 		$cards_own_art = ( $owned_cards >= 2 && $owned_imgs === $owned_cards );
+		/* Which way round is this section built? Most put the card icon before its heading, but
+		   "Advantages of the Barcode Inventory System" puts it after — and attaching a pending
+		   icon to the *next* heading there shifts every icon down by one card. Compare the
+		   document position of the first image against the first heading and follow the page. */
+		$icons_trail = false;
+		if ( $img_nodes && $card_nodes ) {
+			$first_img  = $img_nodes[0]->getNodePath();
+			$first_card = $card_nodes[0]->getNodePath();
+			foreach ( $xp->query( './/h3|.//h4|.//img', $section ) as $probe ) {
+				$path = $probe->getNodePath();
+				if ( $path === $first_img ) {
+					break; // an image comes first: icons lead their headings
+				}
+				if ( $path === $first_card ) {
+					$icons_trail = true; // a heading comes first: images follow theirs
+					break;
+				}
+			}
+		}
+		$last_heading = -1; // index in $blocks of the heading an trailing icon belongs to
 		$caption_list   = array(); // icon + caption rows on the old site are bare <p>s after a "...:" lead-in; rebuild them as a list
 		foreach ( $xp->query( './/h2|.//h3|.//h4|.//p|.//ul|.//ol|.//img', $section ) as $node ) {
 			$name = strtolower( $node->nodeName );
@@ -254,8 +285,13 @@ function dq_landing_parse( $slug, $html = '' ) {
 				if ( $named_icon || $small ) {
 					/* Every H3 card on these pages carries one of these. They used to be dropped
 					   outright, which is what the client spotted as "no logos/icons in the new
-					   build"; hold it for the heading that follows. */
-					$pending_icon = $src;
+					   build". Depending on the section, the icon either leads its heading (hold
+					   it for the next one) or follows it (write it onto the last one). */
+					if ( $icons_trail ) {
+						dq_landing_attach_icon( $blocks, $last_heading, $src );
+					} else {
+						$pending_icon = $src;
+					}
 					continue;
 				}
 				if ( isset( $seen[ $src ] ) ) {
@@ -266,7 +302,11 @@ function dq_landing_parse( $slug, $html = '' ) {
 					   full-size illustration rather than a small icon ("Streamline Inventory
 					   Management" on the SAP provider page), so hold this for the card instead
 					   of dropping it — one photo per section, but the cards keep their art. */
-					$pending_icon = $src;
+					if ( $icons_trail ) {
+						dq_landing_attach_icon( $blocks, $last_heading, $src );
+					} else {
+						$pending_icon = $src;
+					}
 					continue;
 				}
 				$section_images++;
@@ -321,6 +361,9 @@ function dq_landing_parse( $slug, $html = '' ) {
 			}
 			$pending_icon = '';
 			$blocks[]     = '<' . $name . $attr . '>' . dq_landing_fix_copy( $body ? $body : esc_html( $t ) ) . '</' . $name . '>';
+			if ( 'h3' === $name || 'h4' === $name ) {
+				$last_heading = count( $blocks ) - 1;
+			}
 		}
 		if ( $caption_list ) {
 			$blocks[] = '<ul>' . implode( '', $caption_list ) . '</ul>';
@@ -519,6 +562,30 @@ function dq_landing_fix_copy( $text ) {
 	   dash goes with the tier rather than leaving "SAP Business One - Premier Partner". */
 	$text = preg_replace( '/SAP Business One\s*[-\x{2010}-\x{2015}]\s*Gold Partner/u', 'SAP Business One Premier Partner', $text );
 	return str_replace( 'Gold Partner', 'Premier Partner', $text );
+}
+
+/**
+ * Write a card icon onto a heading block that has already been emitted.
+ *
+ * Used for the sections that put the image after its heading rather than before it. Skips a
+ * heading that already carries one, so the duplicate desktop/mobile copies of an image cannot
+ * overwrite the first.
+ *
+ * @param array $blocks  Emitted blocks, by reference.
+ * @param int   $index   Index of the heading block, or -1.
+ * @param string $src    Icon URL.
+ * @return void
+ */
+function dq_landing_attach_icon( array &$blocks, $index, $src ) {
+	if ( $index < 0 || ! isset( $blocks[ $index ] ) || false !== strpos( $blocks[ $index ], 'data-icon=' ) ) {
+		return;
+	}
+	$blocks[ $index ] = preg_replace(
+		'/^<(h[34])>/',
+		'<$1 data-icon="' . esc_url( $src ) . '">',
+		$blocks[ $index ],
+		1
+	);
 }
 
 /**
