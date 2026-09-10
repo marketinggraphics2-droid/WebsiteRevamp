@@ -28,6 +28,12 @@ function dq_process_contact() {
 		return array( false, __( 'Too many messages from this connection. Please try again in an hour.', 'dynamiqes' ) );
 	}
 
+	/* Two shapes post here: the enquiry form, and the job application on /application-form/
+	   (the review found that page had no form at all - item G1). The application asks for a
+	   position rather than a company and industry, so the required set follows the kind. */
+	$kind = isset( $_POST['dq_form'] ) ? sanitize_key( wp_unslash( $_POST['dq_form'] ) ) : 'contact';
+	$kind = 'application' === $kind ? 'application' : 'contact';
+
 	$f = array(
 		'first-name'      => __( 'First Name', 'dynamiqes' ),
 		'last-name'       => __( 'Last Name', 'dynamiqes' ),
@@ -40,8 +46,13 @@ function dq_process_contact() {
 		'other-found'     => __( 'Other', 'dynamiqes' ),
 		'how-much-budget' => __( 'Accounting System budget', 'dynamiqes' ),
 		'message-area'    => __( 'Message', 'dynamiqes' ),
+		'position'        => __( 'Position applied for', 'dynamiqes' ),
+		'location'        => __( 'Preferred location', 'dynamiqes' ),
+		'cv-link'         => __( 'CV / portfolio link', 'dynamiqes' ),
 	);
-	$required = array( 'first-name', 'last-name', 'your-email', 'mobile', 'company-name', 'designation', 'industry', 'how-did-you-find', 'message-area' );
+	$required = 'application' === $kind
+		? array( 'first-name', 'last-name', 'your-email', 'mobile', 'position', 'message-area' )
+		: array( 'first-name', 'last-name', 'your-email', 'mobile', 'company-name', 'designation', 'industry', 'how-did-you-find', 'message-area' );
 	$data     = array();
 	foreach ( $f as $k => $label ) {
 		$raw        = isset( $_POST[ $k ] ) ? wp_unslash( $_POST[ $k ] ) : '';
@@ -54,8 +65,12 @@ function dq_process_contact() {
 		return array( false, __( 'Please enter a valid email address.', 'dynamiqes' ) );
 	}
 
-	$name    = $data['first-name'] . ' ' . $data['last-name'];
-	$subject = sprintf( '[%s] New inquiry from %s (%s)', get_bloginfo( 'name' ), $name, $data['company-name'] );
+	$name = $data['first-name'] . ' ' . $data['last-name'];
+	if ( 'application' === $kind ) {
+		$subject = sprintf( '[%s] Application from %s for %s', get_bloginfo( 'name' ), $name, $data['position'] );
+	} else {
+		$subject = sprintf( '[%s] New inquiry from %s (%s)', get_bloginfo( 'name' ), $name, $data['company-name'] );
+	}
 	$lines   = array();
 	foreach ( $f as $k => $label ) {
 		if ( '' !== $data[ $k ] ) {
@@ -67,14 +82,20 @@ function dq_process_contact() {
 	$lines[] = 'IP: ' . $ip;
 	$body    = implode( "\n", $lines );
 
-	$to      = array_map( 'trim', explode( ',', get_theme_mod( 'dq_contact_email', get_option( 'admin_email' ) ) ) );
+	$to = array_map( 'trim', explode( ',', get_theme_mod( 'dq_contact_email', get_option( 'admin_email' ) ) ) );
+	if ( 'application' === $kind && function_exists( 'dq_career_hr' ) ) {
+		$hr = dq_career_hr();
+		if ( ! empty( $hr['email'] ) && is_email( $hr['email'] ) ) {
+			$to = array( $hr['email'] ); // applications go to HR, not the sales inbox
+		}
+	}
 	$headers = array( 'Reply-To: ' . $name . ' <' . $data['your-email'] . '>' );
 	$sent    = wp_mail( $to, $subject, $body, $headers );
 
 	$post_id = wp_insert_post( array(
 		'post_type'    => 'dq_inquiry',
 		'post_status'  => 'private',
-		'post_title'   => $name . ' — ' . $data['company-name'],
+		'post_title'   => $name . ' — ' . ( 'application' === $kind ? $data['position'] : $data['company-name'] ),
 		'post_content' => $body,
 	) );
 	if ( $post_id && ! is_wp_error( $post_id ) ) {
@@ -83,6 +104,9 @@ function dq_process_contact() {
 	}
 	set_transient( $key, (int) get_transient( $key ) + 1, HOUR_IN_SECONDS );
 
+	if ( 'application' === $kind ) {
+		return array( true, __( 'Thank you — we have received your application and our HR team will be in touch.', 'dynamiqes' ) );
+	}
 	return array( true, __( 'Thank you — we\'ve received your message and will get back to you within 24 hours.', 'dynamiqes' ) );
 }
 

@@ -68,12 +68,12 @@ bir-cas-philippines, promo/bir-cas-solution, promo/accounting-inventory-system, 
 
 ## G. Utility pages
 
-- [ ] **G1** Application Form — not formatted properly, missing contact form. Row 72.
-- [ ] **G2** Application Form — remove the bottom CTA/contact band. Row 73.
-- [ ] **G3** Thank You (Ad) — not formatted/designed properly. Row 74.
-- [ ] **G4** Thank You (Ad) — remove the bottom CTA band. Row 75.
-- [ ] **G5** Thank You (Accounting) — not formatted/designed properly. Row 76.
-- [ ] **G6** Thank You (Accounting) — remove the bottom CTA band. Row 77.
+- [x] **G1** Application Form — not formatted properly, missing contact form. Row 72.
+- [x] **G2** Application Form — remove the bottom CTA/contact band. Row 73.
+- [x] **G3** Thank You (Ad) — not formatted/designed properly. Row 74.
+- [x] **G4** Thank You (Ad) — remove the bottom CTA band. Row 75.
+- [x] **G5** Thank You (Accounting) — not formatted/designed properly. Row 76.
+- [x] **G6** Thank You (Accounting) — remove the bottom CTA band. Row 77.
 - [x] **G7** 404 — fix padding between the two buttons. Row 78.
 - [x] **G8** 404 — centre-align all elements. Row 79.
 
