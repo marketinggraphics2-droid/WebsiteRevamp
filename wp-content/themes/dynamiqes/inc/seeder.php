@@ -64,8 +64,9 @@ function dq_repair_blog_menu_links() {
 			$landing[ $b['title'] ] = $b;
 		}
 	}
-	$n        = 0;
-	$services = dq_services_page();
+	$n          = 0;
+	$services   = dq_services_page();
+	$blogs_page = function_exists( 'dq_blogs_page' ) ? dq_blogs_page() : null;
 	foreach ( wp_get_nav_menu_items( $menu->term_id ) as $mi ) {
 		/* Top-level "Our Services" still on the home anchor → the imported /our-services/ page. */
 		if ( $services && ! $mi->menu_item_parent && 'custom' === $mi->type && dq_is_services_anchor( $mi->url ) ) {
@@ -79,6 +80,27 @@ function dq_repair_blog_menu_links() {
 				'menu-item-object-id' => $services->ID,
 			) );
 			$n++;
+			continue;
+		}
+		/* Top-level "Blogs" pointing anywhere but the Blogs page. On the live database this
+		   item resolves to News & Events, so the nav sends every visitor to the wrong page.
+		   Only the two top-level items above are repaired by title; everything else below is
+		   matched as a child of the Blogs dropdown. */
+		if ( ! $mi->menu_item_parent && $blogs_page && strcasecmp( trim( $mi->title ), 'Blogs' ) === 0 ) {
+			$points_at_blogs = ( 'post_type' === $mi->type && (int) $mi->object_id === (int) $blogs_page->ID )
+				|| ( 'custom' === $mi->type && untrailingslashit( $mi->url ) === untrailingslashit( get_permalink( $blogs_page ) ) );
+			if ( ! $points_at_blogs ) {
+				wp_update_nav_menu_item( $menu->term_id, $mi->ID, array(
+					'menu-item-title'     => $mi->title,
+					'menu-item-status'    => 'publish',
+					'menu-item-parent-id' => 0,
+					'menu-item-position'  => (int) $mi->menu_order,
+					'menu-item-type'      => 'post_type',
+					'menu-item-object'    => 'page',
+					'menu-item-object-id' => (int) $blogs_page->ID,
+				) );
+				$n++;
+			}
 			continue;
 		}
 		if ( ! $mi->menu_item_parent || 'custom' !== $mi->type || ! isset( $landing[ $mi->title ] ) ) {

@@ -299,6 +299,9 @@ function dq_adopt_live_urls() {
 	$moved = dq_migrate_product_slugs();
 	$blogs = dq_ensure_blogs_page();
 	$reset = dq_refresh_product_content();
+	/* The page existing is not enough: on the live database the nav's top-level "Blogs" item
+	   resolves to News & Events, so every visitor who clicks Blogs lands on the wrong page. */
+	$menu = function_exists( 'dq_repair_blog_menu_links' ) ? dq_repair_blog_menu_links() : 0;
 	flush_rewrite_rules();
 	update_option( 'dq_live_urls_v1', time() );
 	update_option( 'dq_live_content_v1', time() );
@@ -306,6 +309,7 @@ function dq_adopt_live_urls() {
 		sprintf( '%d product URLs moved to the live slugs', $moved ),
 		sprintf( '%d stale product fields reset to the live copy', $reset ),
 		$blogs ? 'Blogs index at ' . wp_make_link_relative( get_permalink( $blogs ) ) : 'Blogs page could not be created',
+		sprintf( '%d nav menu links repointed at the imported pages', $menu ),
 		sprintf( '%d products share a URL with a copied live page (title tag / description inherited, sitemap de-duplicated)', count( dq_shadowed_product_pages() ) ),
 	);
 }
@@ -318,3 +322,19 @@ add_action( 'init', function () {
 	update_option( 'dq_live_urls_v1', time() ); // first, so a failure cannot loop
 	dq_adopt_live_urls();
 }, 25 );
+
+/* The nav's top-level "Blogs" item points at News & Events on the live database, and sites
+   seeded before 1.2.4 already passed the dq_live_urls_v1 pass above, so they need a run of
+   their own. Admin-side and once, like the other repairs in this file. */
+add_action( 'init', function () {
+	if ( ! is_admin() || get_option( 'dq_blog_menu_v2' ) || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	update_option( 'dq_blog_menu_v2', time() );
+	if ( function_exists( 'dq_ensure_blogs_page' ) ) {
+		dq_ensure_blogs_page();
+	}
+	if ( function_exists( 'dq_repair_blog_menu_links' ) ) {
+		dq_repair_blog_menu_links();
+	}
+}, 27 );
