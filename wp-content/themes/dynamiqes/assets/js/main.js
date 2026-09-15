@@ -3,7 +3,7 @@
    - scroll-reveal engine ([data-reveal] → .in)
    - nav condense + chrome measurement for the full-height hero
    - hero video fade-in, contact video lazy play/pause
-   - IQ Suite logo strip clone + hover card
+   - product logo strip clone + hover card
    - testimonial marquee clone, feature-card cursor glow, partner photo parallax
    - product-detail hero parallax is CSS-only (scroll-driven animation), see main.css
    - contact form (AJAX → admin-ajax.php) */
@@ -248,7 +248,7 @@
     });
   }
 
-  /* 7 · Hero IQ Suite strip · clone until half the track covers the strip (even set count) */
+  /* 7 · Hero product strip · clone until half the track covers the strip (even set count) */
   var strip = document.querySelector('.banner-strip');
   var stripTrack = document.querySelector('.banner-strip-track');
   if (strip && stripTrack && !reduce) {

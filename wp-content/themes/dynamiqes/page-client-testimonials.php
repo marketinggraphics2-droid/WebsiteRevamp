@@ -22,7 +22,6 @@ $intro        = trim( get_the_content() );
 	<article <?php post_class( 'testimonials-page' ); ?>>
 		<header class="page-hero">
 			<div class="wrap">
-				<span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'What they say', 'dynamiqes' ); ?></span>
 				<h1<?php dq_reveal( '', 60 ); ?>><?php the_title(); ?></h1>
 				<?php if ( '' !== $intro ) : ?><div class="page-hero-intro"<?php dq_reveal( '', 120 ); ?>><?php echo apply_filters( 'the_content', $intro ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div><?php endif; ?>
 			</div>

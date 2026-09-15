@@ -841,3 +841,70 @@ function dq_is_icon_sized( $url, $min = 200 ) {
 	$size = @getimagesize( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
 	return (bool) ( $size && ( $size[0] < $min || $size[1] < $min ) );
 }
+
+/**
+ * Is this image a photograph (fill its panel edge to edge) or a product mockup / UI screen
+ * (keep it whole inside the panel)? JPEG / WebP are photos. A PNG is a photo only when it
+ * carries no alpha channel and no palette: the transparent laptop and monitor renders are
+ * RGBA, the section photos exported as PNG are plain RGB.
+ *
+ * @param string $src Theme-relative path (assets/…) or URL.
+ * @return bool
+ */
+function dq_is_photo_image( $src ) {
+	$src = (string) $src;
+	if ( '' === $src ) {
+		return false;
+	}
+	$path = (string) wp_parse_url( $src, PHP_URL_PATH );
+	$ext  = strtolower( pathinfo( $path, PATHINFO_EXTENSION ) );
+	if ( in_array( $ext, array( 'jpg', 'jpeg', 'webp', 'avif' ), true ) ) {
+		return true;
+	}
+	if ( 'png' !== $ext ) {
+		return false;
+	}
+	$file = preg_match( '#^https?://#i', $src ) ? '' : DQ_DIR . '/' . ltrim( $src, '/' );
+	if ( '' === $file || ! is_readable( $file ) ) {
+		return false;
+	}
+	$head = file_get_contents( $file, false, null, 0, 33 ); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents
+	if ( false === $head || strlen( $head ) < 26 || "\x89PNG" !== substr( $head, 0, 4 ) ) {
+		return false;
+	}
+	if ( in_array( ord( $head[25] ), array( 0, 2 ), true ) ) {
+		return true; // IHDR colour type 0 / 2: no alpha channel at all
+	}
+	/* An alpha channel alone is not a verdict — photos get exported as RGBA too. Sample the
+	   image on a grid: a cut-out laptop or monitor render is transparent over a good part of
+	   its area; an opaque image is a photo unless it is wide (a UI screenshot, which must stay
+	   whole). Decoded once per file and remembered (products render up to four per page). */
+	if ( ! function_exists( 'imagecreatefrompng' ) ) {
+		return false;
+	}
+	$key    = 'dq_photo3_' . md5( $file . '|' . (int) filemtime( $file ) );
+	$cached = get_transient( $key );
+	if ( false !== $cached ) {
+		return '1' === $cached;
+	}
+	$img   = @imagecreatefrompng( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+	$photo = false;
+	if ( $img ) {
+		$w     = imagesx( $img );
+		$h     = imagesy( $img );
+		$clear = 0;
+		for ( $i = 0; $i < 32; $i++ ) {
+			for ( $j = 0; $j < 32; $j++ ) {
+				$x = (int) floor( ( $i + .5 ) * $w / 32 );
+				$y = (int) floor( ( $j + .5 ) * $h / 32 );
+				if ( ( ( imagecolorat( $img, $x, $y ) >> 24 ) & 0x7F ) > 8 ) { // 0 opaque … 127 transparent
+					$clear++;
+				}
+			}
+		}
+		imagedestroy( $img );
+		$photo = $clear <= 1024 * .05 && $w / max( 1, $h ) < 1.5;
+	}
+	set_transient( $key, $photo ? '1' : '0', MONTH_IN_SECONDS );
+	return $photo;
+}

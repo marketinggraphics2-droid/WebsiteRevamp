@@ -181,8 +181,6 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 		<section class="svc-band svc-<?php echo esc_attr( $meta['tone'] ); ?><?php echo $flip ? ' svc-flip' : ''; ?><?php echo $trust ? ' svc-trust' : ''; ?>" id="svc-<?php echo esc_attr( sanitize_title( $sec['title'] ) ); ?>">
 			<div class="wrap svc-grid">
 				<div class="svc-copy">
-					<?php if ( ! $trust ) : ?><span class="eyebrow"<?php dq_reveal(); ?>><?php echo esc_html( sprintf( __( 'Service %02d', 'dynamiqes' ), $n ) ); ?></span>
-					<?php else : ?><span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'Why DynamIQ', 'dynamiqes' ); ?></span><?php endif; ?>
 					<h2<?php dq_reveal( '', 60 ); ?>><?php echo esc_html( $sec['title'] ); ?></h2>
 					<?php foreach ( $paras as $k => $p ) : ?><p<?php dq_reveal( '', 100 + $k * 50 ); ?>><?php echo esc_html( $p ); ?></p><?php endforeach; ?>
 

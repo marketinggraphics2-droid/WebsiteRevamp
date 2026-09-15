@@ -345,7 +345,7 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   }
 }
 
-/* product strip · auto-scrolling IQ Suite logos occupying the bottom row to the
+/* product strip · auto-scrolling product logos occupying the bottom row to the
    RIGHT of the buttons. Same marquee mechanic as .trust — a set plus one
    duplicate, looped on -50%.
    No explicit height: `align-items:stretch` on .banner-base makes it exactly as
@@ -486,7 +486,7 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 }
 
 /* ═══════════════════════════════════════════════════════════════
-   IQ SUITE (PRODUCTS) · photo + tagline cards that flip to the mockup
+   OUR PRODUCTS · photo + tagline cards that flip to the mockup
    Default: product stock photo fills the card (no tint), white logo and a
    one-line white tagline. Hover: light card, black logo, official monitor
    artwork slides in, and the tagline gives way to title + description.
@@ -1240,10 +1240,10 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .products-page .sap-copy p{font-size:var(--body);color:var(--soft);margin-top:14px}
 .products-page .text-link{display:inline-flex;align-items:center;gap:16px;width:max-content;margin-top:28px;color:var(--brand-dark);font-weight:700;text-transform:uppercase;letter-spacing:.08em;font-size:13px}
 .products-page .text-link span{font-size:20px;transition:transform .2s}.text-link:hover span{transform:translateX(4px)}
-.products-page .suite{padding-block:var(--section);background:#f5f4f2}
-.products-page .suite-head{margin-bottom:clamp(48px,6vw,84px)}
-.products-page .suite-head h2{font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;max-width:18ch}
-.products-page .suite-head p{font-size:var(--body);color:var(--soft);max-width:64ch}
+.products-page .products-listing{padding-block:var(--section);background:#f5f4f2}
+.products-page .products-listing-head{margin-bottom:clamp(48px,6vw,84px)}
+.products-page .products-listing-head h2{font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;max-width:18ch}
+.products-page .products-listing-head p{font-size:var(--body);color:var(--soft);max-width:64ch}
 .products-page .product-list{display:grid;gap:22px}
 .products-page .product-row{display:grid;grid-template-columns:1.03fr .97fr;min-height:430px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:#fff}
 .products-page .product-row:nth-child(even) .product-media{order:2}.product-row:nth-child(even) .product-copy{order:1}
@@ -1254,12 +1254,12 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .products-page .product-logo{height:42px;width:auto;max-width:230px;object-fit:contain;object-position:left;margin-bottom:28px}
 .products-page .product-copy h3{font-size:var(--h3);line-height:1.1;letter-spacing:-.035em;margin-bottom:16px}
 .products-page .product-copy p{font-size:var(--body);color:var(--soft);margin-top:12px}
-.products-page .intro-grid{grid-template-columns:1fr}.intro h2,.products-page .suite-head h2{max-width:18ch}
+.products-page .intro-grid{grid-template-columns:1fr}.intro h2,.products-page .products-listing-head h2{max-width:18ch}
 .products-page .sap-panel,.products-page .product-row{grid-template-columns:1fr}.sap-media{min-height:380px}.product-row:nth-child(even) .product-media{order:0}.product-row:nth-child(even) .product-copy{order:0}
 .products-page .hero{min-height:620px}.hero::after{background:linear-gradient(180deg,rgba(15,14,15,.products-page .54),rgba(15,14,15,.products-page .94) 58%)}.hero h1{max-width:9ch}
 .products-page .sap-media,.products-page .product-media{min-height:290px}.sap-panel{min-height:0}.sap-copy,.products-page .product-copy{padding:30px 24px 36px}
 @media (max-width:980px){
-  .products-page .intro-grid{grid-template-columns:1fr}.products-page .intro h2,.products-page .suite-head h2{max-width:18ch}
+  .products-page .intro-grid{grid-template-columns:1fr}.products-page .intro h2,.products-page .products-listing-head h2{max-width:18ch}
   .products-page .sap-panel,.products-page .product-row{grid-template-columns:1fr}.products-page .sap-media{min-height:380px}
   .products-page .product-row:nth-child(even) .product-media{order:0}.products-page .product-row:nth-child(even) .product-copy{order:0}
 }
@@ -1537,7 +1537,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   .home-page .loc-card{padding:16px 17px 18px;gap:9px}
 
   /* Product listing: one complete product row per viewport. */
-  .products-page{--products-nav-h:var(--nav-h,88px);--suite-head-h:clamp(166px,24dvh,180px)}
+  .products-page{--products-nav-h:var(--nav-h,88px);--listing-head-h:clamp(166px,24dvh,180px)}
   /* The top bar measures 44px here, not the 36px this assumed — that alone put
      the page 8px past the fold. The nav is subtracted too now that the hero no
      longer slides underneath it. */
@@ -1556,12 +1556,12 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   .products-page .sap-copy h2{margin-bottom:12px}
   .products-page .sap-copy p{margin-top:8px;line-height:1.52}
 
-  .products-page .suite{padding-block:0;background:linear-gradient(180deg,var(--surface) 0%,var(--muted) 5%,var(--muted) 95%,var(--surface) 100%)}
-  .products-page .suite-head{min-height:var(--suite-head-h);display:grid;align-items:center;margin:0;padding-block:24px 28px}
-  .products-page .suite-head h2{max-width:26ch;font-size:clamp(2.25rem,6.4dvh,3.15rem)}
+  .products-page .products-listing{padding-block:0;background:linear-gradient(180deg,var(--surface) 0%,var(--muted) 5%,var(--muted) 95%,var(--surface) 100%)}
+  .products-page .products-listing-head{min-height:var(--listing-head-h);display:grid;align-items:center;margin:0;padding-block:24px 28px}
+  .products-page .products-listing-head h2{max-width:26ch;font-size:clamp(2.25rem,6.4dvh,3.15rem)}
   .products-page .product-list{gap:0}
   .products-page .product-row{position:relative;grid-template-columns:minmax(0,.98fr) minmax(420px,1.02fr);gap:clamp(36px,5vw,76px);align-items:stretch;min-height:calc(100dvh - var(--products-nav-h));max-height:none;border:0;border-radius:0;overflow:visible;background:transparent}
-  .products-page .product-row:first-child{min-height:calc(100dvh - var(--products-nav-h) - var(--suite-head-h))}
+  .products-page .product-row:first-child{min-height:calc(100dvh - var(--products-nav-h) - var(--listing-head-h))}
   .products-page .product-row:nth-child(odd){background:linear-gradient(100deg,rgba(var(--rgb-white),.72),rgba(var(--rgb-brand),.045) 54%,rgba(var(--rgb-white),.22))}
   .products-page .product-row:nth-child(even){background:linear-gradient(260deg,rgba(var(--rgb-white),.72),rgba(var(--rgb-brand),.045) 54%,rgba(var(--rgb-white),.22))}
   .products-page .product-media{display:grid;align-self:stretch;align-items:end;min-height:0;padding:clamp(18px,3dvh,32px) clamp(8px,2vw,28px) 0;overflow:visible;background:transparent}
@@ -1575,7 +1575,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
     box-shadow:0 26px 56px -24px rgba(var(--rgb-ink),.30);filter:none}
   .products-page .product-media{align-items:center}
   .products-page .product-row:first-child .product-media{padding-top:0}
-  .products-page .product-row:first-child .product-media img{max-height:calc(100dvh - var(--products-nav-h) - var(--suite-head-h))}
+  .products-page .product-row:first-child .product-media img{max-height:calc(100dvh - var(--products-nav-h) - var(--listing-head-h))}
   .products-page .product-row:first-child .product-copy{padding-block:16px}
   .products-page .product-copy{align-self:center;padding:clamp(24px,4dvh,42px) clamp(12px,2vw,30px)}
   .products-page .product-logo{margin-bottom:16px}
@@ -1686,8 +1686,8 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
      rather than removed from the markup: it still carries the alt text, and the
      ≥981px composition (where it sits in its own column) is untouched. */
   .products-page .product-logo{display:none}
-  .products-page .suite{padding-block:0;background:linear-gradient(180deg,var(--surface),var(--muted) 4%,var(--muted) 96%,var(--surface))}
-  .products-page .suite-head{height:auto;margin:0;padding-block:48px 24px}
+  .products-page .products-listing{padding-block:0;background:linear-gradient(180deg,var(--surface),var(--muted) 4%,var(--muted) 96%,var(--surface))}
+  .products-page .products-listing-head{height:auto;margin:0;padding-block:48px 24px}
   .products-page .product-list{gap:0}
   .products-page .product-row{padding-block:20px;background:linear-gradient(180deg,rgba(var(--rgb-white),.7),rgba(var(--rgb-brand),.04),rgba(var(--rgb-white),.2))}
   .products-page .cta-section{padding-block:48px}
@@ -1722,7 +1722,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
      legibility floor while fitting the longest description (IQ Tax). */
   .products-page .product-copy p,
   .products-page .sap-copy p{font-size:1rem;line-height:1.5}
-  .products-page .suite-head{padding-block:42px 20px}
+  .products-page .products-listing-head{padding-block:42px 20px}
   .products-page .product-row{padding-block:clamp(26px,4.5dvh,44px)}
   /* ONE SCREEN PER PRODUCT · detail-page heroes. These must live HERE, not in
      detail.css: the global `.product-detail-page.product-template-page
@@ -1961,7 +1961,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 /* ── Lazy-load plugin compatibility (Smush, a3, etc.) ──
    Those plugins add .lazyload{opacity:0} / .lazyloaded{opacity:1} to every image and
    background element they process, which would override the theme's own state layers on the
-   IQ Suite cards (monitor artwork + black logo are hover-only). These rules win by specificity. */
+   product cards (monitor artwork + black logo are hover-only). These rules win by specificity. */
 .iq-card .iq-hover-art.lazyload,.iq-card .iq-hover-art.lazyloading{opacity:0}
 .iq-card .iq-hover-art.lazyloaded{opacity:1;transform:scale(1)}
 .iq-card:not(.all):hover .iq-hover-art.lazyloaded{opacity:0;transform:scale(1.06)}
@@ -2499,7 +2499,7 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .post-feature-body .feature-title{margin:0;font-size:clamp(1.6rem,1.2rem + 1.4vw,2.5rem);line-height:1.1;letter-spacing:-.03em;text-wrap:balance;font-weight:700}
 .post-feature-body .feature-title a{color:var(--text);transition:color .2s}
 .post-feature-body .feature-title a:hover{color:var(--orange-deep)}
-.products-page .suite-head .sec-title{margin:0;font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;max-width:18ch;font-weight:700}
+.products-page .products-listing-head .sec-title{margin:0;font-size:var(--h2);line-height:1.05;letter-spacing:-.045em;max-width:18ch;font-weight:700}
 .loc-card .loc-city{margin:0 0 10px;font-weight:700;font-size:var(--fs-card);line-height:var(--lh-heading)}
 .career-hr .h2{color:#fff;font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.03em;margin:12px 0 0;font-weight:700}
 .career-apply .h3{margin:0;font-size:var(--fs-card);line-height:var(--lh-heading);font-weight:700}
@@ -2576,6 +2576,79 @@ h4.post-share-label{margin:0}
 .about-page .about-services-media img{position:relative;z-index:1;width:100%;max-width:480px;height:auto;border:0;border-radius:0}
 @media(max-width:900px){.about-page .product-row{grid-template-columns:1fr;gap:22px}.about-page .product-row:nth-child(even) .product-media{order:0}.about-page .product-media{min-height:220px}.about-page .product-media img{max-height:280px}}
 @media(max-width:600px){.about-page .about-icon{width:56px;height:56px}.about-page .about-icon img{height:30px}.about-page .product-row{padding:16px}}
+
+/* products listing — the About page's card system
+   ------------------------------------------------
+   /products/ used to compose itself one product per 100dvh: borderless rows on a
+   tinted gradient, stretched to fill the screen. A 16:9 screenshot is nowhere near
+   a screen tall, so each product floated in ~300px of dead space and the section
+   read as a series of gaps rather than a list. /about-us/ lists the same products
+   as self-contained cards sized to their content, and that is the refined one — so
+   the listing adopts it here, verbatim: same border, radius, card gradient, gap and
+   alternating media column. Only the presentation changes; the copy, images, order
+   and links are untouched.
+
+   Scoped `.products-page .products-listing` (0,3,0) so it outranks every `.products-page
+   .product-row` rule above — including the ones inside media queries, which add no
+   specificity of their own — without having to unpick them one by one. .sap-feature
+   gets the same card so the SAP panel above the list doesn't read as a different
+   page. */
+.products-page .products-listing{padding-block:var(--section);background:var(--bg)}
+.products-page .products-listing .product-list{display:grid;gap:clamp(20px,2.6vw,32px)}
+.products-page .products-listing .product-row,
+.products-page .sap-feature .sap-panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(28px,4vw,64px);align-items:center;min-height:0;max-height:none;padding:clamp(20px,2.6vw,32px);border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card-grad)}
+.products-page .products-listing .product-row:nth-child(even) .product-media{order:2}
+.products-page .products-listing .product-row:nth-child(even) .product-copy{order:0}
+.products-page .products-listing .product-media,
+.products-page .sap-feature .sap-media{position:relative;display:grid;place-items:center;align-self:center;min-height:300px;padding:clamp(8px,1.5vw,20px);overflow:visible;background:transparent}
+.products-page .products-listing .product-media::before,
+.products-page .sap-feature .sap-media::before{content:"";display:block;position:absolute;width:280px;height:280px;border-radius:50%;background:rgba(var(--rgb-brand),.09);filter:blur(24px)}
+.products-page .sap-feature .sap-media::after{display:none}
+.products-page .products-listing .product-media img,
+.products-page .sap-feature .sap-media>img{position:relative;z-index:1;display:block;align-self:center;justify-self:center;width:100%;max-width:100%;height:auto;max-height:340px;margin-inline:auto;object-fit:contain;object-position:center;border:0;border-radius:0;background:none;box-shadow:none;filter:none}
+.products-page .products-listing .product-copy,
+.products-page .sap-feature .sap-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;align-self:center;padding:clamp(6px,1vw,14px) 0}
+/* The logo is the product name as artwork; it earns its place beside the H3 in a
+   card, at every width. The stacked composition used to hide it below 980px. */
+.products-page .products-listing .product-logo{display:block;height:36px;width:auto;max-width:220px;object-fit:contain;object-position:left;margin-bottom:16px}
+.products-page .products-listing .product-copy h3{margin:0 0 12px;font-size:var(--fs-h3);line-height:var(--lh-tight);letter-spacing:-.02em}
+.products-page .products-listing .product-copy p,
+.products-page .sap-feature .sap-copy p{margin-top:0;color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body)}
+.products-page .products-listing .product-copy p+p,
+.products-page .sap-feature .sap-copy p+p{margin-top:.8em}
+/* Cards are sized to their content, so the second paragraph the one-screen layout
+   had to hide on short viewports fits again — every product reads in full. */
+.products-page .products-listing .product-copy p:nth-of-type(2),
+.products-page .sap-feature .sap-copy p:nth-of-type(2){display:block}
+.products-page .products-listing .text-link,
+.products-page .sap-feature .text-link{display:inline-flex;align-items:center;gap:10px;margin-top:20px}
+.products-page .sap-feature{min-height:0;display:block;padding-block:var(--section) 0;background:var(--bg)}
+.products-page .sap-feature .sap-logo{margin-bottom:16px}
+/* The SAP artwork is a portrait-ish monitor render, not the 16:9 screenshot the
+   rule above is sized for: at width:100% with a height cap the BOX keeps the full
+   column while the picture shrinks inside it, stranding ~100px of empty space
+   either side. Sizing by max-width and max-height together keeps the box on the
+   render's own ratio. */
+.products-page .sap-feature .sap-media>img{width:auto;max-width:100%;max-height:min(420px,52vh)}
+.products-page .sap-feature .sap-copy h2{margin:0 0 12px;font-size:var(--fs-h2);line-height:var(--lh-tight);letter-spacing:-.025em}
+.products-page .sap-feature .sap-caption{margin-top:14px;color:var(--faint);font-size:var(--fs-sm);text-align:center}
+@media(max-width:900px){
+  .products-page .products-listing .product-row,
+  .products-page .sap-feature .sap-panel{grid-template-columns:1fr;gap:22px;padding-block:clamp(20px,2.6vw,32px)}
+  .products-page .products-listing .product-row:nth-child(even) .product-media{order:0}
+  .products-page .products-listing .product-media,
+  .products-page .sap-feature .sap-media{min-height:220px;padding-top:clamp(8px,1.5vw,20px)}
+  .products-page .products-listing .product-media img,
+  .products-page .sap-feature .sap-media>img{max-height:280px}
+}
+@media(max-width:600px){
+  .products-page .products-listing .product-row,
+  .products-page .sap-feature .sap-panel{padding:16px}
+  .products-page .products-listing .product-media,
+  .products-page .sap-feature .sap-media{min-height:180px}
+  .products-page .products-listing .product-media img,
+  .products-page .sap-feature .sap-media>img{max-height:230px}
+}
 /* testimonials — Client Testimonials page + testimonial single (inc/testimonial-media.php).
    One wide card per client, the live page's composition: copy on the left (logo, quote, name),
    the client's video poster on the right; a quote-mark panel stands in when there is no video.
@@ -2751,12 +2824,12 @@ h4.post-share-label{margin:0}
 .products-page .sap-media>img{grid-row:1}
 .products-page .sap-caption{position:relative;z-index:2;grid-row:2;padding-top:4px}
 
-/* B3 · "The IQ Suite — built in-house on SAP Business One": the head was a fixed
+/* B3 · "Built in-house on SAP Business One": the head was a fixed
    180px box, so the title's third line bled into the product rows below. It gets a
    min-height and a wider measure, which also lands the title on two lines. */
-.products-page .suite-head .sec-title{max-width:34ch}
+.products-page .products-listing-head .sec-title{max-width:34ch}
 @media(min-width:1180px){
-  .products-page .suite-head .sec-title{max-width:38ch}
+  .products-page .products-listing-head .sec-title{max-width:38ch}
 }
 
 /* D1 · product page section heads: the eyebrow, H2 and intro copy share one measure, so
@@ -2850,8 +2923,11 @@ h4.post-share-label{margin:0}
 .cta-form select{color:rgba(var(--rgb-white),.62)}
 .cta-form select:valid{color:var(--color-on-accent)}
 .cta-form select option{color:var(--text);background:var(--color-surface)}
+/* background-color is declared here on purpose: the generic .field focus rule (above) paints
+   a focused field var(--panel) — white — and ties this rule on specificity, so without it the
+   white text in a focused CTA field sat on a white box and typing was invisible. */
 .cta-form input:focus,.cta-form select:focus,.cta-form textarea:focus{
-  outline:none;border-color:var(--orange);box-shadow:0 0 0 3px rgba(var(--rgb-brand),.24);
+  outline:none;border-color:var(--orange);background-color:rgba(var(--rgb-white),.14);box-shadow:0 0 0 3px rgba(var(--rgb-brand),.24);
 }
 .cta-form .field.invalid input,.cta-form .field.invalid select,.cta-form .field.invalid textarea{border-color:#ff8a80}
 .cta-form .submit-row{display:flex;justify-content:center;margin-top:6px}
@@ -2925,7 +3001,7 @@ h4.post-share-label{margin:0}
 .lp-cards .feature-group p{position:relative;color:var(--soft);font-size:var(--fs-sm);line-height:var(--lh-body)}
 .lp-cards .feature-group ul{position:relative;display:grid;gap:8px;list-style:none;color:var(--soft);font-size:var(--fs-sm)}
 .lp-cards .feature-group li{display:flex;gap:9px}
-.lp-cards .feature-group li::before{content:"\2713";flex:0 0 auto;color:var(--orange-deep);font-weight:900}
+.lp-cards .feature-group li::before{content:"✓";flex:0 0 auto;color:var(--orange-deep);font-weight:900}
 .lp-cards .feature-group a{color:var(--orange-deep);font-weight:600;text-decoration:underline;text-underline-offset:3px}
 @media(max-width:980px){.lp-cards .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.lp-cards .feature-grid{grid-template-columns:1fr}}
@@ -2946,7 +3022,7 @@ h4.post-share-label{margin:0}
 }
 .lp-checklist li{position:relative;padding-left:1.9em;color:var(--soft);font-size:var(--fs-body);line-height:var(--lh-body)}
 .lp-checklist li::before{
-  content:"\2713";position:absolute;left:0;top:.05em;display:grid;place-items:center;
+  content:"✓";position:absolute;left:0;top:.05em;display:grid;place-items:center;
   width:1.35em;height:1.35em;border-radius:50%;font-size:.72em;font-weight:900;
   color:var(--orange-deep);background:rgba(var(--rgb-brand),.14);border:1px solid rgba(var(--rgb-brand),.3);
 }
@@ -3500,3 +3576,169 @@ h4.post-share-label{margin:0}
     grid-template-columns:repeat(5,minmax(0,1fr));
   }
 }
+
+/* ═══ Landing pages · four-card sets, head-row photo, copy sections sized to content ═══
+   Three things the review saw on /accounting-system-philippines/: a four-card set rendered
+   3 + 1 with the last card alone on its row; the photo beside the section head was a 272px
+   thumbnail adrift in its column; and a copy-only section was stretched to a full screen, so
+   its heading sat a third of the way down under nothing. */
+
+/* The column count follows the card count, so no row is ever left half empty: two cards take
+   two columns, three take three, four and eight take four (two where four won't fit), six take
+   three (3 + 3, not 4 + 2). Five and nine already take five (below). */
+@media (min-width:901px){
+  .lp-cards .feature-grid:has(> :last-child:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .lp-cards .feature-grid:has(> :last-child:nth-child(3)),
+  .lp-cards .feature-grid:has(> :last-child:nth-child(6)){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (min-width:1180px){
+  .lp-cards .feature-grid:has(> :last-child:nth-child(4)),
+  .lp-cards .feature-grid:has(> :last-child:nth-child(8)){grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (min-width:901px) and (max-width:1179px){
+  .lp-cards .feature-grid:has(> :last-child:nth-child(4)),
+  .lp-cards .feature-grid:has(> :last-child:nth-child(8)){grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* The head-row photo runs the full height of the copy beside it: the figure stretches to the
+   row and the image is absolutely positioned inside it, so the photo (a 638×829 portrait here)
+   fills the panel without dictating the row's height. Every inline image on these pages is a
+   real section photo (638px+ wide), so covering the panel never upscales an icon. */
+@media (min-width:901px){
+  .lp-cards:has(>.wrap>.lp-inline-media)>.wrap{align-items:stretch}
+  .lp-cards>.wrap>.lp-inline-media{position:relative;display:block;align-self:stretch;min-height:260px;border-radius:18px;overflow:hidden;border:1px solid var(--line);background:var(--bg-2)}
+  .lp-cards>.wrap>.lp-inline-media img{position:absolute;inset:0;width:100%;height:100%;max-height:none;object-fit:cover;object-position:center;border-radius:0}
+  /* Every built section is as tall as its content, with the site's section rhythm. The
+     one-screen minimum centred a few paragraphs in a 900px box and left 250–630px of dead
+     space above and below cards, FAQs and logo strips alike. */
+  .lp-section{min-height:0;padding-block:clamp(56px,7vw,96px)}
+}
+
+/* Stacked: the photo is a full-width 16:10 panel between the copy and the cards, not a
+   thumbnail floating in the middle of the column. */
+@media (max-width:900px){
+  .lp-cards>.wrap>.lp-inline-media{border-radius:16px;overflow:hidden;border:1px solid var(--line);background:var(--bg-2)}
+  .lp-cards>.wrap>.lp-inline-media img{width:100%;aspect-ratio:16/10;max-height:300px;object-fit:cover;object-position:center;border-radius:0}
+}
+
+/* ═══ Product pages · the same three fixes as the landing pages ═══
+   Seen on /products/sap-business-one-philippines/ at a 1365px window: a four-card set rendered
+   3 + 1 once the auto-fit grid dropped a column; and every section was stretched to a full
+   screen, leaving 300–550px of dead space around an overview, a card set or the FAQ. */
+@media (min-width:901px){
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(3)),
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(6)){grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* sections are as tall as their content, on the site's section rhythm */
+  .product-detail-page main>section:not(.detail-hero){min-height:0}
+  .product-detail-page .overview,
+  .product-detail-page .features,
+  .product-detail-page .showcase,
+  .product-detail-page .faq{padding-block:clamp(56px,7vw,96px)}
+  .product-detail-page .portal-features{padding-block:clamp(56px,7vw,96px)}
+}
+@media (min-width:1180px){
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(4)),
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(8)){grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+@media (min-width:901px) and (max-width:1179px){
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(4)),
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(8)){grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+/* The showcase beside a product section's head runs the full height of the copy, as a panel.
+   A photograph (.is-photo — JPEG, or a PNG with no alpha channel, decided in PHP) fills the
+   panel edge to edge; a product mockup or UI screen sits whole inside it on the same soft
+   gradient the product overview uses, so a laptop render is never cropped. */
+@media (min-width:901px){
+  .product-detail-page .features.has-showcase .portal-features-layout{align-items:stretch}
+  .product-detail-page .portal-features .showcase-frame{position:relative;display:block;align-self:stretch;min-height:280px;padding:0;border:1px solid var(--line);border-radius:18px;background:linear-gradient(145deg,#f0f1f2,#fff);overflow:hidden}
+  .product-detail-page .portal-features .showcase-frame img{position:absolute;inset:0;width:100%;height:100%;max-height:none;margin:0;padding:clamp(18px,2.2vw,32px);object-fit:contain;object-position:center;filter:none}
+  .product-detail-page .portal-features .showcase-frame.is-photo{background:var(--bg-2)}
+  .product-detail-page .portal-features .showcase-frame.is-photo img{padding:0;object-fit:cover}
+}
+@media (max-width:900px){
+  .product-detail-page .portal-features .showcase-frame{position:relative;width:100%;aspect-ratio:16/10;max-height:360px;padding:0;border:1px solid var(--line);border-radius:16px;background:linear-gradient(145deg,#f0f1f2,#fff);overflow:hidden}
+  .product-detail-page .portal-features .showcase-frame img{position:absolute;inset:0;width:100%;height:100%;max-height:none;margin:0;padding:16px;object-fit:contain;filter:none}
+  .product-detail-page .portal-features .showcase-frame.is-photo{background:var(--bg-2)}
+  .product-detail-page .portal-features .showcase-frame.is-photo img{padding:0;object-fit:cover}
+}
+
+/* six trust signals read 3 + 3, not 4 + 2 */
+@media (min-width:901px){
+  .trust-grid:has(> :last-child:nth-child(6)){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* ═══ Product hero · one composition for all nine products ═══
+   Review of the product pages: the H1 ran to four lines at 63px and out-shouted the product;
+   the screenshot (a flat PNG with its own orange offset frame) sat straight on a ghosted stock
+   photo with nothing separating the two, so the page read as a collage — a dark UI sidebar
+   simply dissolved into the photograph. The photo now stays as texture behind a heavier scrim,
+   and the screenshot sits on a frosted panel: one clean surface, the same card language as
+   every section below. The H1 is sized to hold in three lines beside it. */
+.product-template-page .product-hero-bg{background-image:linear-gradient(90deg,rgba(255,255,255,.985) 0%,rgba(255,255,255,.96) 46%,rgba(255,255,255,.84) 74%,rgba(255,255,255,.88) 100%),var(--product-hero-bg)}
+.product-detail-page.product-template-page .hero-copy h1{max-width:18ch;font-size:clamp(2.2rem,1.35rem + 1.7vw,3.3rem);line-height:1.04;letter-spacing:-.04em}
+.product-detail-page.product-template-page .hero-copy p{max-width:56ch}
+.product-detail-page.product-template-page .hero-media{position:relative;display:grid;place-items:center;min-height:0;padding:clamp(18px,2.4vw,34px)}
+.product-detail-page.product-template-page .hero-media::before{content:"";display:block;position:absolute;inset:0;border-radius:24px;background:rgba(255,255,255,.62);border:1px solid rgba(var(--rgb-ink),.1);box-shadow:0 34px 80px -44px rgba(var(--rgb-ink),.4);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.product-detail-page.product-template-page .hero-media img{position:relative;z-index:1;display:block;width:100%;max-width:100%;height:auto;max-height:min(440px,56dvh);object-fit:contain;border:0;border-radius:0;box-shadow:none;filter:drop-shadow(0 18px 28px rgba(var(--rgb-ink),.14))}
+@media (min-width:981px){
+  .product-detail-page.product-template-page .hero-grid{grid-template-columns:minmax(0,1fr) minmax(0,.94fr);gap:clamp(36px,5vw,80px);align-items:center;padding-block:clamp(28px,5dvh,64px) clamp(48px,7dvh,88px)}
+}
+@media (max-width:980px){
+  .product-detail-page.product-template-page .hero-media{order:-1;padding:clamp(14px,4vw,24px)}
+  .product-detail-page.product-template-page .hero-media::before{display:block;border-radius:18px}
+  .product-detail-page.product-template-page .hero-media img{width:100%;max-height:min(46dvh,360px)}
+  .product-detail-page.product-template-page .hero-copy h1{max-width:none;font-size:clamp(1.7rem,1.2rem + 2.6vw,2.6rem)}
+}
+@media (max-width:620px){
+  .product-detail-page.product-template-page .hero-media img{max-height:min(34dvh,260px)}
+}
+
+/* Titles-only card sets (IQ Ai's "Key Capabilities"): a row of equal cards with a check mark
+   where no icon exists, five across where they fit — not a run of unlabelled pills wrapping 4 + 1. */
+.trust-badge:empty{display:grid;place-items:center;color:var(--brand-dark);font-size:1.15rem;font-weight:900;line-height:1}
+.trust-badge:empty::before{content:"✓"}
+@media (min-width:1180px){
+  .product-detail-page .trust-grid:has(> :last-child:nth-child(5)){grid-template-columns:repeat(5,minmax(0,1fr))}
+  .product-detail-page .trust-grid:has(> :last-child:nth-child(5)) .trust-signal{flex-direction:column;align-items:flex-start;gap:14px;padding:22px 20px}
+}
+@media (min-width:901px){
+  .product-detail-page .trust-grid:has(> :last-child:nth-child(3)),
+  .product-detail-page .trust-grid:has(> :last-child:nth-child(6)){grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+
+/* A section's plain list (IQ Ai's five capabilities) is a two-column check list under the head,
+   in the same voice as the check lists inside the feature cards — not a row of unlabelled pills
+   wrapping 4 + 1. */
+.product-detail-page .portal-features .feature-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 22px;margin:clamp(18px,2.4vw,28px) 0 0;padding:0;list-style:none;max-width:44rem}
+.product-detail-page .portal-features .feature-list li{position:relative;display:flex;align-items:flex-start;gap:12px;margin:0;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--card-grad);color:var(--text);font-size:var(--fs-body);font-weight:600;line-height:var(--lh-heading)}
+.product-detail-page .portal-features .feature-list li::before{content:"✓";flex:0 0 auto;display:grid;place-items:center;width:26px;height:26px;margin-top:-2px;border-radius:8px;background:rgba(var(--rgb-brand),.12);color:var(--brand-dark);font-weight:900;font-size:.9rem}
+@media (max-width:560px){.product-detail-page .portal-features .feature-list{grid-template-columns:1fr}}
+
+/* Product images without frames: the hero screenshot floats on the scrim with only its own
+   shadow (no frosted panel, no hairline), and the overview / showcase panels keep their soft
+   fill but lose the 1px outline. */
+.product-detail-page.product-template-page .hero-media::before{display:none}
+.product-detail-page.product-template-page .hero-media{padding:0}
+.product-detail-page.product-template-page .hero-media img{filter:drop-shadow(0 26px 40px rgba(var(--rgb-ink),.18))}
+.product-detail-page .overview-media,
+.product-detail-page .portal-features .showcase-frame,
+.product-detail-page .portal-features .showcase-frame.is-photo{border:0}
+@media (max-width:980px){
+  .product-detail-page.product-template-page .hero-media::before{display:none}
+  .product-detail-page.product-template-page .hero-media{padding:0}
+}
+
+/* No panel behind product mockups at all: the showcase and overview frames are transparent,
+   the render floats on the section with its own shadow. Photos keep filling their frame. */
+.product-detail-page .portal-features .showcase-frame:not(.is-photo),
+.product-detail-page .overview-media{background:transparent;border:0;box-shadow:none;border-radius:0;overflow:visible}
+.product-detail-page .portal-features .showcase-frame:not(.is-photo) img{padding:0;object-fit:contain;filter:drop-shadow(0 24px 36px rgba(var(--rgb-ink),.16))}
+.product-detail-page .overview-media img{filter:drop-shadow(0 24px 36px rgba(var(--rgb-ink),.16))}
+
+/* Cards without the orange corner tint: the blurred disc in the top-right of feature cards is gone
+   on product and landing pages alike; the card is border, radius and surface only. */
+.product-detail-page .portal-features .feature-group::before,
+.lp-cards .feature-group::before,
+.feature-group::before{display:none}

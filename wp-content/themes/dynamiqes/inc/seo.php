@@ -75,11 +75,11 @@ function dq_seo_trim( $text, $len = 158 ) {
 
 function dq_meta_description() {
 	if ( is_front_page() ) {
-		return get_theme_mod( 'dq_seo_home_description', 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and the IQ Suite for Philippine small and mid-market businesses.' );
+		return get_theme_mod( 'dq_seo_home_description', 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and in-house ERP add-ons for Philippine small and mid-market businesses.' );
 	}
 	if ( is_post_type_archive( 'dq_product' ) ) {
 		$live = dq_shadowed_seo( 'description' );
-		return $live ? dq_seo_trim( $live ) : __( 'Explore SAP Business One and the DynamIQ IQ Suite of ERP modules and business solutions.', 'dynamiqes' );
+		return $live ? dq_seo_trim( $live ) : __( 'Explore SAP Business One and the DynamIQ range of ERP modules and business solutions.', 'dynamiqes' );
 	}
 	if ( is_singular() ) {
 		$id     = get_queried_object_id();
@@ -283,7 +283,7 @@ function dq_schema_organization() {
 		'alternateName' => 'DynamIQ',
 		'url'      => home_url( '/' ),
 		'logo'     => array( '@type' => 'ImageObject', 'url' => DQ_URI . '/assets/logos/DynamIQ_Enterprise_Solution_Inc__with_Tagline_Logo_blk.svg' ),
-		'description' => get_theme_mod( 'dq_seo_home_description', 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and the IQ Suite for Philippine small and mid-market businesses.' ),
+		'description' => get_theme_mod( 'dq_seo_home_description', 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and in-house ERP add-ons for Philippine small and mid-market businesses.' ),
 		'email'    => $c['email'],
 		'telephone'=> $c['phone1'],
 		'address'  => array( '@type' => 'PostalAddress', 'streetAddress' => '12 Tagdalit Street, Brgy. Manresa', 'addressLocality' => 'Quezon City', 'postalCode' => '1115', 'addressRegion' => 'Metro Manila', 'addressCountry' => 'PH' ),

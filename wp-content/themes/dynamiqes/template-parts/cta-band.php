@@ -13,7 +13,7 @@
 
 $args         = isset( $args ) && is_array( $args ) ? $args : array();
 $dq_cta_title = get_theme_mod( 'dq_cta_title', __( "We'd like to hear from you", 'dynamiqes' ) );
-$dq_cta_text  = get_theme_mod( 'dq_cta_text', __( 'Tell us about your business and we will show you how SAP Business One and the IQ Suite can streamline your operations, compliance and growth.', 'dynamiqes' ) );
+$dq_cta_text  = get_theme_mod( 'dq_cta_text', __( 'Tell us about your business and we will show you how SAP Business One and our ERP add-ons can streamline your operations, compliance and growth.', 'dynamiqes' ) );
 $dq_cta_label = get_theme_mod( 'dq_cta_label', __( 'Get Your Free Business Analysis', 'dynamiqes' ) );
 $dq_cta_url   = get_theme_mod( 'dq_cta_url', '' );
 if ( ! $dq_cta_url ) {

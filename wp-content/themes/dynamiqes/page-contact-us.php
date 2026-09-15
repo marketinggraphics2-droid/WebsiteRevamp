@@ -29,7 +29,6 @@ if ( '' === $intro ) {
 	<article <?php post_class( 'contact-page' ); ?>>
 		<header class="page-hero page-hero--photo" style="--hero-photo:url('<?php echo esc_url( dq_page_hero_photo( 'contact-us-banner.jpg' ) ); ?>')"><?php /* the live page's banner photo (Featured Image overrides it) */ ?>
 			<div class="wrap">
-				<span class="eyebrow"<?php dq_reveal( 'fade' ); ?>><?php the_title(); ?></span>
 				<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
 				<div class="page-hero-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div>
 			</div>

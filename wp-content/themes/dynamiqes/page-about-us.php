@@ -57,7 +57,6 @@ $about_img = function ( $name ) {
 	<article <?php post_class( 'about-page' ); ?>>
 		<header class="page-hero">
 			<div class="wrap">
-				<span class="eyebrow"<?php dq_reveal( 'fade' ); ?>><?php the_title(); ?></span>
 				<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
 				<div class="page-hero-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div>
 			</div>
@@ -67,13 +66,11 @@ $about_img = function ( $name ) {
 			<div class="wrap about-mv-grid">
 				<article class="about-card"<?php dq_reveal(); ?>>
 					<span class="about-icon"><img src="<?php echo esc_url( $about_img( 'mission' ) ); ?>" alt="" width="67" height="59" loading="lazy"></span>
-					<span class="eyebrow"><?php esc_html_e( 'Why we exist', 'dynamiqes' ); ?></span>
 					<h2><?php esc_html_e( 'Mission', 'dynamiqes' ); ?></h2>
 					<p><?php echo dq_inline_html( $copy['mission'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
 				</article>
 				<article class="about-card"<?php dq_reveal( '', 100 ); ?>>
 					<span class="about-icon"><img src="<?php echo esc_url( $about_img( 'vision' ) ); ?>" alt="" width="67" height="59" loading="lazy"></span>
-					<span class="eyebrow"><?php esc_html_e( 'Where we are going', 'dynamiqes' ); ?></span>
 					<h2><?php esc_html_e( 'Vision', 'dynamiqes' ); ?></h2>
 					<p><?php echo dq_inline_html( $copy['vision'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
 				</article>
@@ -83,7 +80,6 @@ $about_img = function ( $name ) {
 		<section class="about-values">
 			<div class="wrap">
 				<div class="sec-head center"<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'Culture', 'dynamiqes' ); ?></span>
 					<h2><?php echo esc_html( $copy['values_h2'] ); ?></h2>
 				</div>
 				<div class="career-values">
@@ -101,7 +97,6 @@ $about_img = function ( $name ) {
 		<section class="about-products">
 			<div class="wrap">
 				<div class="sec-head"<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'The IQ Suite', 'dynamiqes' ); ?></span>
 					<h2><?php echo esc_html( $copy['products_h2'] ); ?></h2>
 					<p><?php echo dq_inline_html( $copy['products_intro'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
 				</div>
@@ -129,7 +124,6 @@ $about_img = function ( $name ) {
 		<section class="about-services">
 			<div class="wrap about-services-grid">
 				<div<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'What we do', 'dynamiqes' ); ?></span>
 					<h2><?php echo esc_html( $copy['services_h2'] ); ?></h2>
 					<p><?php echo dq_inline_html( $copy['services_p'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
 					<div class="hero-actions"><a class="btn btn-primary" href="<?php echo esc_url( dq_services_url() ); ?>"><?php esc_html_e( 'GO TO SERVICES', 'dynamiqes' ); ?> <span aria-hidden="true">→</span></a></div>
@@ -142,7 +136,6 @@ $about_img = function ( $name ) {
 		<section class="hear-from-our-customer" id="testimonials"><?php /* same marquee as the homepage testimonials; the client name is an H3 here because the live about page has one per testimonial */ ?>
 			<div class="wrap">
 				<div class="sec-head"<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'What they say', 'dynamiqes' ); ?></span>
 					<h2><?php echo esc_html( $copy['customers_h2'] ); ?></h2>
 				</div>
 			</div>

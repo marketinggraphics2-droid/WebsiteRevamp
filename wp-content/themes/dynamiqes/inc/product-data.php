@@ -1,6 +1,6 @@
 <?php
 /**
- * IQ Suite product catalogue: default content, field map and accessors.
+ * Product catalogue: default content, field map and accessors.
  *
  * Products live in the `dq_product` post type. Every field below can be edited
  * in WP Admin (Products → edit → "Product details"). Image fields accept either a
@@ -38,10 +38,10 @@ function dq_product_field_map() {
 		'background'     => array( 'image', __( 'Hero background photo', 'dynamiqes' ), '' ),
 		'overview_image' => array( 'image', __( 'Overview image', 'dynamiqes' ), '' ),
 		'feature_image'  => array( 'image', __( 'Features image', 'dynamiqes' ), __( 'Leave empty to hide the features showcase image.', 'dynamiqes' ) ),
-		'card_art'       => array( 'image', __( 'Home card artwork', 'dynamiqes' ), __( 'Monitor render shown on the IQ Suite card on the home page.', 'dynamiqes' ) ),
+		'card_art'       => array( 'image', __( 'Home card artwork', 'dynamiqes' ), __( 'Monitor render shown on the product card on the home page.', 'dynamiqes' ) ),
 		'card_photo'     => array( 'image', __( 'Home card hover photo', 'dynamiqes' ), '' ),
-		'card_tagline'   => array( 'text', __( 'Home card tagline', 'dynamiqes' ), __( 'One short benefit line shown over the photo on the IQ Suite card at rest (e.g. Run my business better).', 'dynamiqes' ) ),
-		'card_title'     => array( 'text', __( 'Home card title', 'dynamiqes' ), __( 'Two or three words shown under the logo when the IQ Suite card is hovered (e.g. Self-Service Portal).', 'dynamiqes' ) ),
+		'card_tagline'   => array( 'text', __( 'Home card tagline', 'dynamiqes' ), __( 'One short benefit line shown over the photo on the product card at rest (e.g. Run my business better).', 'dynamiqes' ) ),
+		'card_title'     => array( 'text', __( 'Home card title', 'dynamiqes' ), __( 'Two or three words shown under the logo when the product card is hovered (e.g. Self-Service Portal).', 'dynamiqes' ) ),
 		'card_desc'      => array( 'textarea', __( 'Home card description', 'dynamiqes' ), __( 'Two short sentences, revealed when the card is hovered.', 'dynamiqes' ) ),
 		'strip_desc'     => array( 'text', __( 'Hero strip tooltip', 'dynamiqes' ), __( 'One line shown when hovering the logo in the home hero.', 'dynamiqes' ) ),
 		'listing'        => array( 'lines', __( 'Products page paragraphs', 'dynamiqes' ), __( 'One paragraph per line.', 'dynamiqes' ) ),
@@ -290,8 +290,8 @@ function dq_product_defaults( $raw = false ) {
 			'card_photo'     => 'assets/products/photos/all.jpg',
 			'card_tagline'   => 'Run my business better',
 			'card_title'     => 'Core ERP Platform',
-			'card_desc'      => 'SAP Business One lets you manage your entire business — finance, sales, inventory, and operations — in one affordable platform. It\'s the flagship ERP for small and mid-market companies that the whole IQ Suite is built on.',
-			'strip_desc'     => 'The ERP platform the whole IQ Suite is built on.',
+			'card_desc'      => 'SAP Business One lets you manage your entire business — finance, sales, inventory, and operations — in one affordable platform. It\'s the flagship ERP for small and mid-market companies that all our add-on modules are built on.',
+			'strip_desc'     => 'The ERP platform all our add-on modules are built on.',
 			'listing'        => array(
 				'SAP Business One is an application that lets you manage your entire business operations easily and effectively. It comes with built-in modules that represent the business areas of your operation.',
 				'The main capabilities of the system range from financial management, sales and customer management, purchasing and inventory control, up to production planning, and project management. It also covers analytics and reporting so you can make timely decisions based on real-time data.',

@@ -1,6 +1,6 @@
 <?php
 /**
- * Product detail page (SAP Business One and every IQ Suite module).
+ * Product detail page (SAP Business One and every add-on module).
  *
  * Structure follows the live dynamiqes.com product page section by section (SEO): the H1 and hero
  * paragraph, then the ordered `sections` of the product — Product Overview, the feature / benefit
@@ -104,8 +104,10 @@ $render_items = function ( $items ) {
 		/* Each section's own illustration (the live page has one per section); a product with
 		   no per-section art falls back to the single feature mockup, on the first section. */
 		$sec_img = ! empty( $s['image'] ) ? dq_asset( $s['image'] ) : '';
+		$sec_src = ! empty( $s['image'] ) ? $s['image'] : '';
 		if ( '' === $sec_img && 'generic' === $s['type'] && $showcase ) {
 			$sec_img  = $showcase;
+			$sec_src  = $p['feature_image'];
 			$showcase = '';
 		}
 		?>
@@ -116,7 +118,6 @@ $render_items = function ( $items ) {
 				<?php if ( $p['overview_image'] ) : ?><img src="<?php echo esc_url( $p['overview_image'] ); ?>" alt="<?php echo esc_attr( $p['name'] . ' product overview' ); ?>" loading="lazy"><?php endif; ?>
 			</div>
 			<div class="overview-copy">
-				<span class="eyebrow"<?php dq_reveal(); ?>><?php echo esc_html( $p['name'] ); ?></span>
 				<h2<?php dq_reveal(); ?>><?php echo esc_html( $p['overview_title'] ); ?></h2>
 				<?php foreach ( $p['overview'] as $para ) : ?><p<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 				<?php if ( $p['closing'] ) : ?><p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $p['closing'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endif; ?>
@@ -134,7 +135,6 @@ $render_items = function ( $items ) {
 				<?php /* one shared measure for the eyebrow, H2 and intro: the copy under a heading
 				   now wraps to the same width and left edge as the heading itself (review item D1). */ ?>
 				<div class="portal-features-head">
-					<span class="eyebrow"<?php dq_reveal(); ?>><?php echo esc_html( $p['name'] ); ?></span>
 					<h2<?php dq_reveal(); ?>><?php echo esc_html( $s['title'] ); ?></h2>
 					<?php foreach ( $s['intro'] as $para ) : ?><p<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 				</div>
@@ -143,7 +143,7 @@ $render_items = function ( $items ) {
 				<?php endif; ?>
 			</div>
 			<?php if ( $sec_img ) : ?>
-			<div class="showcase-frame"<?php dq_reveal(); ?>><img src="<?php echo esc_url( $sec_img ); ?>" alt="<?php echo esc_attr( $s['title'] ? $s['title'] : $p['name'] . ' feature interface' ); ?>" loading="lazy"></div>
+			<div class="showcase-frame<?php echo dq_is_photo_image( $sec_src ) ? ' is-photo' : ''; ?>"<?php dq_reveal(); ?>><img src="<?php echo esc_url( $sec_img ); ?>" alt="<?php echo esc_attr( $s['title'] ? $s['title'] : $p['name'] . ' feature interface' ); ?>" loading="lazy"></div>
 			<?php endif; ?>
 			<?php if ( ! empty( $s['items'] ) || $s['closing'] ) : ?>
 			<?php /* The cards run the full width beneath the head + illustration row rather than
@@ -180,7 +180,6 @@ $render_items = function ( $items ) {
 	<section class="faq">
 		<div class="wrap faq-grid">
 			<div class="faq-head">
-				<span class="eyebrow"<?php dq_reveal(); ?>><?php echo esc_html( $p['name'] ); ?></span>
 				<?php $faq_title = ! empty( $s['title'] ) ? $s['title'] : __( 'Frequently Asked Questions (FAQ)', 'dynamiqes' ); ?>
 				<?php if ( false === $s['heading'] ) : /* the live IQ REM page styles this line as text, not a heading */ ?>
 				<p class="faq-title"<?php dq_reveal(); ?>><?php echo esc_html( $faq_title ); ?></p>

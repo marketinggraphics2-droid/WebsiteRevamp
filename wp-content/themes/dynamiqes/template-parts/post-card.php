@@ -24,7 +24,7 @@ $cats  = array_values( array_filter( get_the_category(), function ( $c ) { retur
 			<span class="news-date"><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></span>
 		</div>
 		<<?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput ?> class="card-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></<?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
-		<p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 24 ) ); ?></p>
+		<p><?php echo esc_html( get_the_excerpt() ); /* untrimmed: WordPress' own 55-word auto-excerpt is what the live listings show, and a hand-written excerpt shows whole there too */ ?></p>
 		<a class="tlink" href="<?php the_permalink(); ?>"><?php esc_html_e( 'Read more', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">→</span></a>
 	</div>
 </article>

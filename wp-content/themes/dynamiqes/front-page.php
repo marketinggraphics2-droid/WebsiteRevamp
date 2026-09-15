@@ -9,7 +9,7 @@ get_header();
 
 $products  = dq_get_products();
 $sap       = dq_get_product_by_key( 'sap' );
-$suite     = array_values( array_filter( $products, function ( $p ) { return 'sap' !== $p['key']; } ) );
+$addons     = array_values( array_filter( $products, function ( $p ) { return 'sap' !== $p['key']; } ) );
 $news      = dq_news_items( 5 ); // 1 featured + 2×2 grid
 $featured  = array_shift( $news );
 $contact   = dq_contact_info();
@@ -38,13 +38,13 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 		</div>
 		<div class="banner-base">
 			<div class="banner-actions">
-				<div class="dynamiq-cta"><a href="<?php echo esc_url( dq_products_url() ); ?>"><?php echo esc_html( get_theme_mod( 'dq_hero_primary_label', 'EXPLORE THE IQ SUITE' ) ); ?> <span class="arr" aria-hidden="true">→</span></a></div>
+				<div class="dynamiq-cta"><a href="<?php echo esc_url( dq_products_url() ); ?>"><?php echo esc_html( get_theme_mod( 'dq_hero_primary_label', 'EXPLORE OUR PRODUCTS' ) ); ?> <span class="arr" aria-hidden="true">→</span></a></div>
 				<a class="banner-secondary" href="#contact"><?php echo esc_html( get_theme_mod( 'dq_hero_secondary_label', 'Book a Free Demo' ) ); ?> <span class="arr" aria-hidden="true">→</span></a>
 			</div>
-			<div class="banner-strip" aria-label="<?php esc_attr_e( 'The IQ Suite', 'dynamiqes' ); ?>">
+			<div class="banner-strip" aria-label="<?php esc_attr_e( 'Our products', 'dynamiqes' ); ?>">
 				<div class="banner-strip-marq">
 					<div class="banner-strip-track">
-						<?php foreach ( $suite as $p ) : ?>
+						<?php foreach ( $addons as $p ) : ?>
 							<a href="<?php echo esc_url( $p['url'] ); ?>" data-name="<?php echo esc_attr( $p['menu_label'] ); ?>" data-desc="<?php echo esc_attr( $p['strip_desc'] ); ?>"><img src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>" loading="eager"></a>
 						<?php endforeach; ?>
 					</div>
@@ -75,7 +75,7 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 	</div>
 </section>
 
-<!-- ═══ IQ SUITE (PRODUCTS) ═══ -->
+<!-- ═══ OUR PRODUCTS ═══ -->
 <section class="iq" id="products">
 	<div class="wrap">
 		<div class="sec-head"<?php dq_reveal(); ?>>
@@ -103,7 +103,7 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 				</div>
 			</a>
 			<?php endif; ?>
-			<?php $delays = array( 0, 70, 140 ); foreach ( $suite as $i => $p ) : ?>
+			<?php $delays = array( 0, 70, 140 ); foreach ( $addons as $i => $p ) : ?>
 			<a class="iq-card" href="<?php echo esc_url( $p['url'] ); ?>"<?php dq_reveal( '', $delays[ $i % 3 ] ); ?>>
 				<span class="iq-art no-lazyload skip-lazy" style="background-image:url('<?php echo esc_url( $p['card_art'] ); ?>')"></span>
 				<span class="iq-hover-art no-lazyload skip-lazy" style="background-image:url('<?php echo esc_url( $p['card_photo'] ); ?>')"></span>

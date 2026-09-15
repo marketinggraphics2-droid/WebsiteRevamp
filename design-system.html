@@ -489,7 +489,7 @@ comp({ id:'buttons', group:'atoms', title:'Buttons', used:['Every page'],
   </div>
   <div class="ds-dark" style="padding:24px;border-radius:14px">
     <div class="banner-actions">
-      <div class="dynamiq-cta"><a href="#">EXPLORE THE IQ SUITE <span class="arr" aria-hidden="true">→</span></a></div>
+      <div class="dynamiq-cta"><a href="#">EXPLORE OUR PRODUCTS <span class="arr" aria-hidden="true">→</span></a></div>
       <a class="banner-secondary" href="#">Book a Free Demo <span class="arr" aria-hidden="true">→</span></a>
     </div>
   </div>
@@ -1149,7 +1149,7 @@ group('home', 'Homepage sections', 'The homepage is the benchmark every other pa
 
 comp({ id:'hero', group:'home', title:'Home hero (banner video)', used:['Home'],
   notes:[
-    '<b>The video IS the background.</b> Copy hugs the LEFT edge (opts out of the 1440px column), buttons sit bottom-left with the IQ-Suite logo strip stretching beside them.',
+    '<b>The video IS the background.</b> Copy hugs the LEFT edge (opts out of the 1440px column), buttons sit bottom-left with the product logo strip stretching beside them.',
     'Height = <code>100dvh − top bar − nav</code>, so header + nav + hero are exactly one screen. The headline uses the height-aware <code>--fs-hero</code> so CTAs never drop below the fold.',
     'Contrast is guaranteed by three stacked scrims (left→right, bottom→top, overall tint) plus <code>brightness(.65)</code> on the footage — never rely on what the clip happens to show.',
     'The strip is a marquee (−50% loop, 46s) with a JS-positioned hover card (<code>.banner-tip</code>). Dark-surface tokens are set on the section so the ghost button and lede re-tune themselves.'
@@ -1168,10 +1168,10 @@ comp({ id:'hero', group:'home', title:'Home hero (banner video)', used:['Home'],
     </div>
     <div class="banner-base">
       <div class="banner-actions">
-        <div class="dynamiq-cta"><a href="#">EXPLORE THE IQ SUITE <span class="arr" aria-hidden="true">→</span></a></div>
+        <div class="dynamiq-cta"><a href="#">EXPLORE OUR PRODUCTS <span class="arr" aria-hidden="true">→</span></a></div>
         <a class="banner-secondary" href="#contact">Book a Free Demo <span class="arr" aria-hidden="true">→</span></a>
       </div>
-      <div class="banner-strip" aria-label="The IQ Suite">
+      <div class="banner-strip" aria-label="Our products">
         <div class="banner-strip-marq">
           <div class="banner-strip-track">
             <a href="#" data-name="IQ Portal" data-desc="Approvals and reports anywhere."><img src="${A('products/iq-portal-wht.svg')}" alt="IQ Portal"></a>
@@ -1223,7 +1223,7 @@ comp({ id:'hero', group:'home', title:'Home hero (banner video)', used:['Home'],
   background:linear-gradient(90deg,rgba(var(--rgb-night),.66),rgba(var(--rgb-night),.40) 38%,rgba(var(--rgb-night),.10) 72%,rgba(var(--rgb-night),0)),
              linear-gradient(0deg,rgba(var(--rgb-night),.60),rgba(var(--rgb-night),.24) 34%,rgba(var(--rgb-night),0) 68%),
              rgba(var(--rgb-night),.16); }
-/* IQ Suite logo strip (marquee, glass pill matching .banner-secondary) */
+/* product logo strip (marquee, glass pill matching .banner-secondary) */
 .banner-strip{ position:relative; z-index:2; flex:1 1 320px; min-width:0; display:flex; align-items:center; overflow:hidden; border:1.5px solid var(--line); border-radius:var(--r-pill); background:var(--ghost-bg); backdrop-filter:var(--frost); -webkit-backdrop-filter:var(--frost); }
 .banner-strip-marq{ width:100%; overflow:hidden; -webkit-mask-image:linear-gradient(90deg,transparent,var(--color-black) 9%,var(--color-black) 91%,transparent); mask-image:linear-gradient(90deg,transparent,var(--color-black) 9%,var(--color-black) 91%,transparent); }
 .banner-strip-track{ display:flex; align-items:center; gap:clamp(36px,5vw,76px); width:max-content; animation:bannerLogos 46s linear infinite; }
@@ -1296,7 +1296,7 @@ comp({ id:'trust', group:'home', title:'Trust note + client logo marquee', used:
 .trust-track img:hover{ transform:scale(1.03); }
 @media (prefers-reduced-motion:reduce){ .trust-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; gap:36px 48px; } .trust-marq::before,.trust-marq::after{ display:none; } }`});
 
-comp({ id:'iqcards', group:'home', title:'Our Products — IQ Suite cards', used:['Home'],
+comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:['Home'],
   notes:[
     'Heading is just “Our Products” (eyebrow removed). Grid: 3 columns, fixed-height rows, SAP flagship spans 2×2.',
     '<b>At rest:</b> full-bleed product photo (no tint), white logo top-left, one-line white tagline bottom-left with soft text shadow.',
@@ -1350,7 +1350,7 @@ comp({ id:'iqcards', group:'home', title:'Our Products — IQ Suite cards', used
     </div>
   </div>
 </section>`,
-  css:`/* ═══ IQ SUITE CARDS ═══ */
+  css:`/* ═══ PRODUCT CARDS ═══ */
 .iq{ padding-block:var(--sec); position:relative; background:linear-gradient(180deg,transparent 0,var(--bg-2) var(--section-blend),var(--bg-2) calc(100% - var(--section-blend)),transparent 100%); }
 .iq-grid{ display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:minmax(clamp(200px,18.5vw,248px),auto); gap:14px; }
 .iq-card{ position:relative; isolation:isolate; overflow:hidden; min-height:0; border-radius:14px; border:1px solid var(--line); background:var(--card-grad);
@@ -1619,7 +1619,7 @@ comp({ id:'services', group:'home', title:'Our Services — numbered timeline', 
     <div class="serv-timeline">
       <div class="serv-step" data-reveal><img class="serv-img" src="${A('services/consultation.jpg')}" alt="Consultation"><div class="serv-node"><span class="serv-num-badge">01</span></div><h3>Consultation</h3><p>We study how you work today and map SAP Business One to your processes.</p></div>
       <div class="serv-step" data-reveal style="--d:90ms"><img class="serv-img" src="${A('services/implementation.jpg')}" alt="Implementation"><div class="serv-node"><span class="serv-num-badge">02</span></div><h3>Implementation</h3><p>Configuration, data migration and go-live handled by certified consultants.</p></div>
-      <div class="serv-step" data-reveal style="--d:180ms"><img class="serv-img" src="${A('services/development.jpg')}" alt="Development"><div class="serv-node"><span class="serv-num-badge">03</span></div><h3>Development</h3><p>Add-ons and integrations from the IQ Suite when the standard system is not enough.</p></div>
+      <div class="serv-step" data-reveal style="--d:180ms"><img class="serv-img" src="${A('services/development.jpg')}" alt="Development"><div class="serv-node"><span class="serv-num-badge">03</span></div><h3>Development</h3><p>Add-ons and integrations we build in-house when the standard system is not enough.</p></div>
       <div class="serv-step" data-reveal style="--d:270ms"><img class="serv-img" src="${A('services/training.jpg')}" alt="Training"><div class="serv-node"><span class="serv-num-badge">04</span></div><h3>Training</h3><p>Role-based training so every user is productive on day one.</p></div>
       <div class="serv-step" data-reveal style="--d:360ms"><img class="serv-img" src="${A('services/support.jpg')}" alt="Support"><div class="serv-node"><span class="serv-num-badge">05</span></div><h3>Support</h3><p>Local helpdesk, maintenance and upgrades for the life of your system.</p></div>
     </div>
@@ -1919,7 +1919,7 @@ comp({ id:'ctaband', group:'sub', title:'CTA band (dark panel)', used:['Products
       <!-- optional kicker: only the product pages render it -->
       <p class="cta-kicker">Ready when you are</p>
       <p class="cta-title">We'd like to hear from you</p>
-      <p>Tell us about your business and we will show you how SAP Business One and the IQ Suite can streamline your operations, compliance and growth.</p>
+      <p>Tell us about your business and we will show you how SAP Business One and our ERP add-ons can streamline your operations, compliance and growth.</p>
       <div class="dynamiq-cta"><a href="#">Get Your Free Business Analysis <span class="arr" aria-hidden="true">→</span></a></div>
       <p class="cta-phone"><a href="tel:+6328000000"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1L6.6 10.8z"/></svg> (02) 8000 0000</a></p>
     </div>
@@ -2411,14 +2411,16 @@ comp({ id:'testistory', group:'sub', title:'Testimonial story card (text left / 
 
 comp({ id:'productrow', group:'sub', title:'Product row (listing / About)', used:['Products','About Us'],
   notes:[
-    'One product per row, alternating media / copy. On the listing the row is borderless on a faint orange-tinted gradient; on About Us it is a card (<code>.about-page .product-row</code>).',
-    'Product shots are flat 16:9 screenshots: <b>borderless, 12px radius, soft shadow only</b> — no frame, no panel behind. Sized by max-width AND max-height together so the box never letterboxes.',
-    'Copy: product logo (42px), H3, one or two paragraphs in <code>--fs-lede</code>/1.75, uppercase <code>.text-link</code> “VIEW PRODUCT”.',
-    '<b>Build note:</b> main.css lines 558–561 contain four stray rules that lost their <code>@media</code> wrapper (e.g. <code>.products-page .product-row{grid-template-columns:1fr}</code>, <code>.product-media{min-height:290px}</code>, <code>.product-copy{padding:30px 24px 36px}</code>, <code>.hero{min-height:620px}</code>) plus invalid <code>rgba(15,14,15,.products-page .94)</code> values. They are overridden by the real breakpoints so nothing visible breaks, but they should be deleted. The values here are the intended ones.'
+    'One product per row, alternating media / copy, as a <b>card</b>: 1px <code>--line</code> border, 16px radius, <code>--card-grad</code> fill, <code>clamp(20px,2.6vw,32px)</code> padding. <b>The listing and About Us share one treatment</b> — the listing scopes it as <code>.products-page .products-listing</code> (0,3,0) so it outranks the older per-viewport rules still in main.css.',
+    'Cards are sized to their CONTENT. The listing used to stretch every row to <code>100dvh</code>; a 16:9 screenshot is nowhere near a screen tall, so each product floated in ~300px of dead space and the section read as a run of gaps. Never reintroduce a viewport height here.',
+    'Product shots are <b>borderless and unframed</b> — no radius, no shadow, no panel. A blurred orange disc (<code>280px</code>, <code>blur(24px)</code>) sits behind the image as the only decoration.',
+    'Copy: product logo (36px, visible at every width), H3 in <code>--fs-h3</code>, one or two paragraphs in <code>--fs-body</code>/<code>--lh-body</code> separated by <code>.8em</code>, uppercase <code>.text-link</code> “VIEW PRODUCT”.',
+    'The SAP panel above the listing (<code>.products-page .sap-feature .sap-panel</code>) is the same card, so the section above the list does not read as a different page. Its artwork is a portrait-ish monitor render rather than a 16:9 shot, so it is sized by <code>width:auto</code> + <code>max-width:100%</code> + <code>max-height</code> together — <code>width:100%</code> with a height cap letterboxes it.',
+    '<b>Build note:</b> main.css lines 558–561 contain four stray rules that lost their <code>@media</code> wrapper (e.g. <code>.products-page .product-row{grid-template-columns:1fr}</code>, <code>.product-media{min-height:290px}</code>, <code>.product-copy{padding:30px 24px 36px}</code>, <code>.hero{min-height:620px}</code>) plus invalid <code>rgba(15,14,15,.products-page .94)</code> values. They are overridden by the real breakpoints so nothing visible breaks, but they should be deleted.'
   ],
-  resp:['≥981px (listing): one complete row per viewport (<code>min-height:100dvh − nav</code>).', '≤980px: stacks, content-sized (not stretched), the product logo hides (redundant above the H3), shot full width.', '≤880px tall or ≤400px wide: the second paragraph hides so the row still fits a phone screen.'],
+  resp:['≤900px: stacks to one column, 22px gap; the media column keeps a 220px floor and the shot caps at 280px. The product logo stays — it is beside the H3, not stacked on top of it.', '≤600px: 16px card padding, 180px media floor, 230px shot cap.', 'Both paragraphs show at every size. The old listing hid the second one below 880px tall / 400px wide to keep a row inside one screen; content-sized cards have no such budget.'],
   html:`<div class="products-page">
-  <div class="wrap product-list" style="padding-block:24px">
+  <div class="wrap products-listing" style="padding-block:24px"><div class="product-list">
     <article class="product-row" id="iq-portal">
       <div class="product-media"><img src="${A('products/site-media/dynamic-portal-product-overview.png')}" alt="IQ Portal"></div>
       <div class="product-copy">
@@ -2438,62 +2440,69 @@ comp({ id:'productrow', group:'sub', title:'Product row (listing / About)', used
         <a class="text-link" href="#">VIEW PRODUCT <span>→</span></a>
       </div>
     </article>
-  </div>
+  </div></div>
 </div>`,
-  css:`/* ═══ PRODUCT ROW ═══ */
-.products-page .product-list{ display:grid; gap:22px; }
-.products-page .product-row{ display:grid; grid-template-columns:1.03fr .97fr; min-height:430px; border:1px solid var(--line); border-radius:16px; overflow:hidden; background:#fff; }
-.products-page .product-row:nth-child(even) .product-media{ order:2; }
-.products-page .product-row:nth-child(even) .product-copy{ order:1; }
-.products-page .product-media{ position:relative; display:grid; place-items:center; min-height:360px; padding:clamp(24px,4vw,52px); overflow:hidden; background:linear-gradient(145deg,#f0f1f2,#fff 64%); }
-.products-page .product-media img{ position:relative; z-index:1; width:100%; height:100%; max-height:330px; object-fit:contain; }
-.products-page .product-copy{ display:flex; flex-direction:column; justify-content:center; padding:clamp(32px,5vw,72px); }
-.products-page .product-logo{ height:42px; width:auto; max-width:230px; object-fit:contain; object-position:left; margin-bottom:28px; }
-.products-page .product-copy h3{ font-size:var(--h3); line-height:1.1; letter-spacing:-.035em; margin-bottom:16px; }
-.products-page .product-copy p{ font-size:var(--fs-lede); line-height:var(--lh-relaxed); color:var(--soft); margin-top:12px; }
-.products-page .text-link{ display:inline-flex; align-items:center; gap:16px; width:max-content; margin-top:28px; color:var(--brand-dark); font-weight:700; text-transform:uppercase; letter-spacing:.08em; font-size:var(--fs-sm); }
-.products-page .text-link span{ font-size:20px; transition:transform .2s; }
-.products-page .text-link:hover span{ transform:translateX(4px); }
-/* ≥981px: borderless rows on a faint tinted gradient, one row per viewport, borderless 16:9 shots */
-@media (min-width:981px){
-  .products-page{ --products-nav-h:88px; }
-  .products-page .product-list{ gap:0; }
-  .products-page .product-row{ position:relative; grid-template-columns:minmax(0,.98fr) minmax(420px,1.02fr); gap:clamp(36px,5vw,76px); align-items:stretch; min-height:calc(100dvh - var(--products-nav-h)); border:0; border-radius:0; overflow:visible; background:transparent; }
-  .products-page .product-row:nth-child(odd){ background:linear-gradient(100deg,rgba(var(--rgb-white),.72),rgba(var(--rgb-brand),.045) 54%,rgba(var(--rgb-white),.22)); }
-  .products-page .product-row:nth-child(even){ background:linear-gradient(260deg,rgba(var(--rgb-white),.72),rgba(var(--rgb-brand),.045) 54%,rgba(var(--rgb-white),.22)); }
-  .products-page .product-media{ display:grid; align-self:stretch; align-items:center; min-height:0; padding:clamp(18px,3dvh,32px) clamp(8px,2vw,28px) 0; overflow:visible; background:transparent; }
-  .products-page .product-media img{ align-self:center; justify-self:center; width:auto; max-width:100%; height:auto; max-height:min(520px,62dvh); object-fit:contain; border-radius:12px; border:0; background:none; box-shadow:0 26px 56px -24px rgba(var(--rgb-ink),.30); }
-  .products-page .product-copy{ align-self:center; padding:clamp(24px,4dvh,42px) clamp(12px,2vw,30px); }
-  .products-page .product-logo{ margin-bottom:16px; }
-  .products-page .product-copy h3{ margin-bottom:8px; }
-  .products-page .product-copy p{ margin-top:8px; line-height:1.52; }
-  .products-page .text-link{ margin-top:18px; }
+  css:`/* ═══ PRODUCT ROW — the card, shared by /products/ and /about-us/ ═══ */
+.about-page .product-list,
+.products-page .products-listing .product-list{ display:grid; gap:clamp(20px,2.6vw,32px); }
+.about-page .product-row,
+.products-page .products-listing .product-row,
+.products-page .sap-feature .sap-panel{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,4vw,64px); align-items:center; min-height:0; padding:clamp(20px,2.6vw,32px); border:1px solid var(--line); border-radius:16px; overflow:hidden; background:var(--card-grad); }
+.about-page .product-row:nth-child(even) .product-media,
+.products-page .products-listing .product-row:nth-child(even) .product-media{ order:2; }
+.products-page .products-listing .product-row:nth-child(even) .product-copy{ order:0; }
+.about-page .product-media,
+.products-page .products-listing .product-media,
+.products-page .sap-feature .sap-media{ position:relative; display:grid; place-items:center; align-self:center; min-height:300px; padding:clamp(8px,1.5vw,20px); overflow:visible; background:transparent; }
+.about-page .product-media::before,
+.products-page .products-listing .product-media::before,
+.products-page .sap-feature .sap-media::before{ content:""; display:block; position:absolute; width:280px; height:280px; border-radius:50%; background:rgba(var(--rgb-brand),.09); filter:blur(24px); }
+.about-page .product-media img,
+.products-page .products-listing .product-media img{ position:relative; z-index:1; display:block; width:100%; max-width:100%; height:auto; max-height:340px; margin-inline:auto; object-fit:contain; border:0; border-radius:0; background:none; box-shadow:none; filter:none; }
+/* the SAP artwork is a monitor render, not a 16:9 shot: width:auto keeps the box on its own ratio */
+.products-page .sap-feature .sap-media>img{ width:auto; max-width:100%; max-height:min(420px,52vh); }
+.about-page .product-copy,
+.products-page .products-listing .product-copy,
+.products-page .sap-feature .sap-copy{ display:flex; flex-direction:column; align-items:flex-start; justify-content:center; align-self:center; padding:clamp(6px,1vw,14px) 0; }
+.about-page .product-logo,
+.products-page .products-listing .product-logo{ display:block; height:36px; width:auto; max-width:220px; object-fit:contain; object-position:left; margin-bottom:16px; }
+.about-page .product-copy h3,
+.products-page .products-listing .product-copy h3{ margin:0 0 12px; font-size:var(--fs-h3); line-height:var(--lh-tight); letter-spacing:-.02em; }
+.about-page .product-copy p,
+.products-page .products-listing .product-copy p,
+.products-page .sap-feature .sap-copy p{ margin-top:0; color:var(--soft); font-size:var(--fs-body); line-height:var(--lh-body); }
+.about-page .product-copy p+p,
+.products-page .products-listing .product-copy p+p,
+.products-page .sap-feature .sap-copy p+p{ margin-top:.8em; }
+.about-page .product-copy .text-link,
+.products-page .products-listing .text-link,
+.products-page .sap-feature .text-link{ display:inline-flex; align-items:center; gap:10px; margin-top:20px; }
+.products-page .products-listing{ padding-block:var(--section); background:var(--bg); }
+.products-page .sap-feature{ min-height:0; display:block; padding-block:var(--section) 0; background:var(--bg); }
+/* responsive */
+@media (max-width:900px){
+  .about-page .product-row,
+  .products-page .products-listing .product-row,
+  .products-page .sap-feature .sap-panel{ grid-template-columns:1fr; gap:22px; }
+  .about-page .product-row:nth-child(even) .product-media,
+  .products-page .products-listing .product-row:nth-child(even) .product-media{ order:0; }
+  .about-page .product-media,
+  .products-page .products-listing .product-media,
+  .products-page .sap-feature .sap-media{ min-height:220px; }
+  .about-page .product-media img,
+  .products-page .products-listing .product-media img,
+  .products-page .sap-feature .sap-media>img{ max-height:280px; }
 }
-@media (max-width:980px){
-  .products-page .product-row{ grid-template-columns:1fr; gap:0; border:0; border-radius:0; overflow:visible; min-height:0; align-content:start; padding-block:20px; background:linear-gradient(180deg,rgba(var(--rgb-white),.7),rgba(var(--rgb-brand),.04),rgba(var(--rgb-white),.2)); }
-  .products-page .product-row:nth-child(even) .product-media,.products-page .product-row:nth-child(even) .product-copy{ order:0; }
-  .products-page .product-media{ min-height:0; padding:0; background:transparent; overflow:visible; }
-  .products-page .product-media img{ width:100%; max-width:100%; height:auto; max-height:none; margin-inline:auto; display:block; object-position:center; border-radius:10px; border:0; background:none; box-shadow:0 16px 34px -18px rgba(var(--rgb-ink),.28); }
-  .products-page .product-copy{ padding:clamp(16px,2.6dvh,26px) 0 0; }
-  .products-page .product-logo{ display:none; }
+@media (max-width:600px){
+  .about-page .product-row,
+  .products-page .products-listing .product-row,
+  .products-page .sap-feature .sap-panel{ padding:16px; }
+  .products-page .products-listing .product-media,
+  .products-page .sap-feature .sap-media{ min-height:180px; }
+  .products-page .products-listing .product-media img,
+  .products-page .sap-feature .sap-media>img{ max-height:230px; }
 }
-@media (max-width:980px) and (max-height:880px),(max-width:400px){ .products-page .product-copy p:nth-of-type(2){ display:none; } }
-@media (max-width:620px){ .products-page .product-copy p{ font-size:1rem; line-height:1.5; } .products-page .product-row{ padding-block:clamp(26px,4.5dvh,44px); } }
-@media (hover:none){ .sub-page .text-link,.products-page .text-link{ min-height:44px; display:inline-flex; align-items:center; } }
-/* About Us variant: alternating cards */
-.about-page .product-list{ display:grid; gap:clamp(20px,2.6vw,32px); }
-.about-page .product-row{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:clamp(28px,4vw,64px); align-items:center; padding:clamp(20px,2.6vw,32px); border:1px solid var(--line); border-radius:16px; background:var(--card-grad); }
-.about-page .product-row:nth-child(even) .product-media{ order:2; }
-.about-page .product-media{ position:relative; display:grid; place-items:center; min-height:300px; padding:clamp(8px,1.5vw,20px); }
-.about-page .product-media::before{ content:""; position:absolute; width:280px; height:280px; border-radius:50%; background:rgba(var(--rgb-brand),.09); filter:blur(24px); }
-.about-page .product-media img{ position:relative; z-index:1; display:block; width:100%; height:auto; max-height:340px; object-fit:contain; }
-.about-page .product-copy{ display:flex; flex-direction:column; align-items:flex-start; padding:clamp(6px,1vw,14px) 0; }
-.about-page .product-logo{ display:block; height:36px; width:auto; max-width:220px; object-fit:contain; object-position:left; margin-bottom:16px; }
-.about-page .product-copy h3{ margin:0 0 12px; font-size:var(--fs-h3); line-height:var(--lh-tight); letter-spacing:-.02em; }
-.about-page .product-copy p{ color:var(--soft); font-size:var(--fs-body); line-height:var(--lh-body); }
-.about-page .product-copy p+p{ margin-top:.8em; }
-@media (max-width:900px){ .about-page .product-row{ grid-template-columns:1fr; gap:22px; } .about-page .product-row:nth-child(even) .product-media{ order:0; } .about-page .product-media{ min-height:220px; } .about-page .product-media img{ max-height:280px; } }
-@media (max-width:600px){ .about-page .product-row{ padding:16px; } }`,
+@media (hover:none){ .sub-page .text-link,.products-page .text-link{ min-height:44px; display:inline-flex; align-items:center; } }`,
   deps:['textlinks']});
 
 comp({ id:'careercard', group:'sub', title:'Career card & apply rail', used:['Career','Job single'],
@@ -2558,7 +2567,7 @@ comp({ id:'landinghero', group:'sub', title:'SEO landing hero & in-content CTA',
 <section class="landing-body" style="padding-block:24px"><div class="wrap"><div class="entry-content landing-content">
   <h2>Why choose SAP Business One?</h2>
   <ul><li>One system for finance, sales, purchasing and inventory</li><li>BIR CAS-ready books and forms with IQ Tax</li><li>Implemented and supported locally by a Premier Partner</li></ul>
-  <div class="landing-cta"><h3>Ready To Get Started?</h3><h2>Let’s talk about your SAP roadmap</h2><p>Tell us where your operations slow down and we will show you what SAP Business One and the IQ Suite can do about it.</p><div class="dynamiq-cta landing-cta-btn"><a href="#">Book a Free Demo <span class="arr" aria-hidden="true">→</span></a></div></div>
+  <div class="landing-cta"><h3>Ready To Get Started?</h3><h2>Let’s talk about your SAP roadmap</h2><p>Tell us where your operations slow down and we will show you what SAP Business One and our ERP add-ons can do about it.</p><div class="dynamiq-cta landing-cta-btn"><a href="#">Book a Free Demo <span class="arr" aria-hidden="true">→</span></a></div></div>
 </div></div></section>`,
   css:`/* ═══ LANDING HERO ═══ */
 .landing-hero{ position:relative; overflow:hidden; background:linear-gradient(135deg,#1f1e1f 0%,var(--color-ink) 55%,#3a3639 100%); color:#fff; --text:#fff; --soft:rgba(255,255,255,.8); --line:rgba(255,255,255,.3); }

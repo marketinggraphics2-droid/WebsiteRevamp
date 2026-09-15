@@ -286,9 +286,7 @@ function dq_lp_head( array $g, $eyebrow = '', $centred = false ) {
 		return '';
 	}
 	$out = '<div class="lp-head' . ( $centred ? ' is-centred' : '' ) . '"' . dq_reveal_attr() . '>';
-	if ( $eyebrow && '' !== $g['title'] ) {
-		$out .= '<span class="eyebrow">' . esc_html( $eyebrow ) . '</span>';
-	}
+	/* no eyebrow: the live pages carry none, and the sub-pages follow the live text (the parameter stays for callers) */
 	if ( '' !== $g['title'] ) {
 		$out .= '<h2>' . esc_html( $g['title'] ) . '</h2>';
 	}

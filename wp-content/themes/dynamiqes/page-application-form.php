@@ -33,7 +33,6 @@ $intro = '' !== $intro
 	<article <?php post_class( 'application-page' ); ?>>
 		<header class="page-hero">
 			<div class="wrap">
-				<span class="eyebrow"<?php dq_reveal( 'fade' ); ?>><?php esc_html_e( 'Careers', 'dynamiqes' ); ?></span>
 				<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
 				<div class="page-hero-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div>
 			</div>

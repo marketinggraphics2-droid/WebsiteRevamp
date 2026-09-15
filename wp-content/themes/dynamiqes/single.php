@@ -115,7 +115,6 @@ if ( $related->post_count < 3 ) {
 	<section class="post-related" aria-labelledby="relatedHeading">
 		<div class="wrap">
 			<div class="sec-head"<?php dq_reveal(); ?>>
-				<span class="eyebrow"><?php echo esc_html( $hub_label ); ?></span>
 				<?php $rel_tag = $is_news ? 'h2' : 'h4'; /* live: H2 "Other News and Events" on news, H4 "You May Also Like" on posts */ ?>
 				<<?php echo $rel_tag; // phpcs:ignore WordPress.Security.EscapeOutput ?> id="relatedHeading"><?php echo $is_news ? esc_html__( 'Other News and Events', 'dynamiqes' ) : esc_html__( 'You May Also Like', 'dynamiqes' ); ?></<?php echo $rel_tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 			</div>

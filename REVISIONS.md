@@ -27,7 +27,7 @@ Legend: `[ ]` open · `[x]` done · `[?]` blocked on input from IQ/client
 
 - [x] **B1** "Make your business Run Easier with SAP Business One 10.0" — section too empty. Row 1.
 - [x] **B2** "SAP Business One" — right column empty. Row 2.
-- [x] **B3** "The IQ Suite" — header bleeds into card section; no left padding on text. Row 3.
+- [x] **B3** Product-list section header — bleeds into card section; no left padding on text. Row 3.
 
 ## C. SAP Business One (`/products/sap-business-one-philippines/`)
 

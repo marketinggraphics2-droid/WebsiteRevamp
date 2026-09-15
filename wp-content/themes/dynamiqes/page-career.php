@@ -33,7 +33,6 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 	<article <?php post_class( 'career-page' ); ?>>
 		<header class="page-hero page-hero--photo" style="--hero-photo:url('<?php echo esc_url( dq_page_hero_photo( 'career-banner.jpg' ) ); ?>')"><?php /* the live page's banner photo (Featured Image overrides it) */ ?>
 			<div class="wrap">
-				<span class="eyebrow"<?php dq_reveal( 'fade' ); ?>><?php the_title(); ?></span>
 				<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
 				<div class="page-hero-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div>
 			</div>
@@ -42,7 +41,6 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 		<section class="career-jobs" id="openings">
 			<div class="wrap">
 				<div class="sec-head"<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'Open positions', 'dynamiqes' ); ?></span>
 					<h2><?php echo esc_html( $copy['hiring_h2'] ); ?></h2>
 					<p><?php echo esc_html( $copy['hiring_lead'] ); ?></p>
 				</div>
@@ -77,7 +75,6 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 		<section class="career-join">
 			<div class="wrap career-join-grid">
 				<div<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'SAP Business One', 'dynamiqes' ); ?></span>
 					<h2><?php echo esc_html( $copy['join_h2'] ); ?></h2>
 					<p><?php echo esc_html( $copy['join_p'] ); ?></p>
 				</div>
@@ -99,7 +96,6 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 		<section class="career-culture">
 			<div class="wrap">
 				<div class="sec-head center"<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'Life at DynamIQ', 'dynamiqes' ); ?></span>
 					<h2><?php echo esc_html( $copy['culture_h2'] ); ?></h2>
 					<p><?php echo esc_html( $copy['culture_p'] ); ?></p>
 				</div>
@@ -128,7 +124,6 @@ $pin = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7
 		<section class="career-hr" id="hr">
 			<div class="wrap career-hr-grid">
 				<div<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'HR Contact Information', 'dynamiqes' ); ?></span>
 					<p class="h2"><?php esc_html_e( 'Ready to apply?', 'dynamiqes' ); ?></p><?php /* not a heading: the live /career/ outline ends with the core values */ ?>
 					<p><?php esc_html_e( 'Send your CV and the position you are applying for to our HR team, or call us during office hours.', 'dynamiqes' ); ?></p>
 					<ul>

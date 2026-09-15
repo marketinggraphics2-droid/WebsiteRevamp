@@ -40,7 +40,6 @@ $news     = new WP_Query( array_merge( $base, array( 'posts_per_page' => 9, 'pag
 	<article <?php post_class( 'news-page' ); ?>>
 		<header class="page-hero page-hero--photo" style="--hero-photo:url('<?php echo esc_url( dq_page_hero_photo( 'news-events-banner.jpg' ) ); ?>')"><?php /* the live page's banner photo (Featured Image overrides it) */ ?>
 			<div class="wrap">
-				<span class="eyebrow"<?php dq_reveal( 'fade' ); ?>><?php the_title(); ?></span>
 				<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
 				<div class="page-hero-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div>
 				<div class="hero-actions"<?php dq_reveal( '', 160 ); ?>>
@@ -53,7 +52,6 @@ $news     = new WP_Query( array_merge( $base, array( 'posts_per_page' => 9, 'pag
 		<section class="news-featured">
 			<div class="wrap">
 				<div class="sec-head"<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'Latest', 'dynamiqes' ); ?></span>
 					<h2><?php esc_html_e( 'Featured News and Events', 'dynamiqes' ); ?></h2>
 				</div>
 				<?php $featured->the_post(); get_template_part( 'template-parts/post-feature', null, array( 'heading' => 'h3' ) ); wp_reset_postdata(); ?>
@@ -64,7 +62,6 @@ $news     = new WP_Query( array_merge( $base, array( 'posts_per_page' => 9, 'pag
 		<section class="news-list">
 			<div class="wrap">
 				<div class="sec-head"<?php dq_reveal(); ?>>
-					<span class="eyebrow"><?php esc_html_e( 'All stories', 'dynamiqes' ); ?></span>
 					<h2><?php esc_html_e( 'News and Events', 'dynamiqes' ); ?></h2>
 				</div>
 				<?php if ( $news->have_posts() ) : ?>

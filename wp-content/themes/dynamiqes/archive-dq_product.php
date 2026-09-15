@@ -9,12 +9,11 @@ get_header();
 
 $products = dq_get_products();
 $sap      = dq_get_product_by_key( 'sap' );
-$suite    = array_values( array_filter( $products, function ( $p ) { return 'sap' !== $p['key']; } ) );
+$addons    = array_values( array_filter( $products, function ( $p ) { return 'sap' !== $p['key']; } ) );
 ?>
 <main id="main">
 	<section class="hero">
 		<div class="wrap">
-			<span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'Our Products', 'dynamiqes' ); ?></span>
 			<h1<?php dq_reveal(); ?>><?php esc_html_e( 'Our Solutions', 'dynamiqes' ); ?></h1>
 			<p<?php dq_reveal(); ?>>We are more than just a software vendor. We devise a total ENTERPRISE RESOURCE PLANNING (ERP) SYSTEM experience that is truly customer-focused and remarkably life centered to sustain a balance between your personal and professional priorities. Here are some of our products:</p>
 			<div class="hero-actions"><a class="btn btn-primary" href="<?php echo esc_url( dq_home_anchor( 'contact' ) ); ?>"><?php esc_html_e( 'INQUIRE NOW', 'dynamiqes' ); ?> <span aria-hidden="true">→</span></a></div>
@@ -43,13 +42,11 @@ $suite    = array_values( array_filter( $products, function ( $p ) { return 'sap
 	</section>
 	<?php endif; ?>
 
-	<section class="suite">
+	<section class="products-listing">
 		<div class="wrap">
-			<div class="suite-head">
-				<div><span class="eyebrow"<?php dq_reveal(); ?>><?php esc_html_e( 'Our Products', 'dynamiqes' ); ?></span><p class="sec-title"<?php dq_reveal(); ?>><?php esc_html_e( 'The IQ Suite — built in-house on SAP Business One', 'dynamiqes' ); ?></p><?php /* styled like an H2, but the live /products/ outline has no heading here */ ?></div>
-			</div>
+			<?php /* no heading here: the live /products/ outline goes straight from the SAP panel to the product list */ ?>
 			<div class="product-list">
-				<?php foreach ( $suite as $p ) : ?>
+				<?php foreach ( $addons as $p ) : ?>
 				<article class="product-row" id="iq-<?php echo esc_attr( $p['key'] ); ?>"<?php dq_reveal(); ?>>
 					<div class="product-media"><img src="<?php echo esc_url( $p['hero'] ); ?>" alt="<?php echo esc_attr( $p['name'] . ' interface' ); ?>" loading="lazy"></div>
 					<div class="product-copy">
