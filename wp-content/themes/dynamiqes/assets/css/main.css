@@ -3748,7 +3748,13 @@ h4.post-share-label{margin:0}
 /* Form: a two-field row (the Industry / How-did-you-find-us selects) spans the panel like the
    three-field rows above it, instead of leaving a hole in the third column. */
 @media (min-width:901px){
-  .cta-form .row:has(> .field:nth-child(2):last-child){grid-template-columns:repeat(2,minmax(0,1fr))}
+  /* The form is one grid with every field a direct child, so the two selects were cells 7-8 of
+     a three-column grid with cell 9 empty. Six tracks: text fields span two, the selects span
+     three, so the pair fills the row. */
+  .cta-form .row{grid-template-columns:repeat(6,minmax(0,1fr))}
+  .cta-form .row>.field{grid-column:span 2}
+  .cta-form .row>.field--select{grid-column:span 3}
+  .cta-form .row>.field.full,.cta-form .row>.submit-row{grid-column:1 / -1}
 }
 
 /* Cards: four to a set read 2 x 2 (wider cards, fewer wrapped lines); eight and nine read three
