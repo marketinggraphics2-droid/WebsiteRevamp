@@ -134,6 +134,10 @@ function dq_lp_parse_groups( $html ) {
 		}
 		if ( 'figure' === $name || 'img' === $name ) {
 			$img = 'img' === $name ? $node : $xp->query( './/img', $node )->item( 0 );
+			if ( $img && false !== strpos( $cls, 'is-seal' ) ) {
+				$group['extra'][] = dq_lp_outer_html( $node ); // accreditation seals: a row under the copy, never the section photo
+				continue;
+			}
 			if ( $img ) {
 				if ( '' === $group['media'] ) {
 					$group['media'] = dq_lp_outer_html( $img );

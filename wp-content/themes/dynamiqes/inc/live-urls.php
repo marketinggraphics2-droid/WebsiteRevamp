@@ -345,20 +345,56 @@ add_action( 'init', function () {
 /* Imported landing pages follow the importer. On every theme update the stored copies are read
    again from the live pages, so an importer fix reaches the site without a manual step - the
    09-14 review was looking at staging content imported before the 1.2.x fixes (no in-text
-   links, no contact form, glued words, a card icon as the section photo). Runs in the
-   background a few seconds after the first admin load of the new version; the auto-import for
-   empty pages (inc/seeder.php) stays as it is. */
+   links, no contact form, glued words, a card icon as the section photo).
+
+   1.3.2 scheduled this through WP-Cron and it never ran on staging (the version was stamped,
+   so it never retried either). It now runs in the request itself: four pages per admin page
+   load, the pending list saved before each batch so a failure cannot repeat the same slugs,
+   and the version stamped only when the list is empty. A notice in wp-admin reports the
+   result. The auto-import for empty pages (inc/seeder.php) stays as it is. */
 add_action( 'init', function () {
-	if ( ! is_admin() || ! current_user_can( 'manage_options' ) || get_option( 'dq_landing_import_ver' ) === DQ_VERSION ) {
+	if ( ! is_admin() || wp_doing_ajax() || ! current_user_can( 'manage_options' ) || ! function_exists( 'dq_import_landing_pages' ) ) {
 		return;
 	}
-	update_option( 'dq_landing_import_ver', DQ_VERSION ); // first, so a failure cannot loop
-	if ( ! wp_next_scheduled( 'dq_landing_reimport' ) ) {
-		wp_schedule_single_event( time() + 5, 'dq_landing_reimport' );
+	if ( get_option( 'dq_landing_import_ver' ) === DQ_VERSION ) {
+		return;
+	}
+	$pending = get_option( 'dq_landing_import_pending' );
+	if ( get_option( 'dq_landing_import_pending_ver' ) !== DQ_VERSION || ! is_array( $pending ) ) {
+		$pending = dq_landing_slugs();
+		update_option( 'dq_landing_import_pending_ver', DQ_VERSION );
+		update_option( 'dq_landing_import_report', array() );
+	}
+	$batch = array_splice( $pending, 0, 4 );
+	update_option( 'dq_landing_import_pending', $pending ); // first, so a fatal cannot loop on the same slugs
+	if ( $batch ) {
+		if ( function_exists( 'set_time_limit' ) ) {
+			@set_time_limit( 150 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+		}
+		$only = function () use ( $batch ) {
+			return $batch;
+		};
+		add_filter( 'dq_landing_slugs', $only, 99 );
+		$report = dq_import_landing_pages( false );
+		remove_filter( 'dq_landing_slugs', $only, 99 );
+		update_option( 'dq_landing_import_report', array_merge( (array) get_option( 'dq_landing_import_report', array() ), (array) $report ) );
+	}
+	if ( ! $pending ) {
+		update_option( 'dq_landing_import_ver', DQ_VERSION );
+		update_option( 'dq_landing_import_done', time() );
 	}
 }, 27 );
-add_action( 'dq_landing_reimport', function () {
-	if ( function_exists( 'dq_import_landing_pages' ) ) {
-		dq_import_landing_pages( false );
+
+/* One notice when the re-import finishes, with the importer's own report; dismissed by reading. */
+add_action( 'admin_notices', function () {
+	if ( ! current_user_can( 'manage_options' ) || ! get_option( 'dq_landing_import_done' ) ) {
+		return;
 	}
+	$report = (array) get_option( 'dq_landing_import_report', array() );
+	delete_option( 'dq_landing_import_done' );
+	$failed = array_filter( $report, function ( $l ) { return false === strpos( $l, 'updated' ); } );
+	echo '<div class="notice notice-' . ( $failed ? 'warning' : 'success' ) . ' is-dismissible"><p><strong>'
+		. esc_html( sprintf( __( 'DynamIQ %s: landing pages re-imported from the live site.', 'dynamiqes' ), DQ_VERSION ) ) . '</strong> '
+		. esc_html( sprintf( __( '%1$d pages updated, %2$d failed.', 'dynamiqes' ), count( $report ) - count( $failed ), count( $failed ) ) )
+		. ( $failed ? '<br>' . esc_html( implode( ' | ', $failed ) ) : '' ) . '</p></div>';
 } );

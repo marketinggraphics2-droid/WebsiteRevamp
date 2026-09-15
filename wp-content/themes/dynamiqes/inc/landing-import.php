@@ -323,6 +323,19 @@ function dq_landing_parse( $slug, $html = '' ) {
 					$pending_check = true; // the old pages draw bullet points as check.png + <p>
 					continue;
 				}
+				/* Accreditation seals (BIR, "trusted brand") on the two SEM provider pages: 220px+
+				   artwork that the icon test was dropping by name. Kept as their own figures and laid
+				   out as a row. The "SAP Silver Partner" seal stays out: the review asked for the
+				   current tier, "Premier Partner", everywhere (item F5). */
+				if ( 0 === $owned_cards && ! isset( $seen[ $src ] ) && preg_match( '/(seal|partner|bureau|accredit)/i', rawurldecode( basename( $src ) ) ) && ! preg_match( '/icon/i', rawurldecode( basename( $src ) ) ) ) { // only in a copy-only section: a card's "partner" icon stays a card icon
+					if ( preg_match( '/silver/i', rawurldecode( basename( $src ) ) ) ) {
+						$seen[ $src ] = true;
+						continue;
+					}
+					$seen[ $src ] = true;
+					$blocks[]     = '<figure class="wp-block-image is-seal"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( dq_landing_fix_copy( trim( $node->getAttribute( 'alt' ) ) ) ) . '" loading="lazy"></figure>';
+					continue;
+				}
 				if ( $named_icon || $small ) {
 					/* Every H3 card on these pages carries one of these. They used to be dropped
 					   outright, which is what the client spotted as "no logos/icons in the new
@@ -338,6 +351,15 @@ function dq_landing_parse( $slug, $html = '' ) {
 				}
 				if ( isset( $seen[ $src ] ) ) {
 					continue; // the old pages repeat a block for desktop/mobile
+				}
+				if ( $section_images >= 1 && 0 === $owned_cards ) {
+					/* A second photo in a section with no cards ("ERP Solutions in the Philippines"
+					   carries two): kept as a further figure rather than parked on a heading that
+					   never comes. The section builder shows it under the copy. */
+					$section_images++;
+					$seen[ $src ] = true;
+					$blocks[]     = '<figure class="wp-block-image"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( dq_landing_fix_copy( trim( $node->getAttribute( 'alt' ) ) ? trim( $node->getAttribute( 'alt' ) ) : $title ) ) . '" loading="lazy"></figure>';
+					continue;
 				}
 				if ( $cards_own_art || $section_images >= 1 ) {
 					/* The section already has its photo. Some sections give every card its own

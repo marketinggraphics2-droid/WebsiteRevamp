@@ -3846,3 +3846,9 @@ h4.post-share-label{margin:0}
 @media (min-width:901px){
   .career-page .career-jobs,.career-page .career-join,.career-page .career-culture{min-height:0;padding-block:clamp(56px,7vw,96px)}
 }
+
+/* Accreditation seals (BIR, trusted brand) sit in a row under the copy, at their own size */
+.lp-extra:has(.is-seal){display:flex;flex-wrap:wrap;align-items:center;gap:clamp(18px,2.4vw,36px)}
+.lp-extra .is-seal{margin:0}
+.lp-extra .is-seal img{width:auto;height:clamp(72px,7vw,110px);border:0;border-radius:0;background:transparent}
+.lp-extra figure:not(.is-seal) img{max-width:640px}
