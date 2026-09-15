@@ -94,6 +94,8 @@ function dq_landing_parse( $slug, $html = '' ) {
 		}
 		if ( $sec ) {
 			$hero_sec = $sec;
+			$hero_check = false;   // a check.png just went by: the next line is a bullet point
+			$hero_list  = array();
 			foreach ( $xp->query( './/h2|.//p|.//img', $sec ) as $node ) { // document order
 				$name = strtolower( $node->nodeName );
 				if ( ! dq_landing_owned( $node, $sec ) ) {
@@ -105,9 +107,14 @@ function dq_landing_parse( $slug, $html = '' ) {
 				}
 				if ( 'p' === $name ) {
 					$t = dq_landing_text( $node );
-					if ( mb_strlen( $t ) > 40 ) {
+					if ( $hero_check && '' !== $t ) {
+						$hero_list[] = '<li>' . esc_html( $t ) . '</li>'; // the old pages draw bullets as check.png + <p>
+					} elseif ( mb_strlen( $t ) > 40 ) {
 						$intro .= '<p>' . esc_html( $t ) . '</p>';
 					}
+					$hero_check = false;
+				} elseif ( preg_match( '/check/i', basename( dq_landing_img_src( $node ) ) ) ) {
+					$hero_check = true;
 				} elseif ( ! $og_image ) {
 					/* Hero image: the first real *photo* in the hero section. "First image" alone
 					   picked up a 20x20 check.png on the two SEM provider pages and used it as the
@@ -117,6 +124,9 @@ function dq_landing_parse( $slug, $html = '' ) {
 						$og_image = $src;
 					}
 				}
+			}
+			if ( $hero_list ) {
+				$intro .= '<ul class="lp-checklist">' . implode( '', $hero_list ) . '</ul>';
 			}
 		}
 	}
@@ -243,7 +253,9 @@ function dq_landing_parse( $slug, $html = '' ) {
 		}
 		$last_heading = -1; // index in $blocks of the heading an trailing icon belongs to
 		$caption_list   = array(); // icon + caption rows on the old site are bare <p>s after a "...:" lead-in; rebuild them as a list
-		foreach ( $xp->query( './/h2|.//h3|.//h4|.//p|.//ul|.//ol|.//img', $section ) as $node ) {
+		$pending_check  = false;   // a check.png just went by: the next <p> is a bullet point
+		$check_list     = array();
+		foreach ( $xp->query( './/h2|.//h3|.//h4|.//p|.//ul|.//ol|.//img|.//a', $section ) as $node ) {
 			$name = strtolower( $node->nodeName );
 			if ( ! dq_landing_owned( $node, $section ) ) {
 				continue; // belongs to a later section libxml nested inside this one (unclosed tags on the old site)
@@ -253,6 +265,30 @@ function dq_landing_parse( $slug, $html = '' ) {
 					continue;
 				}
 				$started = true;
+			}
+			if ( $check_list && 'img' !== $name && ! ( 'p' === $name && $pending_check ) ) {
+				$blocks[]   = '<ul class="lp-checklist">' . implode( '', $check_list ) . '</ul>'; // the bullet run ended
+				$check_list = array();
+			}
+			if ( 'a' === $name ) {
+				/* A standalone button ("CONSULT AN EXPERT") - not a link inside a paragraph, which
+				   dq_landing_inline keeps in place. Kept as its own block so the section builder can give
+				   the section the CTA treatment with the page's own label. */
+				if ( $from_h2 || $xp->query( 'ancestor::p|ancestor::li|ancestor::h1|ancestor::h2|ancestor::h3|ancestor::h4', $node )->length ) {
+					continue;
+				}
+				$acls  = strtolower( $node->getAttribute( 'class' ) . ' ' . ( $node->parentNode instanceof DOMElement ? $node->parentNode->getAttribute( 'class' ) : '' ) );
+				$label = dq_landing_text( $node );
+				if ( '' === $label || mb_strlen( $label ) > 40 || ! preg_match( '/(btn|button|bg-orange|cta)/', $acls ) ) {
+					continue;
+				}
+				$key = spl_object_hash( $section ) . '|a|' . $label;
+				if ( isset( $seen[ $key ] ) ) {
+					continue;
+				}
+				$seen[ $key ] = true;
+				$blocks[]     = '<p class="landing-btn"><a href="' . esc_url( trim( $node->getAttribute( 'href' ) ) ) . '">' . esc_html( dq_landing_fix_copy( $label ) ) . '</a></p>';
+				continue;
 			}
 			if ( 'img' === $name ) {
 				if ( $from_h2 ) {
@@ -282,6 +318,10 @@ function dq_landing_parse( $slug, $html = '' ) {
 				if ( ! $named_icon && ! $small && ! $w && ! $h ) {
 					$dims  = dq_landing_image_size( $src );
 					$small = $dims && ( $dims[0] < 200 || $dims[1] < 200 );
+				}
+				if ( preg_match( '/check/i', basename( $src ) ) ) {
+					$pending_check = true; // the old pages draw bullet points as check.png + <p>
+					continue;
 				}
 				if ( $named_icon || $small ) {
 					/* Every H3 card on these pages carries one of these. They used to be dropped
@@ -319,7 +359,7 @@ function dq_landing_parse( $slug, $html = '' ) {
 				$section_images++;
 				$seen[ $src ] = true;
 				$alt = trim( $node->getAttribute( 'alt' ) );
-				$blocks[] = '<figure class="wp-block-image"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( $alt ? $alt : $title ) . '" loading="lazy"></figure>';
+				$blocks[] = '<figure class="wp-block-image"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( dq_landing_fix_copy( $alt ? $alt : $title ) ) . '" loading="lazy"></figure>';
 				continue;
 			}
 			if ( 'ul' === $name || 'ol' === $name ) {
@@ -348,9 +388,16 @@ function dq_landing_parse( $slug, $html = '' ) {
 			}
 			$key = spl_object_hash( $section ) . '|' . $name . '|' . $t; // the old site repeats blocks within a section (desktop/mobile copies); the same heading in two sections is real
 			if ( isset( $seen[ $key ] ) ) {
+				$pending_check = false;
 				continue;
 			}
 			$seen[ $key ] = true;
+			if ( 'p' === $name && $pending_check ) {
+				$pending_check = false;
+				$inline        = dq_landing_inline( $node );
+				$check_list[]  = '<li>' . dq_landing_fix_copy( $inline ? $inline : esc_html( $t ) ) . '</li>';
+				continue;
+			}
 			$lead_in = $blocks && ':</p>' === substr( end( $blocks ), -5 );
 			if ( 'p' === $name && mb_strlen( $t ) <= 60 && ! preg_match( '/[.!?]$/u', $t ) && ( $caption_list || $lead_in ) ) {
 				$caption_list[] = '<li>' . esc_html( $t ) . '</li>';
@@ -375,6 +422,9 @@ function dq_landing_parse( $slug, $html = '' ) {
 		}
 		if ( $caption_list ) {
 			$blocks[] = '<ul>' . implode( '', $caption_list ) . '</ul>';
+		}
+		if ( $check_list ) {
+			$blocks[] = '<ul class="lp-checklist">' . implode( '', $check_list ) . '</ul>';
 		}
 	}
 
@@ -569,7 +619,10 @@ function dq_landing_fix_copy( $text ) {
 	/* "SAP Business One - Gold Partner in the Philippines" should read as one phrase, so the
 	   dash goes with the tier rather than leaving "SAP Business One - Premier Partner". */
 	$text = preg_replace( '/SAP Business One\s*[-\x{2010}-\x{2015}]\s*Gold Partner/u', 'SAP Business One Premier Partner', $text );
-	return str_replace( 'Gold Partner', 'Premier Partner', $text );
+	$text = str_replace( 'Gold Partner', 'Premier Partner', $text );
+	/* The old pages write the company as "Dynamiqes" in headings and copy; the review asked for
+	   "DynamIQ" everywhere. Whole word, capitalised - e-mail addresses and URLs are untouched. */
+	return preg_replace( '/\bDynamiqes\b/u', 'DynamIQ', $text );
 }
 
 /**

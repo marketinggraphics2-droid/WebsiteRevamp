@@ -341,3 +341,24 @@ add_action( 'init', function () {
 		dq_repair_blog_menu_links();
 	}
 }, 27 );
+
+/* Imported landing pages follow the importer. On every theme update the stored copies are read
+   again from the live pages, so an importer fix reaches the site without a manual step - the
+   09-14 review was looking at staging content imported before the 1.2.x fixes (no in-text
+   links, no contact form, glued words, a card icon as the section photo). Runs in the
+   background a few seconds after the first admin load of the new version; the auto-import for
+   empty pages (inc/seeder.php) stays as it is. */
+add_action( 'init', function () {
+	if ( ! is_admin() || ! current_user_can( 'manage_options' ) || get_option( 'dq_landing_import_ver' ) === DQ_VERSION ) {
+		return;
+	}
+	update_option( 'dq_landing_import_ver', DQ_VERSION ); // first, so a failure cannot loop
+	if ( ! wp_next_scheduled( 'dq_landing_reimport' ) ) {
+		wp_schedule_single_event( time() + 5, 'dq_landing_reimport' );
+	}
+}, 27 );
+add_action( 'dq_landing_reimport', function () {
+	if ( function_exists( 'dq_import_landing_pages' ) ) {
+		dq_import_landing_pages( false );
+	}
+} );

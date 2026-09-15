@@ -29,7 +29,7 @@ $addons    = array_values( array_filter( $products, function ( $p ) { return 'sa
 				   section looking half-finished (review items B1/B2). */ ?>
 				<div class="sap-media">
 					<img src="<?php echo esc_url( $sap['hero'] ); ?>" alt="<?php echo esc_attr( $sap['name'] . ' interface' ); ?>" loading="lazy">
-					<p class="sap-caption"><?php esc_html_e( 'Make your business Run Easier with SAP Business One 10.0', 'dynamiqes' ); ?></p>
+					<p class="sap-caption"><?php esc_html_e( 'Make your business run easier with SAP Business One 10.0', 'dynamiqes' ); ?></p>
 				</div>
 				<div class="sap-copy">
 					<img class="sap-logo" src="<?php echo esc_url( $sap['logo'] ); ?>" alt="<?php echo esc_attr( $sap['name'] ); ?>" loading="lazy">

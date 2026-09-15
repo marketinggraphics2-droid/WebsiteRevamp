@@ -53,6 +53,7 @@ function dq_lp_new_group() {
 		'faq'   => '',
 		'cta'   => '',
 		'extra' => array(),
+		'button' => array(), // the section's own button, from the importer's <p class="landing-btn">
 	);
 }
 
@@ -151,6 +152,13 @@ function dq_lp_parse_groups( $html ) {
 			continue;
 		}
 		if ( 'p' === $name ) {
+			if ( false !== strpos( $cls, 'landing-btn' ) ) {
+				$a = $xp->query( './/a', $node )->item( 0 );
+				if ( $a instanceof DOMElement ) {
+					$group['button'] = array( 'label' => trim( wp_strip_all_tags( dq_lp_inner_html( $a ) ) ), 'href' => trim( $a->getAttribute( 'href' ) ) );
+				}
+				continue;
+			}
 			$copy = trim( dq_lp_inner_html( $node ) );
 			if ( '' === trim( wp_strip_all_tags( $copy ) ) ) {
 				continue;
@@ -172,7 +180,7 @@ function dq_lp_parse_groups( $html ) {
 	/* drop the empties left by the flushes above */
 	$groups = array_values( array_filter( $groups, function ( $g ) {
 		return '' !== $g['title'] || $g['intro'] || $g['items'] || $g['lists']
-			|| '' !== $g['media'] || '' !== $g['faq'] || '' !== $g['cta'] || $g['extra'];
+			|| '' !== $g['media'] || '' !== $g['faq'] || '' !== $g['cta'] || $g['extra'] || $g['button'];
 	} ) );
 
 	/* The old pages put a section's illustration above its H2, so it arrives as a group
@@ -228,7 +236,7 @@ function dq_lp_logos() {
 	foreach ( array( false, true ) as $dup ) {
 		foreach ( $logos as $l ) {
 			$out .= '<img src="' . esc_url( dq_asset( $l[1] ) ) . '" alt="' . ( $dup ? '' : esc_attr( $l[0] ) ) . '"'
-				. ( $dup ? ' aria-hidden="true"' : '' ) . ' loading="lazy" height="40">';
+				. ( $dup ? ' aria-hidden="true"' : '' ) . ' loading="eager" height="48">'; // eager: a lazy second copy never loads off-screen and the loop shows a hole
 		}
 	}
 	return $out . '</div></div>';
@@ -441,12 +449,6 @@ function dq_lp_cta_section( $cta_html, $index = 0 ) {
 				<div class="cta-form">
 					<?php get_template_part( 'template-parts/enquiry-form', null, array( 'id' => 'lpForm-' . (int) $index, 'compact' => true, 'submit' => __( 'SEND ENQUIRY', 'dynamiqes' ) ) ); ?>
 				</div>
-				<div class="lp-cta-links">
-					<div class="dynamiq-cta"><a href="<?php echo esc_url( dq_book_demo_url() ); ?>"><?php esc_html_e( 'Get Your Free Business Analysis', 'dynamiqes' ); ?> <span class="arr" aria-hidden="true">&rarr;</span></a></div>
-					<?php if ( ! empty( $contact['phone1'] ) ) : ?>
-					<p class="cta-phone"><a href="<?php echo esc_attr( dq_tel( $contact['phone1'] ) ); ?>"><?php echo dq_icon_phone(); // phpcs:ignore WordPress.Security.EscapeOutput ?> <?php echo esc_html( $contact['phone1'] ); ?></a></p>
-					<?php endif; ?>
-				</div>
 			</div>
 		</div>
 	</section>
@@ -473,8 +475,9 @@ function dq_landing_sections( $html, $eyebrow = '' ) {
 	$band    = 0; // alternating section ground, for some vertical rhythm
 	$splits  = 0; // alternating image side
 
-	foreach ( $groups as $g ) {
+	foreach ( $groups as $gi => $g ) {
 		$variant = dq_lp_variant( $g );
+		$next    = isset( $groups[ $gi + 1 ] ) ? $groups[ $gi + 1 ] : null;
 
 		if ( 'cta' === $variant ) {
 			$section = dq_lp_cta_section( $g['cta'], $ctas );
@@ -549,10 +552,72 @@ function dq_landing_sections( $html, $eyebrow = '' ) {
 				. '</div></section>';
 			continue;
 		}
+		if ( dq_lp_is_cta_copy( $g, $next ) ) {
+			$out .= dq_lp_cta_copy_section( $g );
+			continue;
+		}
 		$out .= '<section class="lp-section lp-copy' . $alt . '"><div class="wrap">'
 			. dq_lp_head( $g, $eyebrow ) . $media . dq_lp_lists( $g['lists'] ) . $extra
 			. '</div></section>';
 	}
 
 	return array( $out, $has_cta );
+}
+
+/**
+ * Is this copy-only group the page's own call to action? The old pages close each argument with
+ * a short "Trust DynamIQ ..." / "Get Started Today!" block, sometimes with a button; the review
+ * asked for those to get the CTA design rather than reading as one more paragraph (item "This is
+ * a CTA section"). A group is a CTA when it carries a button, when it is the last group or the one
+ * before the FAQ, or when its title reads as an invitation.
+ *
+ * @param array      $g    Group.
+ * @param array|null $next The group that follows, or null.
+ * @return bool
+ */
+function dq_lp_is_cta_copy( array $g, $next ) {
+	if ( $g['items'] || $g['lists'] || '' !== $g['media'] || '' !== $g['faq'] || '' !== $g['cta'] ) {
+		return false;
+	}
+	if ( ! empty( $g['button'] ) ) {
+		return true;
+	}
+	if ( count( $g['intro'] ) > 3 || '' === $g['title'] ) {
+		return false;
+	}
+	if ( null === $next ) {
+		return true;
+	}
+	$nv = dq_lp_variant( $next );
+	if ( 'faq' === $nv || 'faq-items' === $nv ) {
+		return true;
+	}
+	return '!' === substr( trim( $g['title'] ), -1 )
+		|| (bool) preg_match( '/^(trust |get started|grow with|implement |enhance |access |streamline your|empower )/i', $g['title'] );
+}
+
+/** The CTA panel for a copy group: heading, copy, the page's own button (or the enquiry link). */
+function dq_lp_cta_copy_section( array $g ) {
+	$label = ! empty( $g['button']['label'] ) ? $g['button']['label'] : __( 'Get Your Free Business Analysis', 'dynamiqes' );
+	$href  = ! empty( $g['button']['href'] ) ? $g['button']['href'] : '';
+	$live  = function_exists( 'dq_landing_source_base' ) ? dq_landing_source_base() : '';
+	if ( '' !== $href && '' !== $live && 0 === strpos( $href, $live ) ) {
+		$href = home_url( substr( $href, strlen( $live ) ) ); // the old page's destination, on this site
+	}
+	if ( '' === $href || 0 === strpos( $href, '#' ) ) {
+		$href = dq_book_demo_url();
+	}
+	ob_start();
+	?>
+	<section class="cta-section lp-cta-copy">
+		<div class="wrap">
+			<div class="cta-panel"<?php echo dq_reveal_attr( 'scale' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
+				<?php if ( '' !== $g['title'] ) : ?><h2><?php echo esc_html( $g['title'] ); ?></h2><?php endif; ?>
+				<?php foreach ( $g['intro'] as $dq_p ) : ?><p><?php echo dq_inline_html( $dq_p ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
+				<div class="dynamiq-cta"><a href="<?php echo esc_url( $href ); ?>"><?php echo esc_html( $label ); ?> <span class="arr" aria-hidden="true">→</span></a></div>
+			</div>
+		</div>
+	</section>
+	<?php
+	return ob_get_clean();
 }
