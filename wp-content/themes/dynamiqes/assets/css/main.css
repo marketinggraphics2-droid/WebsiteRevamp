@@ -3432,7 +3432,6 @@ h4.post-share-label{margin:0}
      screen like every other band (the home page and Our Services already do this). */
   .sub-page .cta-section:not(.product-cta):not(.lp-cta),
   .sub-page .contact-us{
-    min-height:calc(100dvh - var(--nav-h,88px));
     display:grid;align-content:center;
     padding-block:clamp(28px,4.5dvh,56px);
   }
@@ -3820,4 +3819,30 @@ h4.post-share-label{margin:0}
   .lp-photo-row:last-child:nth-child(odd) .lp-photo-media{order:2;aspect-ratio:16/9;max-height:340px;height:auto;align-self:stretch}
   .lp-photo-row:last-child:nth-child(odd) .lp-photo-media img{height:100%;object-fit:cover}
   .lp-photo-row:last-child:nth-child(odd) .lp-photo-copy{align-self:center}
+}
+
+/* No section is stretched to a screen any more. The one-screen minimum that 1.3.1 lifted from the
+   landing sections still applied to the CTA panels (form and copy), the products-page CTA and the
+   Our Services bands: at 1908 x 1000 each sat centred in a 911px box with 225-570px of air. Every
+   one is now as tall as its content, on the section rhythm. */
+@media (min-width:901px){
+  .sub-page .cta-section,
+  .lp-cta,
+  .lp-cta-copy,
+  .products-page .cta-section,
+  .svc-band,
+  .services-page .svc-cta-band,
+  .services-page .contact-us,
+  .home-page .cta-section{min-height:0;padding-block:clamp(56px,7vw,96px)}
+  .svc-band{padding-block:clamp(48px,6vw,80px)}
+}
+/* seven cards read 4 + 3, not 3 + 3 + 1 */
+@media (min-width:1180px){
+  .lp-cards .feature-grid:has(> :last-child:nth-child(7)),
+  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(7)){grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+/* Career: the openings, "join" and culture sections are as tall as their content (the apply rail
+   already was, since 1.3.2) */
+@media (min-width:901px){
+  .career-page .career-jobs,.career-page .career-join,.career-page .career-culture{min-height:0;padding-block:clamp(56px,7vw,96px)}
 }
