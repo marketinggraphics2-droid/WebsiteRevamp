@@ -980,3 +980,17 @@ function dq_is_photo_image( $src ) {
 	set_transient( $key, $photo ? '1' : '0', MONTH_IN_SECONDS );
 	return $photo;
 }
+
+/**
+ * An <img> with no source renders as a blank box (or a broken-image glyph when it has alt
+ * text). The cloned posts carry a few from the old editor; they are dropped from the output.
+ */
+function dq_strip_srcless_images( $html ) {
+	if ( false === strpos( $html, '<img' ) ) {
+		return $html;
+	}
+	return preg_replace_callback( '/<img\b[^>]*>/i', function ( $m ) {
+		return preg_match( '/\s(?:src|data-src|srcset|data-srcset)\s*=\s*[\x22\x27][^\x22\x27]+[\x22\x27]/i', $m[0] ) ? $m[0] : '';
+	}, $html );
+}
+add_filter( 'the_content', 'dq_strip_srcless_images', 7 );
