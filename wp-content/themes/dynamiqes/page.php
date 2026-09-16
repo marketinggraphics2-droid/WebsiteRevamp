@@ -7,7 +7,7 @@
 
 get_header();
 the_post();
-$img = has_post_thumbnail() ? get_the_post_thumbnail_url( get_the_ID(), 'dq-wide' ) : '';
+$img = dq_main_thumbnail_url( get_the_ID(), 'dq-wide' ); // '' for a logo / icon set as Featured Image
 ?>
 <main id="main">
 	<article <?php post_class(); ?>>

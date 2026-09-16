@@ -13,7 +13,13 @@
 get_header();
 the_post();
 
-$hero_img = has_post_thumbnail() ? get_the_post_thumbnail_url( get_the_ID(), 'dq-wide' ) : get_post_meta( get_the_ID(), '_dq_hero_image', true );
+$hero_img = dq_main_thumbnail_url( get_the_ID(), 'dq-wide' );
+if ( ! $hero_img ) {
+	$hero_img = get_post_meta( get_the_ID(), '_dq_hero_image', true );
+	if ( $hero_img && ! dq_main_image_ok( $hero_img ) ) {
+		$hero_img = ''; // a logo, icon or check mark is never the hero, whatever set it
+	}
+}
 $intro    = get_post_meta( get_the_ID(), '_dq_landing_intro', true );
 $headline = get_post_meta( get_the_ID(), '_dq_landing_h1', true ); // article headline; the page title stays for <title>/menus
 $body     = get_post()->post_content;
@@ -23,7 +29,7 @@ if ( '' === trim( $body ) && ! get_post_meta( get_the_ID(), '_dq_landing_source'
 	if ( $live ) {
 		$headline = $headline ? $headline : $live['title'];
 		$intro    = $intro ? $intro : $live['intro'];
-		$hero_img = $hero_img ? $hero_img : $live['hero_image'];
+		$hero_img = $hero_img ? $hero_img : ( dq_main_image_ok( $live['hero_image'] ) ? $live['hero_image'] : '' );
 		$body     = $live['content'];
 	}
 }

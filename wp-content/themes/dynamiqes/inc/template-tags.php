@@ -139,9 +139,9 @@ function dq_news_category_ids() {
  * the live dynamiqes.com banner (assets/pages/<file>) for the News & Events, Careers and Contact Us pages.
  */
 function dq_page_hero_photo( $file, $post_id = null ) {
-	$post_id = $post_id ? $post_id : get_the_ID();
-	if ( $post_id && has_post_thumbnail( $post_id ) ) {
-		return get_the_post_thumbnail_url( $post_id, 'dq-wide' );
+	$thumb = dq_main_thumbnail_url( $post_id, 'dq-wide' );
+	if ( $thumb ) {
+		return $thumb;
 	}
 	return dq_asset( 'assets/pages/' . ltrim( $file, '/' ) );
 }
@@ -658,8 +658,9 @@ function dq_default_news() {
 
 /** Post image URL: featured image, then the `_dq_thumb` fallback. */
 function dq_post_thumb_url( $post_id, $size = 'dq-card' ) {
-	if ( has_post_thumbnail( $post_id ) ) {
-		return get_the_post_thumbnail_url( $post_id, $size );
+	$thumb = dq_main_thumbnail_url( $post_id, $size );
+	if ( $thumb ) {
+		return $thumb;
 	}
 	return dq_asset( get_post_meta( $post_id, '_dq_thumb', true ) );
 }
@@ -840,6 +841,77 @@ function dq_is_icon_sized( $url, $min = 200 ) {
 	}
 	$size = @getimagesize( $file ); // phpcs:ignore WordPress.PHP.NoSilencedErrors
 	return (bool) ( $size && ( $size[0] < $min || $size[1] < $min ) );
+}
+
+/**
+ * May this image stand as a page's main image - hero, section photo, showcase, card photo?
+ *
+ * Art meant as a logo, icon, seal, check mark or other chrome never may, however it got there:
+ * a Featured Image set on the old site, an early import, an editor's slip. The staging copy of
+ * the BIR CAS provider page carried the 20px check.png as its Featured Image and the hero blew
+ * it up to 640px. Ruled out by name, by format (vector, gif, ico) and by size: a theme file is
+ * measured from disk, an upload from its attachment record; anything under 400 x 200 px is not
+ * a main image. A remote file that cannot be measured passes on name alone.
+ *
+ * @param string $src           Image URL or theme-relative path.
+ * @param int    $attachment_id The attachment, when known (saves a URL lookup).
+ * @return bool
+ */
+function dq_main_image_ok( $src, $attachment_id = 0 ) {
+	$src = trim( (string) $src );
+	if ( '' === $src || 0 === strpos( $src, 'data:' ) ) {
+		return false;
+	}
+	$path = (string) wp_parse_url( $src, PHP_URL_PATH );
+	$name = strtolower( rawurldecode( basename( $path ) ) );
+	if ( preg_match( '/\.(svg|gif|ico)([.-]|$)/', $name ) ) {
+		return false;
+	}
+	if ( preg_match( '/(^|[^a-z])(check|checkmark|checked|tick|icon|icons|ico|logo|logos|badge|badges|seal|seals|bureau|accredit|accreditation|arrow|arrows|bullet|bullets|favicon|sprite|glyph|symbol)([^a-z]|$)/', $name ) ) {
+		return false;
+	}
+	if ( dq_is_icon_sized( $src, 200 ) ) {
+		return false;
+	}
+	if ( ! $attachment_id && false !== strpos( $path, '/wp-content/uploads/' ) ) {
+		$attachment_id = dq_attachment_id_from_url( $src );
+	}
+	if ( $attachment_id ) {
+		$mime = (string) get_post_mime_type( $attachment_id );
+		if ( $mime && preg_match( '#image/(svg|gif|x-icon|vnd\.microsoft\.icon)#', $mime ) ) {
+			return false;
+		}
+		$meta = wp_get_attachment_metadata( $attachment_id );
+		if ( is_array( $meta ) && ! empty( $meta['width'] ) && ! empty( $meta['height'] ) && ( (int) $meta['width'] < 400 || (int) $meta['height'] < 200 ) ) {
+			return false;
+		}
+	}
+	return true;
+}
+
+/** Attachment ID for an upload URL, sized copies (-300x200) resolved to the original. Memoised. */
+function dq_attachment_id_from_url( $url ) {
+	static $cache = array();
+	if ( isset( $cache[ $url ] ) ) {
+		return $cache[ $url ];
+	}
+	$clean = preg_replace( '/-\d+x\d+(?=\.[a-z]{3,4}$)/i', '', $url );
+	$id    = attachment_url_to_postid( $clean );
+	if ( ! $id && $clean !== $url ) {
+		$id = attachment_url_to_postid( $url );
+	}
+	$cache[ $url ] = (int) $id;
+	return $cache[ $url ];
+}
+
+/** Featured Image URL when the image may be a main image, '' otherwise. */
+function dq_main_thumbnail_url( $post_id = null, $size = 'dq-wide' ) {
+	$post_id = $post_id ? $post_id : get_the_ID();
+	if ( ! $post_id || ! has_post_thumbnail( $post_id ) ) {
+		return '';
+	}
+	$url = get_the_post_thumbnail_url( $post_id, $size );
+	return ( $url && dq_main_image_ok( $url, get_post_thumbnail_id( $post_id ) ) ) ? $url : '';
 }
 
 /**

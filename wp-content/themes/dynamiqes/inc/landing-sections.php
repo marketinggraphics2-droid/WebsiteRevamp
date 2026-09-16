@@ -126,7 +126,7 @@ function dq_lp_parse_groups( $html ) {
 				/* the importer parks the live card art on the heading: data-icon for a ~60px
 				   icon, data-photo for full-size art that deserves its own row */
 				'icon'  => $node instanceof DOMElement ? trim( $node->getAttribute( 'data-icon' ) ) : '',
-				'photo' => $node instanceof DOMElement ? trim( $node->getAttribute( 'data-photo' ) ) : '',
+				'photo' => $node instanceof DOMElement && dq_main_image_ok( $node->getAttribute( 'data-photo' ) ) ? trim( $node->getAttribute( 'data-photo' ) ) : '',
 				'text'  => array(),
 				'list'  => '',
 			);
@@ -137,6 +137,9 @@ function dq_lp_parse_groups( $html ) {
 			if ( $img && false !== strpos( $cls, 'is-seal' ) ) {
 				$group['extra'][] = dq_lp_outer_html( $node ); // accreditation seals: a row under the copy, never the section photo
 				continue;
+			}
+			if ( $img && ! dq_main_image_ok( $img instanceof DOMElement ? $img->getAttribute( 'src' ) : '' ) ) {
+				continue; // icon, logo or check-mark art is never a section image
 			}
 			if ( $img ) {
 				if ( '' === $group['media'] ) {

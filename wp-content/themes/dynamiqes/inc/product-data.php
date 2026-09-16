@@ -715,8 +715,9 @@ function dq_get_product( $post = null ) {
 	foreach ( array( 'logo', 'logo_light', 'background', 'hero', 'overview_image', 'feature_image', 'card_art', 'card_photo' ) as $img ) {
 		$product[ $img ] = dq_asset( $product[ $img ] );
 	}
-	if ( has_post_thumbnail( $post ) ) {
-		$product['hero'] = get_the_post_thumbnail_url( $post, 'full' );
+	$thumb = function_exists( 'dq_main_thumbnail_url' ) ? dq_main_thumbnail_url( $post->ID, 'full' ) : '';
+	if ( $thumb ) {
+		$product['hero'] = $thumb; // a logo set as the Featured Image stays a logo
 	}
 	return $product;
 }

@@ -398,3 +398,39 @@ add_action( 'admin_notices', function () {
 		. esc_html( sprintf( __( '%1$d pages updated, %2$d failed.', 'dynamiqes' ), count( $report ) - count( $failed ), count( $failed ) ) )
 		. ( $failed ? '<br>' . esc_html( implode( ' | ', $failed ) ) : '' ) . '</p></div>';
 } );
+
+/* Pages whose Featured Image is a logo, icon, seal or check mark lose that Featured Image once
+   per theme version (the attachment itself stays). The templates refuse such an image anyway;
+   this also keeps it out of og:image and any listing. Landing pages cloned from the old site
+   carried check.png that way. */
+add_action( 'init', function () {
+	if ( ! is_admin() || wp_doing_ajax() || ! current_user_can( 'manage_options' ) || ! function_exists( 'dq_main_image_ok' ) ) {
+		return;
+	}
+	if ( get_option( 'dq_thumb_gate_ver' ) === DQ_VERSION ) {
+		return;
+	}
+	update_option( 'dq_thumb_gate_ver', DQ_VERSION );
+	$dropped = array();
+	foreach ( get_posts( array( 'post_type' => 'page', 'posts_per_page' => -1, 'post_status' => 'any', 'meta_key' => '_thumbnail_id', 'fields' => 'ids' ) ) as $pid ) {
+		$tid = (int) get_post_thumbnail_id( $pid );
+		$url = $tid ? wp_get_attachment_url( $tid ) : '';
+		if ( $url && ! dq_main_image_ok( $url, $tid ) ) {
+			delete_post_thumbnail( $pid );
+			$dropped[] = get_post_field( 'post_name', $pid ) . ' (' . rawurldecode( basename( $url ) ) . ')';
+		}
+	}
+	if ( $dropped ) {
+		update_option( 'dq_thumb_gate_report', $dropped );
+	}
+}, 28 );
+
+add_action( 'admin_notices', function () {
+	$dropped = get_option( 'dq_thumb_gate_report' );
+	if ( ! $dropped || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	delete_option( 'dq_thumb_gate_report' );
+	echo '<div class="notice notice-info is-dismissible"><p><strong>' . esc_html( sprintf( __( 'DynamIQ %s: icon-type Featured Images removed from %d page(s).', 'dynamiqes' ), DQ_VERSION, count( (array) $dropped ) ) ) . '</strong> '
+		. esc_html( implode( ' | ', (array) $dropped ) ) . '</p></div>';
+} );
