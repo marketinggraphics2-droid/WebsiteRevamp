@@ -249,10 +249,22 @@
   }
 
   /* 7 · Hero product strip · clone until half the track covers the strip (even set count) */
+  /* A lazy-load plugin (Smush on staging) may have swapped an image's src for data-src + a 1x1
+     placeholder. In a looping track that leaves holes: a clone never enters the viewport check,
+     and the marquee's second copy sits off-screen. Put the real src back on those images. */
+  var unlazy = function (img) {
+    var real = img.getAttribute('data-src');
+    if (real) { img.setAttribute('src', real); img.removeAttribute('data-src'); }
+    img.removeAttribute('data-srcset');
+    img.classList.remove('lazyload', 'lazyloaded');
+    img.setAttribute('loading', 'eager');
+  };
+  [].forEach.call(document.querySelectorAll('.trust-track img'), unlazy);
   var strip = document.querySelector('.banner-strip');
   var stripTrack = document.querySelector('.banner-strip-track');
   if (strip && stripTrack && !reduce) {
     var stripSet = [].slice.call(stripTrack.children);
+    [].forEach.call(stripTrack.querySelectorAll('img'), unlazy);
     var fillStrip = function () {
       while (stripTrack.children.length > stripSet.length) { stripTrack.removeChild(stripTrack.lastChild); }
       var sets = 1;
@@ -262,7 +274,7 @@
           var c = node.cloneNode(true);
           c.setAttribute('aria-hidden', 'true');
           c.setAttribute('tabindex', '-1');
-          c.querySelectorAll('img').forEach(function (img) { img.setAttribute('alt', ''); });
+          c.querySelectorAll('img').forEach(function (img) { img.setAttribute('alt', ''); unlazy(img); });
           frag.appendChild(c);
         });
         stripTrack.appendChild(frag);
@@ -271,6 +283,7 @@
     };
     fillStrip();
     window.addEventListener('resize', fillStrip);
+    window.addEventListener('load', fillStrip); // logo widths are final only once the images are in
   }
 
   /* 7b · Hover card for the strip logos */

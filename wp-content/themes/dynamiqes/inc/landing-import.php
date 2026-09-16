@@ -291,12 +291,12 @@ function dq_landing_parse( $slug, $html = '' ) {
 				continue;
 			}
 			if ( 'img' === $name ) {
-				if ( $from_h2 ) {
-					continue;
-				}
 				$src = dq_landing_img_src( $node );
 				if ( ! $src ) {
 					continue;
+				}
+				if ( $from_h2 && ! preg_match( '/(seal|bureau|accredit)/i', rawurldecode( basename( $src ) ) ) ) {
+					continue; // hero remainder carries no images - except a seal the parser nested there
 				}
 				/* A vector never stands in as the section photo, but it is very often the card
 				   icon — the promo pages ship all of theirs as SVG, which an outright reject
@@ -327,7 +327,7 @@ function dq_landing_parse( $slug, $html = '' ) {
 				   artwork that the icon test was dropping by name. Kept as their own figures and laid
 				   out as a row. The "SAP Silver Partner" seal stays out: the review asked for the
 				   current tier, "Premier Partner", everywhere (item F5). */
-				if ( 0 === $owned_cards && ! isset( $seen[ $src ] ) && preg_match( '/(seal|partner|bureau|accredit)/i', rawurldecode( basename( $src ) ) ) && ! preg_match( '/icon/i', rawurldecode( basename( $src ) ) ) ) { // only in a copy-only section: a card's "partner" icon stays a card icon
+				if ( ! isset( $seen[ $src ] ) && preg_match( '/(seal|bureau|accredit|silver partner)/i', rawurldecode( basename( $src ) ) ) && ! preg_match( '/icon/i', rawurldecode( basename( $src ) ) ) ) { // by name only, wherever the parser put it: a card's "partner" icon is not matched
 					if ( preg_match( '/silver/i', rawurldecode( basename( $src ) ) ) ) {
 						$seen[ $src ] = true;
 						continue;

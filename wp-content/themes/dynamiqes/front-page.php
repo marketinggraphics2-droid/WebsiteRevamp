@@ -45,7 +45,7 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 				<div class="banner-strip-marq">
 					<div class="banner-strip-track">
 						<?php foreach ( $addons as $p ) : ?>
-							<a href="<?php echo esc_url( $p['url'] ); ?>" data-name="<?php echo esc_attr( $p['menu_label'] ); ?>" data-desc="<?php echo esc_attr( $p['strip_desc'] ); ?>"><img src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>" loading="eager"></a>
+							<a href="<?php echo esc_url( $p['url'] ); ?>" data-name="<?php echo esc_attr( $p['menu_label'] ); ?>" data-desc="<?php echo esc_attr( $p['strip_desc'] ); ?>"><img class="no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>" loading="eager"></a>
 						<?php endforeach; ?>
 					</div>
 				</div>
@@ -66,10 +66,10 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 	<div class="trust-marq">
 		<div class="trust-track">
 			<?php foreach ( dq_trust_logos() as $l ) : ?>
-				<img src="<?php echo esc_url( dq_asset( $l[1] ) ); ?>" alt="<?php echo esc_attr( $l[0] ); ?>" loading="lazy" height="40">
+				<img class="no-lazyload skip-lazy" src="<?php echo esc_url( dq_asset( $l[1] ) ); ?>" alt="<?php echo esc_attr( $l[0] ); ?>" loading="eager" height="40">
 			<?php endforeach; ?>
 			<?php foreach ( dq_trust_logos() as $l ) : ?>
-				<img src="<?php echo esc_url( dq_asset( $l[1] ) ); ?>" alt="" aria-hidden="true" loading="lazy" height="40">
+				<img class="no-lazyload skip-lazy" src="<?php echo esc_url( dq_asset( $l[1] ) ); ?>" alt="" aria-hidden="true" loading="eager" height="40">
 			<?php endforeach; ?>
 		</div>
 	</div>

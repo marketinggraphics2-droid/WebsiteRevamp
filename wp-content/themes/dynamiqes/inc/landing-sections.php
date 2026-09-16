@@ -239,7 +239,7 @@ function dq_lp_logos() {
 	$out   = '<div class="trust-marq"><div class="trust-track">';
 	foreach ( array( false, true ) as $dup ) {
 		foreach ( $logos as $l ) {
-			$out .= '<img src="' . esc_url( dq_asset( $l[1] ) ) . '" alt="' . ( $dup ? '' : esc_attr( $l[0] ) ) . '"'
+			$out .= '<img class="no-lazyload skip-lazy" src="' . esc_url( dq_asset( $l[1] ) ) . '" alt="' . ( $dup ? '' : esc_attr( $l[0] ) ) . '"'
 				. ( $dup ? ' aria-hidden="true"' : '' ) . ' loading="eager" height="48">'; // eager: a lazy second copy never loads off-screen and the loop shows a hole
 		}
 	}
