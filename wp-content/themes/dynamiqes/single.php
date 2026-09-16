@@ -22,6 +22,11 @@ get_header();
 the_post();
 
 $img      = dq_post_thumb_url( get_the_ID(), 'dq-wide' );
+$soft     = false; // a featured image narrower than the banner is blurred rather than shown stretched
+if ( $img && has_post_thumbnail() ) {
+	$meta = wp_get_attachment_metadata( get_post_thumbnail_id() );
+	$soft = is_array( $meta ) && ! empty( $meta['width'] ) && (int) $meta['width'] < 1100;
+}
 $cats     = array_values( array_filter( get_the_category(), function ( $c ) { return 'uncategorized' !== $c->slug; } ) );
 $cat      = $cats ? $cats[0] : null;
 $news_ids = array_map( 'intval', (array) dq_news_category_ids() );
@@ -63,7 +68,7 @@ if ( $related->post_count < 3 ) {
 	<article <?php post_class( 'blog-post' ); ?>>
 
 		<header class="post-hero<?php echo $img ? '' : ' no-img'; ?>">
-			<?php if ( $img ) : ?><div class="post-hero-media" aria-hidden="true"><img src="<?php echo esc_url( $img ); ?>" alt="" fetchpriority="high" decoding="async"></div><?php endif; ?>
+			<?php if ( $img ) : ?><div class="post-hero-media<?php echo $soft ? ' is-soft' : ''; ?>" aria-hidden="true"><img src="<?php echo esc_url( $img ); ?>" alt="" fetchpriority="high" decoding="async"></div><?php endif; ?>
 			<div class="wrap">
 				<nav class="breadcrumbs" aria-label="<?php esc_attr_e( 'Breadcrumb', 'dynamiqes' ); ?>">
 					<a href="<?php echo esc_url( $hub_url ); ?>"><?php echo esc_html( $hub_label ); ?></a>

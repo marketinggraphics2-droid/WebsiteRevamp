@@ -434,3 +434,67 @@ add_action( 'admin_notices', function () {
 	echo '<div class="notice notice-info is-dismissible"><p><strong>' . esc_html( sprintf( __( 'DynamIQ %s: icon-type Featured Images removed from %d page(s).', 'dynamiqes' ), DQ_VERSION, count( (array) $dropped ) ) ) . '</strong> '
 		. esc_html( implode( ' | ', (array) $dropped ) ) . '</p></div>';
 } );
+
+/**
+ * Featured images cloned from the old site have no dq-card / dq-wide copies (those sizes did not
+ * exist when they were uploaded), so listings were serving 1920px originals into 425px cards.
+ * Generates the missing copies for images in use as Featured Images, a few per admin page load.
+ *
+ * @param int $limit Attachments to process in this call.
+ * @return array{done:int,left:int}
+ */
+function dq_generate_missing_sizes( $limit = 5 ) {
+	global $wpdb;
+	require_once ABSPATH . 'wp-admin/includes/image.php';
+	$ids  = $wpdb->get_col( "SELECT DISTINCT meta_value FROM {$wpdb->postmeta} WHERE meta_key = '_thumbnail_id' AND meta_value > 0" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery
+	$todo = array();
+	foreach ( array_map( 'intval', $ids ) as $id ) {
+		$meta = wp_get_attachment_metadata( $id );
+		if ( ! is_array( $meta ) || empty( $meta['width'] ) || ! wp_attachment_is_image( $id ) ) {
+			continue;
+		}
+		$need = ( (int) $meta['width'] > 800 && empty( $meta['sizes']['dq-card'] ) ) || ( (int) $meta['width'] > 1600 && empty( $meta['sizes']['dq-wide'] ) );
+		if ( $need && is_readable( (string) get_attached_file( $id ) ) ) {
+			$todo[] = $id;
+		}
+	}
+	$done = 0;
+	foreach ( array_slice( $todo, 0, $limit ) as $id ) {
+		$new = wp_generate_attachment_metadata( $id, get_attached_file( $id ) );
+		if ( is_array( $new ) && ! empty( $new['sizes'] ) ) {
+			wp_update_attachment_metadata( $id, $new );
+			$done++;
+		}
+	}
+	return array( 'done' => $done, 'left' => max( 0, count( $todo ) - $done ) );
+}
+
+add_action( 'init', function () {
+	if ( ! is_admin() || wp_doing_ajax() || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	if ( get_option( 'dq_sizes_ver' ) === DQ_VERSION ) {
+		return;
+	}
+	if ( function_exists( 'set_time_limit' ) ) {
+		@set_time_limit( 120 ); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged
+	}
+	$r = dq_generate_missing_sizes( 5 );
+	update_option( 'dq_sizes_done', (int) get_option( 'dq_sizes_done', 0 ) + $r['done'] );
+	if ( 0 === $r['left'] ) {
+		update_option( 'dq_sizes_ver', DQ_VERSION );
+		if ( get_option( 'dq_sizes_done' ) ) {
+			update_option( 'dq_sizes_report', (int) get_option( 'dq_sizes_done' ) );
+		}
+		delete_option( 'dq_sizes_done' );
+	}
+}, 29 );
+
+add_action( 'admin_notices', function () {
+	$n = get_option( 'dq_sizes_report' );
+	if ( ! $n || ! current_user_can( 'manage_options' ) ) {
+		return;
+	}
+	delete_option( 'dq_sizes_report' );
+	echo '<div class="notice notice-success is-dismissible"><p><strong>' . esc_html( sprintf( __( 'DynamIQ %1$s: card and banner copies generated for %2$d featured image(s).', 'dynamiqes' ), DQ_VERSION, (int) $n ) ) . '</strong></p></div>';
+} );

@@ -3852,3 +3852,7 @@ h4.post-share-label{margin:0}
 .lp-extra .is-seal{margin:0}
 .lp-extra .is-seal img{width:auto;height:clamp(72px,7vw,110px);border:0;border-radius:0;background:transparent}
 .lp-extra figure:not(.is-seal) img{max-width:640px}
+
+/* Post banner from a small featured image (under 1100px): softened instead of stretched sharp */
+.post-hero-media.is-soft{overflow:hidden}
+.post-hero-media.is-soft img{filter:blur(6px) saturate(1.05);transform:scale(1.06)}
