@@ -498,6 +498,29 @@ function dq_landing_sections( $html, $eyebrow = '' ) {
 
 		$alt   = ( $band % 2 ) ? ' is-alt' : '';
 		$band++;
+
+		/* Accreditation section: copy whose only art is the seals (BIR, Trusted Brand on the two SEM
+		   provider pages). The seals stand in their own panel beside the copy, each with its name,
+		   rather than in a row under the last paragraph (SEO Hacker, 09-14 final round). */
+		if ( $g['extra'] && ! $g['items'] && ! $g['lists'] && '' === $g['media'] && '' === $g['faq']
+			&& count( $g['extra'] ) === count( preg_grep( '/is-seal/', $g['extra'] ) ) ) {
+			$seals = '';
+			foreach ( $g['extra'] as $fig ) {
+				$src  = preg_match( '/src="([^"]+)"/', $fig, $m ) ? $m[1] : '';
+				$name = preg_match( '/alt="([^"]*)"/', $fig, $m ) ? trim( html_entity_decode( $m[1], ENT_QUOTES ) ) : '';
+				if ( '' === $src ) {
+					continue;
+				}
+				$seals .= '<figure class="lp-seal"><img src="' . esc_url( $src ) . '" alt="' . esc_attr( $name ) . '" loading="lazy" decoding="async">'
+					. ( '' !== $name ? '<figcaption>' . esc_html( $name ) . '</figcaption>' : '' ) . '</figure>';
+			}
+			$out .= '<section class="lp-section lp-split lp-accredited' . $alt . '"><div class="wrap lp-split-grid">'
+				. '<div class="lp-split-copy">' . dq_lp_head( $g, $eyebrow ) . '</div>'
+				. '<div class="lp-seal-panel"' . dq_reveal_attr( 'scale' ) . '>' . $seals . '</div>'
+				. '</div></section>';
+			continue;
+		}
+
 		$extra = $g['extra'] ? '<div class="lp-extra">' . wp_kses_post( implode( '', $g['extra'] ) ) . '</div>' : '';
 
 		if ( 'split' === $variant ) {
