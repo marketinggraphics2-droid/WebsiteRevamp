@@ -311,6 +311,46 @@ function dq_lp_head( array $g, $eyebrow = '', $centred = false ) {
 	return $out . '</div>';
 }
 
+/**
+ * A product-page icon for a card by its title. Used where the old page gave a card a full-size
+ * illustration (523 x 359 px on "Streamline Inventory Management", SAP B1 Provider) or nothing
+ * at all: SEO Hacker asked for icons on those cards like the product pages carry (09-14, rows
+ * 75 and 112). First keyword match wins; the last entry is the fallback.
+ *
+ * @param string $title Card heading.
+ * @return string Theme-relative icon path.
+ */
+function dq_lp_icon_for( $title ) {
+	$map = array(
+		'/inventory|stock|warehouse/i'                    => 'sect-five-inventory',
+		'/customi[sz]|configur|flexib|tailor/i'           => 'sect-six-customizable',
+		'/report|dashboard|analytic|intelligence|insight/i' => 'sect-five-business',
+		'/pick|pack|deliver|distribut|logistic|shipping/i' => 'sect-seven-distribution',
+		'/integrat|erp-integrated|connect/i'              => 'sect-six-integrates',
+		'/label|automat/i'                                => 'sect-four-simple',
+		'/qr|barcode|scan|track/i'                        => 'sect-four-data',
+		'/account|financ|ledger|book/i'                   => 'sect-five-accounting',
+		'/sales|customer|crm/i'                           => 'sect-five-sales',
+		'/purchas|procure|supplier|vendor/i'              => 'sect-five-purchasing',
+		'/production|manufactur|bom|shop floor/i'         => 'sect-five-production',
+		'/project|resource|budget/i'                      => 'sect-five-project',
+		'/mobil|cloud|remote|anywhere|access/i'           => 'sect-five-mobility',
+		'/scal|grow|expand/i'                             => 'sect-six-scalable',
+		'/complian|tax|bir|regulat|audit/i'               => 'sect-four-compliance',
+		'/secur|data|backup|protect/i'                    => 'sect-four-data',
+		'/simple|easy|user|intuitive|friendly/i'          => 'sect-four-easy',
+		'/manage|admin|control|efficien/i'                => 'sect-five-management',
+		'/support|service|help|train/i'                   => 'sect-eight-support',
+		'/./'                                             => 'sect-four-complete',
+	);
+	foreach ( $map as $rx => $icon ) {
+		if ( preg_match( $rx, (string) $title ) ) {
+			return 'assets/products/icons/' . $icon . '.png';
+		}
+	}
+	return 'assets/products/icons/sect-four-complete.png';
+}
+
 /** The H3 groups as cards. */
 function dq_lp_cards( array $items ) {
 	$out = '<div class="feature-grid">';
@@ -485,6 +525,20 @@ function dq_landing_sections( $html, $eyebrow = '' ) {
 	foreach ( $groups as $gi => $g ) {
 		$variant = dq_lp_variant( $g );
 		$next    = isset( $groups[ $gi + 1 ] ) ? $groups[ $gi + 1 ] : null;
+
+		/* Cards whose original art was a full-size illustration rendered as photo tiles; SEO
+		   Hacker asked for icon cards like the product pages instead (09-14, rows 75 and 112).
+		   Every card in such a group gets a product-page icon matched to its heading, so a card
+		   the old page left without art ("Customization") is not the odd one out. */
+		if ( 'photo-rows' === $variant ) {
+			foreach ( $g['items'] as $k => $it ) {
+				$g['items'][ $k ]['photo'] = '';
+				if ( empty( $it['icon'] ) ) {
+					$g['items'][ $k ]['icon'] = dq_lp_icon_for( $it['title'] );
+				}
+			}
+			$variant = 'cards';
+		}
 
 		if ( 'cta' === $variant ) {
 			$section = dq_lp_cta_section( $g['cta'], $ctas );
