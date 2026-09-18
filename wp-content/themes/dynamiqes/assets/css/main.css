@@ -3857,9 +3857,9 @@ h4.post-share-label{margin:0}
 .post-hero-media.is-soft{overflow:hidden}
 .post-hero-media.is-soft img{filter:blur(6px) saturate(1.05);transform:scale(1.06)}
 /* Accreditation section: seals in a panel beside the copy, each named (SEM provider pages) */
-.lp-seal-panel{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-items:start;gap:clamp(24px,3vw,40px);padding:clamp(32px,4vw,56px) clamp(24px,3vw,44px);border-radius:18px;border:1px solid var(--line);background:var(--bg-2)}
+.lp-seal-panel{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-items:start;gap:clamp(24px,3vw,40px);padding:clamp(32px,4vw,56px) clamp(24px,3vw,44px);border-radius:18px}
 .lp-seal-panel:has(> :nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr))}
-.lp-section.is-alt .lp-seal-panel{background:var(--bg)}
+
 .lp-seal{margin:0;display:grid;justify-items:center;align-content:start;gap:14px;width:100%}
 .lp-seal img{display:block;width:auto;max-width:100%;height:clamp(120px,12vw,168px);object-fit:contain;border:0;border-radius:0;background:transparent}
 .lp-seal figcaption{font-size:var(--fs-sm);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--soft);text-align:center}
