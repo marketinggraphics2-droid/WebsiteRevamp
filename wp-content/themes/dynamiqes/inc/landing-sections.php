@@ -54,6 +54,9 @@ function dq_lp_new_group() {
 		'cta'   => '',
 		'extra' => array(),
 		'button' => array(), // the section's own button, from the importer's <p class="landing-btn">
+		'table'  => array(), // data table rows (first = header) — sections added by inc/landing-additions.php
+		'kicker' => '',
+		'closing' => array(),
 	);
 }
 
@@ -513,6 +516,8 @@ function dq_lp_cta_section( $cta_html, $index = 0 ) {
  */
 function dq_landing_sections( $html, $eyebrow = '' ) {
 	$groups = dq_lp_parse_groups( $html );
+	/* The 2026 redesign adds data tables the old pages never had (inc/landing-additions.php). */
+	$groups = apply_filters( 'dq_lp_groups', $groups );
 	if ( ! $groups ) {
 		return array( '', false );
 	}
@@ -523,8 +528,16 @@ function dq_landing_sections( $html, $eyebrow = '' ) {
 	$splits  = 0; // alternating image side
 
 	foreach ( $groups as $gi => $g ) {
+		$g       = array_merge( dq_lp_new_group(), $g );
 		$variant = dq_lp_variant( $g );
 		$next    = isset( $groups[ $gi + 1 ] ) ? $groups[ $gi + 1 ] : null;
+
+		if ( ! empty( $g['table'] ) && function_exists( 'dq_lp_table_section' ) ) {
+			$alt = ( $band % 2 ) ? ' is-alt' : '';
+			$band++;
+			$out .= dq_lp_table_section( $g, $alt );
+			continue;
+		}
 
 		/* Cards whose original art was a full-size illustration rendered as photo tiles; SEO
 		   Hacker asked for icon cards like the product pages instead (09-14, rows 75 and 112).

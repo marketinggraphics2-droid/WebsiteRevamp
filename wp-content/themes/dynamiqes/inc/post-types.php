@@ -137,7 +137,12 @@ add_action( 'save_post_dq_product', function ( $post_id ) {
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE || ! current_user_can( 'edit_post', $post_id ) ) {
 		return;
 	}
-	update_post_meta( $post_id, '_dq_product_key', sanitize_key( $_POST['_dq_product_key'] ?? '' ) );
+	$key = sanitize_key( $_POST['_dq_product_key'] ?? '' );
+	update_post_meta( $post_id, '_dq_product_key', $key );
+	/* Fields the editor changed away from the theme's own copy are remembered, so a later theme
+	   update (dq_refresh_product_content) refreshes everything else but never these. */
+	$defaults = dq_product_defaults();
+	$edited   = array();
 	foreach ( dq_product_field_map() as $field => $def ) {
 		$name = '_dq_' . $field;
 		if ( ! isset( $_POST[ $name ] ) ) {
@@ -149,7 +154,15 @@ add_action( 'save_post_dq_product', function ( $post_id ) {
 			delete_post_meta( $post_id, $name );
 		} else {
 			update_post_meta( $post_id, $name, $val );
+			if ( isset( $defaults[ $key ] ) && trim( $val ) !== trim( (string) dq_product_field_text( $defaults[ $key ], $field ) ) ) {
+				$edited[] = $field;
+			}
 		}
+	}
+	if ( $edited ) {
+		update_post_meta( $post_id, '_dq_edited_fields', $edited );
+	} else {
+		delete_post_meta( $post_id, '_dq_edited_fields' );
 	}
 } );
 

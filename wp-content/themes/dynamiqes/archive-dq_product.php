@@ -50,7 +50,7 @@ $addons    = array_values( array_filter( $products, function ( $p ) { return 'sa
 				<article class="product-row" id="iq-<?php echo esc_attr( $p['key'] ); ?>"<?php dq_reveal(); ?>>
 					<div class="product-media"><img src="<?php echo esc_url( $p['hero'] ); ?>" alt="<?php echo esc_attr( $p['name'] . ' interface' ); ?>" loading="lazy"></div>
 					<div class="product-copy">
-						<img class="product-logo" src="<?php echo esc_url( $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['name'] ); ?>">
+						<?php if ( $p['logo'] ) : ?><img class="product-logo" src="<?php echo esc_url( $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['name'] ); ?>"><?php endif; ?>
 						<h3><?php echo esc_html( $p['name'] ); ?></h3>
 						<?php $paras = ! empty( $p['listing'] ) ? $p['listing'] : array( $p['description'] ); foreach ( $paras as $para ) : ?><p><?php echo esc_html( $para ); ?></p><?php endforeach; ?>
 						<a class="text-link" href="<?php echo esc_url( $p['url'] ); ?>"><?php esc_html_e( 'VIEW PRODUCT', 'dynamiqes' ); ?> <span aria-hidden="true">→</span></a>

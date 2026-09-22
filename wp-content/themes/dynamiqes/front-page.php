@@ -45,7 +45,7 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 				<div class="banner-strip-marq">
 					<div class="banner-strip-track">
 						<?php foreach ( $addons as $p ) : ?>
-							<a href="<?php echo esc_url( $p['url'] ); ?>" data-name="<?php echo esc_attr( $p['menu_label'] ); ?>" data-desc="<?php echo esc_attr( $p['strip_desc'] ); ?>"><img class="no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>" loading="eager"></a>
+							<a href="<?php echo esc_url( $p['url'] ); ?>" data-name="<?php echo esc_attr( $p['menu_label'] ); ?>" data-desc="<?php echo esc_attr( $p['strip_desc'] ); ?>"><?php if ( $p['logo_light'] || $p['logo'] ) : ?><img class="no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>" loading="eager"><?php else : /* no wordmark yet (IQ People, Workplace, Tech Institute) */ ?><span class="strip-text"><?php echo esc_html( $p['menu_label'] ); ?></span><?php endif; ?></a>
 						<?php endforeach; ?>
 					</div>
 				</div>
@@ -108,8 +108,12 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 				<span class="iq-art no-lazyload skip-lazy" style="background-image:url('<?php echo esc_url( $p['card_art'] ); ?>')"></span>
 				<span class="iq-hover-art no-lazyload skip-lazy" style="background-image:url('<?php echo esc_url( $p['card_photo'] ); ?>')"></span>
 				<span class="iq-logo">
+					<?php if ( $p['logo'] ) : ?>
 					<img class="lg-d no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['menu_label'] ); ?>">
 					<img class="lg-l no-lazyload skip-lazy" src="<?php echo esc_url( $p['logo_light'] ? $p['logo_light'] : $p['logo'] ); ?>" alt="" aria-hidden="true">
+					<?php else : /* products without a wordmark yet (IQ People, Workplace, Tech Institute) */ ?>
+					<span class="iq-logo-text"><?php echo esc_html( $p['menu_label'] ); ?></span>
+					<?php endif; ?>
 				</span>
 				<div class="iq-foot">
 					<div class="iq-copy">

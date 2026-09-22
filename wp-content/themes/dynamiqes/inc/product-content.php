@@ -100,6 +100,31 @@ function dq_product_live_content() {
 					),
 				),
 				array(
+					/* Revamp Dynamiq design (Figma, Sept 2026): new section between ERP Features and the
+					   small-business section. The design's "Number of Users" card carries the Production
+					   card's copy (paste error) — a one-line stand-in is used and flagged to the SEO team. */
+					'type'    => 'generic',
+					'title'   => 'SAP Business One Cost Factors',
+					'image'   => 'none',
+					'columns' => 3,
+					'intro'   => array(
+						'SAP Business One pricing in the Philippines starts at ₱148,500, with final costs depending on your users, deployment setup, modules, implementation scope, add-ons, integrations, and support needs.',
+						'At DynamIQ, we provide tailored SAP Business One quotations based on your operations, budget, and growth plans. Whether you need finance, inventory, purchasing, sales, reporting, or BIR compliance support, our team can recommend a cost-effective solution for your business.',
+					),
+					'items'   => array(
+						array( 'title' => 'Number of Users', 'icon' => 'assets/products/icons/sect-six-user.png', 'text' => "SAP Business One is licensed per user, so the number of people who need access is the first factor in the cost of your system.", 'items' => array() ),
+						array( 'title' => 'Deployment Option', 'icon' => 'assets/products/icons/sect-four-deployment.png', 'text' => "SAP Business One can be deployed through cloud, on-premise, or hybrid setups, depending on your IT requirements and budget.", 'items' => array() ),
+						array( 'title' => 'Implementation Scope', 'icon' => 'assets/products/icons/sect-five-project.png', 'text' => "A simple implementation may cost less than a setup involving multiple branches, warehouses, customized workflows, or integrations.", 'items' => array() ),
+						array( 'title' => 'Add-Ons and Customizations', 'icon' => 'assets/products/icons/sect-six-customizable.png', 'text' => "Additional tools such as BIR tax modules, barcode scanning, dashboards, portals, and third-party integrations can affect the overall cost.", 'items' => array() ),
+						array( 'title' => 'Training and Support', 'icon' => 'assets/products/icons/sect-eight-support.png', 'text' => "User training and technical support help ensure a smoother implementation and better long-term system adoption.\\n\\nLooking for SAP Business One pricing in the Philippines? Contact DynamIQ to get a tailored quotation based on your users, modules, deployment preference, and business requirements.", 'items' => array() ),
+						array( 'title' => 'SAP Business One Implementation Timeline', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "Implementation timelines vary depending on business complexity, customization, data migration, and integration requirements. With DynamIQ’s experience supporting local clients, most SAP Business One implementations for SMEs in the Philippines are completed within 3 to 6 months.", 'items' => array() ),
+						array( 'title' => 'Data Migration', 'icon' => 'assets/products/icons/sect-six-integrates.png', 'text' => "Existing business data such as customer records, vendor details, item master data, opening balances, and inventory information are prepared and migrated into SAP Business One.", 'items' => array() ),
+						array( 'title' => 'Customization and Integration', 'icon' => 'assets/products/icons/sect-eight-integration.png', 'text' => "If needed, we set up add-ons, reports, dashboards, BIR compliance tools, barcode solutions, or third-party system integrations.", 'items' => array() ),
+						array( 'title' => 'User Training and Testing', 'icon' => 'assets/products/icons/sect-seven-professional.png', 'text' => "Your team is trained on the system, followed by testing to check workflows, reports, access rights, and transaction accuracy before go-live.", 'items' => array() ),
+						array( 'title' => 'Go-Live and Support', 'icon' => 'assets/products/icons/sect-five-business.png', 'text' => "Once the system is ready, SAP Business One is launched for daily operations. DynamIQ provides post-go-live support to help users adjust, resolve issues, and optimize the system.", 'items' => array() ),
+					),
+				),
+				array(
 					'type'    => 'generic',
 					'title'   => 'Why is SAP Business One Suitable for Small Businesses?',
 					'image'   => 'assets/products/sections/sect-six-main.png',
@@ -293,13 +318,14 @@ function dq_product_live_content() {
 			),
 		),
 		'barcode' => array(
+			/* Revamp Dynamiq design (Figma, Sept 2026) — copy transcribed from the prototype frames. */
 			'title'           => 'Enhance Inventory Accuracy with DynamIQ’s Barcode Integration',
 			'description'     => 'DynamIQ Barcode is a third-party inventory integration designed to extend SAP Business One with barcode-driven tracking and scanning capabilities. Built for businesses that require speed, accuracy, and traceability, it supports both batch-managed and serial-managed items across industries such as food and beverage, pharmaceuticals, and electronics.',
 			'seo_title'       => 'SAP B1 Barcode Module - DynamIQ',
 			'seo_description' => 'DynamIQ Barcoding is a third-party SAP Business One integration that streamlines scanning, tracking, and inventory control for faster, more accurate operations.',
 			'overview_title'  => 'Product Overview',
 			'overview'        => array(
-				'IQ Barcode is a robust barcode inventory solution seamlessly integrated with SAP Business On. It enhances your logistics workflow enabling fast, accurate tracking items through barcode scanning-bringing efficiency, reliability, and real time visibility to your operations.',
+				'IQ Barcode is a robust barcode inventory solution seamlessly integrated with SAP Business One. It enhances your logistics workflow enabling fast, accurate tracking items through barcode scanning-bringing efficiency, reliability, and real time visibility to your operations.',
 			),
 			'closing'         => '',
 			'faqs'            => array(
@@ -318,15 +344,110 @@ function dq_product_live_content() {
 					'type'    => 'overview',
 				),
 				array(
+					'type'    => 'generic',
+					'title'   => 'Technical Specifications',
+					'image'   => 'none', // the 2026 design has no product shot outside the hero and overview
+					'columns' => 3,
+					'items'   => array(
+						array( 'title' => 'Supported SAP Business One Versions', 'icon' => 'assets/products/icons/sect-six-integrates.png', 'text' => "IQ Barcode is designed for SAP Business One environments and connects to SAP B1 through the SAP B1 Service Layer REST API.\n\nThe system is intended for on-premise SAP Business One deployments and can also support SAP B1 Cloud environments when a Service Layer endpoint is available.", 'items' => array() ),
+						array( 'title' => 'Deployment', 'icon' => 'assets/products/icons/sect-four-deployment.png', 'text' => "IQ Barcode is deployed on-premise and connects directly to the SAP B1 Service Layer hosted on the customer’s server.\n\nFor SAP B1 Cloud compatibility, IQ Barcode requires HTTPS connectivity from the IQ Barcode client device to the SAP Service Layer URL.\n\nThis allows the Windows desktop and Android mobile clients to communicate with SAP Business One through the Service Layer endpoint.", 'items' => array() ),
+						array( 'title' => 'Cloud Compatibility', 'icon' => 'assets/products/icons/sect-five-mobility.png', 'text' => "IQ Barcode is compatible with SAP B1 Cloud through the SAP Service Layer endpoint.\n\nThe client device must be able to connect securely to the SAP Service Layer URL through HTTPS.", 'items' => array() ),
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Supported Barcode Formats',
+					'intro'   => array( 'IQ Barcode supports both 1D and 2D barcode formats for scanning and label printing.' ),
+					'table'   => array(
+						array( 'Barcode Type', 'Supported Formats' ),
+						array( '1D Barcodes', 'Code 128 using ^BC ZPL, Code 39 using ^BA ZPL, and EAN-13' ),
+						array( '2D Barcodes', 'QR Code using ^BQ ZPL and Data Matrix' ),
+						array( 'Camera Scanning', 'QR Code, Code 128, and EAN-13 through the mobile_scanner library' ),
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Supported SAP B1 Transactions',
+					'intro'   => array( 'IQ Barcode supports key SAP Business One inventory, sales, purchasing, warehouse, and fixed asset transactions.' ),
+					'table'   => array(
+						array( 'SAP Transaction', 'IQ Barcode Module' ),
+						array( 'Goods Receipt PO, Document Type 20', 'Goods Receipt PO' ),
+						array( 'Delivery, Document Type 15', 'Delivery Receipt' ),
+						array( 'Sales Order, Document Type 17', 'Sales Order Scanning &amp; Reconciliation' ),
+						array( 'AR Invoice, Document Type 13', 'AR Invoice via Delivery flow' ),
+						array( 'Inventory Transfer, Document Type 67', 'Inventory Transfer' ),
+						array( 'Inventory Transfer Request, Document Type 1250000001', 'Inventory Transfer Request' ),
+						array( 'Goods Receipt, Document Type 59', 'Goods Receipt, Inventory' ),
+						array( 'Goods Issue, Document Type 60', 'Goods Issue, Inventory' ),
+						array( 'Inventory Counting', 'Inventory Counting' ),
+						array( 'Stock Transfer / Bin Transfer', 'Bin Transfer' ),
+						array( 'Fixed Asset Master Data', 'Asset Count, Enrollment, and Retirement' ),
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Technical Specifications',
+					'columns' => 2,
+					'items'   => array(
+						array( 'title' => 'Barcode Scanning', 'icon' => 'assets/products/icons/sect-four-data.png', 'text' => "IQ Barcode supports scanning through hardware barcode scanners and camera-based scanning on supported mobile devices.\n\nHardware scanners can include any USB or Bluetooth HID barcode scanner operating in keyboard-wedge mode.\n\nCamera scanning supports QR Code, Code 128, and EAN-13 through the mobile_scanner library.", 'items' => array() ),
+						array( 'title' => 'GS1 Compliance', 'icon' => 'assets/products/icons/sect-four-compliance.png', 'text' => "IQ Barcode supports GS1-compliant barcodes.\n\nThe system reads the raw barcode value and matches it against SAP item barcodes. GS1 Application Identifiers can also be parsed as needed depending on the client’s barcode requirements.", 'items' => array() ),
+						array( 'title' => 'Label Output', 'icon' => 'assets/products/icons/sect-four-simple.png', 'text' => "IQ Barcode supports label output through ZPL, or Zebra Programming Language.\n\nThis enables direct printing to Zebra thermal printers for barcode labels and related warehouse or inventory labels.", 'items' => array() ),
+						array( 'title' => 'SAP B1 Transaction Scanning', 'icon' => 'assets/products/icons/sect-six-integrates.png', 'text' => "IQ Barcode supports scanning workflows for SAP Business One transactions such as Goods Receipt PO, Delivery Receipt, Sales Order Scanning & Reconciliation, AR Invoice via Delivery flow, Inventory Transfer, Inventory Transfer Request, Goods Receipt, Goods Issue, Inventory Counting, Bin Transfer, and Fixed Asset Master Data workflows.\n\nThis allows warehouse, inventory, sales, purchasing, and asset-related teams to process SAP B1 transactions through barcode-enabled workflows.", 'items' => array() ),
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'License Structure',
+					'intro'   => array( 'IQ Barcode uses a per-company license structure with named user seats.' ),
+					'table'   => array(
+						array( 'SAP Transaction', 'IQ Barcode Module' ),
+						array( 'Model', 'Per company license with named user seats.' ),
+						array( 'User Seats', 'Each SAP B1 user who logs into IQ Barcode requires a separate license.' ),
+						array( 'Multi-Company', 'Each SAP B1 company database requires a separate license.' ),
+						array( 'Platform Included', 'The license covers both Windows desktop and Android mobile clients.' ),
+						array( 'Updates', 'Software updates are included during the active subscription period.' ),
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Pricing',
+					'image'   => 'assets/products/site-media/sap-b1-analytics-monitor.jpg',
+					'intro'   => array( 'IQ Barcode uses a subscription-based annual pricing model.', 'Pricing is custom-quoted based on:' ),
+					'list'    => array( 'Number of concurrent users', 'Modules required', 'Client-specific customizations' ),
+					'closing' => array( 'This allows pricing to be aligned with the client’s SAP B1 environment, required barcode workflows, and implementation scope.' ),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Implementation Timeline',
+					'image'   => 'assets/services/implementation.jpg',
+					'media'   => 'left',
+					'intro'   => array(
+						'The typical IQ Barcode implementation timeline is 2 to 4 weeks.',
+						'Actual implementation duration may vary depending on the number of SAP B1 company databases, required modules, barcode formats, label requirements, device setup, user roles, and client-specific customizations.',
+					),
+				),
+				array(
 					'type'    => 'faq',
 				),
 			),
 		),
 		'link' => array(
+			/* Revamp Dynamiq design (Figma, Sept 2026) — copy transcribed from the frames. The design's
+			   hero paragraph is IQ Barcode's and its second "Generic REST API Compatibility" card sits
+			   above the implementation-phase table (paste errors); the live hero copy is kept and the
+			   card is kept as designed. "Per-Integration Configuration" repeats the overview copy in
+			   the design. All flagged to the SEO team. */
 			'title'           => 'Integrate Your Systems Seamlessly with IQ Link for SAP Business One',
-			'description'     => 'Connect SAP B1 to POS, e-commerce platforms, WMS, CRM tools, or custom legacy software. IQ Link ensures real-time or scheduled data syncing while monitoring for inconsistencies, giving your operations a unified, error-resistant workflow.',
+			'description'     => 'Connect SAP B1 to POS, e-commerce platforms, WMS, CRM tools, or custom legacy software. IQ Link ensures real-time or scheduled data syncing while monitoring for inconsistencies.',
 			'seo_title'       => 'IQ Link Integration Module for SAP Business One | Connect POS, HRIS, & More',
 			'seo_description' => 'Use DyanmIQ\'s IQ Link to bring together the different types of software you may be using. Click here to learn more about this SAP Business One Integration!',
+			'overview_title'  => 'Product Overview',
+			'overview'        => array(
+				'IQ Link, formerly IQHub, is a middleware integration platform purpose-built for SAP Business One.',
+				'It acts as an intelligent bridge between SAP B1 and virtually any data source, including external databases, REST APIs, CSV/XML files, and other SAP B1 companies.',
+				'IQ Link helps businesses automate data movement, transform records, schedule integrations, track errors, and sync transactions across SAP Business One and third-party systems without relying on manual uploads or disconnected workflows.',
+			),
+			'closing'         => '',
 			'faqs'            => array(
 				array( 'What types of systems can IQ Link integrate with SAP Business One?', '<p>IQ Link can connect SAP B1 with a wide range of systems, including:</p><ul><li>Point-of-Sale (POS) software</li><li>E-commerce platforms</li><li>Warehouse Management Systems (WMS)</li><li>CRM tools</li><li>Custom legacy systems</li></ul><p>If your software supports data exchange (via APIs, file-based imports, or database-level sync), it can likely be integrated through IQ Link.</p>' ),
 				array( 'How does IQ Link handle data inconsistencies between systems?', '<p>IQ Link features a built-in status report that flags mismatched or missing data in real time. This allows users to proactively correct issues before they affect operations or reporting, helping maintain data integrity across connected systems.</p>' ),
@@ -339,12 +460,220 @@ function dq_product_live_content() {
 			),
 			'faq_heading'     => 'p',
 			'sections'        => array(
+				array( 'type' => 'diagram', 'image' => 'assets/products/site-media/link-diagram.png', 'alt' => 'IQ Link connects SAP Business One with point of sale, payroll, e-commerce, HRIS, warehouse management and other third-party software' ),
+				array( 'type' => 'overview' ),
 				array(
-					'type'    => 'faq',
+					'type'  => 'generic',
+					'title' => 'Features',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Integration Engine', 'image' => 'assets/products/site-media/link-engine.jpg', 'media' => 'right', 'text' => "The Integration Engine is the core of IQ Link. It allows users to configure how data moves from a source system to a target destination, including how fields are mapped, transformed, validated, and posted into SAP Business One or another connected system.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Feature', 'Details' ),
+						array( 'Visual Field Mapping', 'Drag-and-drop-style wizard maps source columns to SAP target fields, including nested objects such as DocumentLines.ItemCode.' ),
+						array( 'Transformation Modes', 'Direct, Custom (static/template values with {placeholder} substitution), SQL Lookup Query, Service Layer OData Query, Formula.' ),
+						array( 'Operation Modes', 'Create (POST), Update (PATCH by key), Upsert (check-then-create-or-update).' ),
+						array( 'Auto-Create Dependencies', 'Automatically creates missing master data (Projects, Warehouses, Distribution Rules, Payment Terms) before posting document' ),
+						array( 'SQL ↔ HANA Translation', 'Supports automatic SQL Server to SAP HANA dialect translation for UserQuery migrations.' ),
+						array( 'FormattedSearches Remap', 'Auto-remaps FMS QueryIDs between SAP companies by matching UserQuery descriptions.' ),
+					),
+					'table_after' => true,
 				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Scheduling & Execution', 'image' => 'assets/products/site-media/link-scheduling.jpg', 'media' => 'left', 'text' => "The Scheduling & Execution layer allows integrations to run manually or automatically based on configured schedules.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Feature', 'Details' ),
+						array( '8 Schedule Types', 'Supports Every N seconds, Every N minutes, Every N hours, Daily at specific times, Weekly with day + time entries, Monthly dates, Start of month, and End of month.' ),
+						array( 'Background Executor', 'Runs as a Windows background service — integrations execute even with the dashboard closed' ),
+						array( 'Auto-Resume', 'On server restart, all integrations with running status automatically resume' ),
+						array( 'Manual Trigger', 'One-click "Execute Now" for ad-hoc runs' ),
+						array( 'Overlap Protection', 'Prevents concurrent executions of the same integration' ),
+						array( 'Cancellation', 'Mid-execution cancel support with row-level granularity' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Error Handling & Retry', 'image' => 'assets/products/site-media/link-error.jpg', 'media' => 'right', 'text' => "IQ Link includes configurable error handling and retry controls to help prevent failed integrations from disrupting the entire sync process.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Feature', 'Details' ),
+						array( 'Error Policies', 'Stop on first error, Continue on error, Retry then stop' ),
+						array( 'Configurable Retry', '1–N retry attempts with 2-second delay between attempts' ),
+						array( 'SAP Session Recovery', 'Automatic re-authentication on 401 (session expiry) without counting as a retry' ),
+						array( 'Skip Synced Rows', 'Deduplication via sync log — never re-processes a previously successful row' ),
+						array( 'Skip "Already Exists"', 'Optionally marks SAP "already exists" errors as synced to prevent infinite retry loops' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Audit Trail & Logging', 'image' => 'assets/products/site-media/link-audit.jpg', 'media' => 'left', 'text' => "IQ Link provides detailed audit trail and logging features so every integration run can be reviewed, traced, and validated.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Feature', 'Details' ),
+						array( 'Per-Row Results', 'Every row records SUCCESS or ERROR with the SAP response message' ),
+						array( 'Incremental Log Writing', 'Log file updated in real-time as each row is processed (not just at batch end)' ),
+						array( 'Rolling Log Files', 'Serilog with daily rotation, 30-day retention' ),
+						array( 'Sync Log Table', 'Persistent IQHub_SyncLogs table tracking every processed row key + timestamp' ),
+						array( 'Last Synced At', 'Per-integration timestamp of last successful sync' ),
+						array( 'Integration Import/Export', 'Export integration configs as JSON for backup/migration; import to restore' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Supported Integration Methods', 'image' => 'assets/products/site-media/link-methods.jpg', 'media' => 'right', 'text' => "IQ Link supports multiple integration methods for moving data into and out of SAP Business One and other connected systems.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Method', 'Role', 'Details' ),
+						array( 'REST (JSON/OData)', 'Source &amp; Destination', 'Full SAP Service Layer proxy; Generic REST API connections with Bearer, API Key, or platform-specific HMAC auth' ),
+						array( 'Direct SQL Database', 'Source', 'Connects directly to SQL Server databases, runs arbitrary queries, returns structured results' ),
+						array( 'CSV', 'Source &amp; Destination', 'Import: File upload or folder watcher with auto-parse. Export: Bulk or transactional CSV generation with configurable delimiter' ),
+						array( 'XML', 'Destination', 'Bulk or per-transaction XML file export with configurable output folder and prefix' ),
+						array( 'SAP Service Layer (OData)', 'Source &amp; Destination', 'Native OData queries ($filter, $select, $crossjoin) and full CRUD (POST/PATCH) on any SAP B1 module' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => 'Features',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'E-Commerce Platforms with Built-In Signed Auth', 'image' => 'assets/products/site-media/link-ecommerce.jpg', 'media' => 'right', 'text' => "IQ Link includes built-in signed authentication support for selected e-commerce platforms.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Platform', 'Auth Protocol', 'Status' ),
+						array( 'Shopee', 'HMAC-SHA256 (partner_id + path + timestamp + access_token + shop_id)', '✅ Production' ),
+						array( 'Lazada', 'HMAC-SHA256 (sorted params, uppercase sign)', '✅ Production' ),
+						array( 'TikTok Shop', 'HMAC-SHA256 (app_secret-wrapped signing)', '✅ Production' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Generic REST API Compatibility', 'image' => 'assets/products/site-media/link-rest.jpg', 'media' => 'left', 'text' => "Any platform that exposes a REST API can work out of the box through IQ Link’s Generic connection type.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Platform', 'Compatibility', 'Notes' ),
+						array( 'WooCommerce', '✅', 'REST API v3 with API Key/Secret or OAuth' ),
+						array( 'Magento', '✅', 'REST API with Bearer token' ),
+						array( 'Toast POS', '✅', 'REST API with Bearer or API Key' ),
+						array( 'Lightspeed', '✅', 'REST API with OAuth Bearer token' ),
+						array( 'Xero', '✅', 'REST API with OAuth 2.0 Bearer token' ),
+						array( 'Salesforce', '✅', 'REST API with OAuth Bearer token' ),
+						array( 'HubSpot', '✅', 'REST API with OAuth Bearer token' ),
+						array( 'Custom ERPs', '✅', 'Any system with a REST/JSON endpoint' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => 'Data Flow Clarity',
+					'image' => 'none',
+					'intro' => array(
+						'IQ Link supports multiple source-to-destination flow directions. Each integration is configured independently, allowing users to define the source connection, destination connection, mapping logic, schedule, operation mode, and error handling policy per integration.',
+						'<strong>Supported Flow Directions</strong>',
+					),
+					'table' => array(
+						array( 'Flow Type', 'Source → Destination', 'Configurable?' ),
+						array( 'SAP → SAP', 'Source SAP company → Destination SAP company', '✅ Per entity, per integration' ),
+						array( 'SQL → SAP', 'External SQL Server DB → SAP B1 module', '✅ One-way, configurable per entity' ),
+						array( 'API → SAP', 'External REST API → SAP B1 module', '✅ One-way, configurable per entity' ),
+						array( 'CSV → SAP', 'CSV file upload or folder watch → SAP B1 module', '✅ One-way, configurable per entity' ),
+						array( 'SAP → CSV', 'SAP B1 query → CSV file export', '✅ One-way, bulk or transactional' ),
+						array( 'SAP → XML', 'SAP B1 query → XML file export', '✅ One-way, bulk or transactional' ),
+						array( 'API → API', 'External REST API → External REST API', '✅ One-way, configurable per entity' ),
+						array( 'SQL → API', 'SQL Server → External REST API', '✅ One-way, configurable per entity' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Per-Integration Configuration', 'image' => 'assets/products/site-media/link-config.jpg', 'media' => 'right', 'text' => "IQ Link, formerly IQHub, is a middleware integration platform purpose-built for SAP Business One.\\n\\nIt acts as an intelligent bridge between SAP B1 and virtually any data source, including external databases, REST APIs, CSV/XML files, and other SAP B1 companies.\\n\\nIQ Link helps businesses automate data movement, transform records, schedule integrations, track errors, and sync transactions across SAP Business One and third-party systems without relying on manual uploads or disconnected workflows.", 'items' => array() ),
+					),
+				),
+				array(
+					'type'  => 'generic',
+					'title' => 'Pricing',
+					'image' => 'assets/products/site-media/link-pricing.jpg',
+					'media' => 'left',
+					'intro' => array( 'IQ Link can be licensed based on the client’s deployment and integration requirements.' ),
+					'table' => array(
+						array( 'Model', 'Description' ),
+						array( 'Per Connection', 'License fee based on the number of active SAP/DB/API connections' ),
+						array( 'Per Integration', 'License fee based on the number of configured integrations' ),
+						array( 'Flat License', 'Single deployment license with unlimited integrations and connections' ),
+						array( 'Subscription', 'Monthly/annual SaaS-style subscription with support' ),
+					),
+					'table_after' => true,
+					'closing' => array(
+						'IQ Link has no per-transaction volume charges. Once licensed, it can process unlimited rows and transactions at no additional cost.',
+						'This is a key differentiator against cloud iPaaS platforms that charge per API call.',
+						"What’s Included:\n- Full middleware platform (backend + dashboard)\n- All integration types (SAP, SQL, API, CSV, XML)\n- Background scheduler with auto-resume\n- AES-256 credential encryption\n- Audit trail and logging\n- Docker deployment support",
+					),
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Generic REST API Compatibility', 'image' => 'assets/products/site-media/link-rest2.jpg', 'media' => 'right', 'text' => "Any platform that exposes a REST API can work out of the box through IQ Link’s Generic connection type.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Phase', 'Duration', 'Activities' ),
+						array( 'Discovery &amp; Setup', '1–2 days', 'Install IQ Link on client server (Windows Service or Docker), configure SQL Server, connect to SAP Service Layer, verify connectivity' ),
+						array( 'Connection Configuration', '0.5–1 day', 'Set up all SAP connections, DB connections, and API connections with credential encryption and testing' ),
+						array( 'Integration Design', '1–3 days per integration', 'Design source queries, configure field mappings, set up transformation rules (lookups, custom values), define schedule' ),
+						array( 'Testing &amp; Validation', '1–2 days per integration', 'Preview source data, execute manual test runs, validate SAP document creation, review error handling' ),
+						array( 'Go-Live &amp; Monitoring', '1 day', 'Enable background scheduling, verify auto-resume, confirm logging and audit trail' ),
+						array( 'Handover &amp; Training', '0.5–1 day', 'Dashboard walkthrough, create/edit integration training, troubleshooting guide' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Typical Integration Timelines', 'image' => 'assets/products/site-media/link-timelines.jpg', 'media' => 'left', 'text' => "", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Scenario', 'Estimated Duration' ),
+						array( 'Discovery &amp; Setup', '3–5 business days' ),
+						array( 'Connection Configuration', '1–2 weeks' ),
+						array( 'Complex (10+ integrations, SAP→SAP migration, e-commerce multi-platform)', '2–4 weeks' ),
+						array( 'Enterprise (multi-company, multi-platform, custom transformations)', '4–8 weeks' ),
+					),
+					'table_after' => true,
+				),
+				array( 'type' => 'faq' ),
 			),
 		),
 		'rem' => array(
+			/* Revamp Dynamiq design (Figma, Sept 2026) — copy transcribed from the frames. Two cards
+			   repeat the "Unit Owner / Buyer Information List" copy in the design; kept as designed. */
 			'title'           => 'Smarter Real Estate Management with IQ REM for SAP Business One',
 			'description'     => 'Optimize your real estate sales and financial processes with IQ REM, the powerful SAP Business One add-on built for developers and real estate professionals.',
 			'seo_title'       => 'SAP B1 Real Estate Management Module | Streamline Property Sales & Financials',
@@ -365,23 +694,43 @@ function dq_product_live_content() {
 			),
 			'faq_heading'     => 'p',
 			'sections'        => array(
+				array( 'type' => 'overview' ),
 				array(
-					'type'    => 'overview',
+					'type'  => 'generic',
+					'title' => 'Features',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Property / Unit Inventory', 'image' => 'assets/products/site-media/rem-inventory.jpg', 'media' => 'left', 'text' => "IQ REM stores real estate units as SAP Business One Items under OITM, enriched with real estate-specific fields for property sales and inventory tracking.\\n\\nEach unit record includes Project, Building, Phase, Unit, Floor, Property, Unit Type, List Price, Price-per-SQM, Floor Area, Misc Fee, VAT, and Account Status.\\n\\nUnits can be tracked as Available, Sold, or Reopen, giving users real-time visibility over unit availability directly inside SAP Business One.", 'items' => array() ),
+						array( 'title' => 'Unit Owner / Buyer Information List', 'image' => 'assets/products/site-media/rem-owner-list.jpg', 'media' => 'right', 'text' => "The Unit Owner / Buyer Information List serves as the main operational dashboard for managing unit-owner records.\\n\\nUsers can search, filter, create, view, edit, cancel, and manage records through a centralized grid. Records can also be filtered by Project and Building using cascading selections.\\n\\nThe list supports ACTIVE, CANCELED, and TRANSFER status tracking, with changes cascading to the related unit’s item flags and the buyer’s business-partner flags.\\n\\nIt also provides launch points for the Payment Plan and Reports / Statement of Account (SOA).", 'items' => array() ),
+						array( 'title' => 'Unit Owner / Buyer Information Form', 'image' => 'assets/products/site-media/rem-owner-form.jpg', 'media' => 'left', 'text' => "The Unit Owner / Buyer Information Form is the detailed registration screen used to link a specific unit to its buyer or owner record.\\n\\nThe form captures Unit Code, Project, Phase, Building, Unit, Floor, Property, Unit Type, Primary Owner, Co-owner, and Contract Type.\\n\\nIt also records the full sales-team chain, including Broker, Override, Property Specialist, Sales Manager, Sales Director, and Sales Division Head.\\n\\nAdditional fields include Sales Source, Group Performance tagging, RF Date, and Date Sold.", 'items' => array() ),
+						array( 'title' => 'Implementation', 'image' => 'assets/products/site-media/rem-implementation.jpg', 'media' => 'right', 'text' => "The Payment Plan acts as the financial engine of the sale. It computes the full contract amount, generates the payment structure, and creates the corresponding SAP Business One documents based on the configured client setup.\\n\\nThe pricing computation follows this flow:\\nList Price → Cascading Discounts → Net List Price → 12% VAT → Total Contract Price (TCP) → Misc Fee → Total Selling Price (TSP)\\n\\nThe module also handles Reservation Fee, Spot DP, Additional DP, Deferred Payment, Net Balance, amortization schedules, financing details, Incoming Payments, OR numbers, checks, and deposits per term.", 'items' => array() ),
+						array( 'title' => 'Uploader', 'image' => 'assets/products/site-media/rem-uploader.jpg', 'media' => 'left', 'text' => "The Uploader supports mass data migration and onboarding through Excel.\\n\\nIt imports owner data, unit-owner links, contract type, sales-team chain, source tagging, group tagging, RF Date, Date Sold, pricing details, payment plans, discounts, DP terms, schedules, and payment collections.\\n\\nOnce uploaded, the system creates the corresponding owner records, payment headers, discount records, AR Invoices, and payment lines.\\n\\nIt also flags the related SAP Items and Business Partners as active.", 'items' => array() ),
+					),
 				),
 				array(
-					'type'    => 'faq',
-					'heading' => false,
+					'type'  => 'generic',
+					'title' => 'Technical Details',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Unit Owner / Buyer Information List Details', 'image' => 'assets/products/site-media/rem-list-details.jpg', 'media' => 'left', 'text' => "The Payment Plan supports cascading discounts such as Promo Discount, Commission Discount, Payment Discount, and Price Discount.\\n\\nDown-payment components include Reservation Fee, Spot DP, Additional DP, Deferred Payment, and Net Balance. Each component can be computed as an amount and percentage.\\n\\nFor amortization, the module spreads the deferred amount over a defined number of months and calculates the DP Start Date, DP End Date, monthly payment amount, and misc fee distribution.\\n\\nFinancing details include Takeout / Loanable Amount, In-house Financing Years, Bank Financing Years, and Bank Financing Due Date.\\n\\nDepending on configuration, the Payment Plan can generate service-type AR Invoices for TCP and Misc Fee under the PrimeHomes configuration, or Sales Orders for RCD.\\n\\nAll payment-related data is persisted in custom tables, including the payment header, payment lines, and discounts. Records are tracked by status, such as ACTIVE, CANCELED, and TRANSFER.", 'items' => array() ),
+						array( 'title' => 'Unit Owner / Buyer Information List', 'image' => 'assets/products/site-media/rem-owner-list-2.jpg', 'media' => 'right', 'text' => "The Unit Owner / Buyer Information List serves as the main operational dashboard for managing unit-owner records.\\n\\nUsers can search, filter, create, view, edit, cancel, and manage records through a centralized grid. Records can also be filtered by Project and Building using cascading selections.\\n\\nThe list supports ACTIVE, CANCELED, and TRANSFER status tracking, with changes cascading to the related unit’s item flags and the buyer’s business-partner flags.\\n\\nIt also provides launch points for the Payment Plan and Reports / Statement of Account (SOA).", 'items' => array() ),
+						array( 'title' => 'Uploader Details', 'image' => 'assets/products/site-media/rem-uploader-details.jpg', 'media' => 'left', 'text' => "The Uploader imports payment collections, including check number, check amount, check date, OR number, OR date, IP number, deposit number, and schedule lines.\\n\\nIt also creates the corresponding owner records, payment headers, discount records, AR Invoices, and payment lines after upload.", 'items' => array() ),
+					),
 				),
+				array( 'type' => 'faq' ),
 			),
 		),
 		'ai' => array(
+			/* Revamp Dynamiq design (Figma, Sept 2026) — copy transcribed from the prototype frames. */
 			'title'           => 'Unlock Intelligent Automation with IQ Ai by DynamIQ',
-			'description'     => 'IQ Ai is a next-generation Ai-powered engine built by DynamIQ Enterprise Solution Inc. to extend the capabilities of SAP Business One. It uses machine learning, natural language processing, and intelligent automation to help you.',
+			'description'     => "IQ Ai is a smart, AI-powered chat assistant built specifically for companies that use SAP Business One. Developed by DynamIQ Enterprise Solution Inc., IQ Ai helps users interact with their SAP Business One system in a faster, easier, and more intuitive way.\n\nInstead of clicking through complicated menus or writing database code to find information, IQ Ai lets you simply talk to your data. You can ask questions, request charts, upload documents, or create new records directly inside your SAP Business One system.\n\nWith IQ Ai, SAP Business One users can save time, reduce manual work, and access business information more efficiently through a secure and controlled AI-powered interface.",
 			'seo_title'       => 'AI Module for SAP Business One ERP - DynamIQes',
 			'seo_description' => 'Upgrade your SAP Business One ERP productivity with an AI Module. Automate insights, streamline operations, and drive smarter decisions with integrated AI.',
 			'overview_title'  => 'Smarter Insights, Smoother Operations: An Overview of IQ Ai',
 			'overview'        => array(
-				'IQ Ai is an intelligent solution designed to work seamlessly with SAP Business One. It harnesses the power of artificial intelligence to turn your business data into real-time insights, smart recommendations, and automated actions—so you can work smarter, not harder.',
+				'IQ Ai is designed to make SAP Business One easier to use by giving businesses a conversational way to work with their data. It acts as an intelligent assistant that understands user questions and helps retrieve information from SAP Business One without requiring users to manually search through complex screens or prepare database queries.',
+				'For companies that rely on SAP Business One, this means faster access to the information they need. Users can ask IQ Ai a question and receive answers based on their business data. This helps teams work more efficiently and reduces the time spent looking for records, checking information, or waiting for technical assistance.',
+				'IQ Ai also helps users turn data into clearer outputs. It can draw charts and visualizations, making it easier to understand information at a glance. This is especially useful for users who need quick insights from their SAP Business One data without manually preparing reports.',
 			),
 			'closing'         => '',
 			'faqs'            => array(),
@@ -392,17 +741,29 @@ function dq_product_live_content() {
 				array(
 					'type'    => 'generic',
 					'title'   => 'Key Capabilities of IQ Ai',
-					'list'    => array(
-						'Predictive Insights',
-						'Automated Analysis',
-						'Conversational Intelligence',
-						'Process Automation',
-						'Smart Alerts & Recommendations',
+					'columns' => 2,
+					'image'   => 'assets/products/site-media/IQ-Ai-screen.png',
+					'intro'   => array(
+						'IQ AI is built to help SAP Business One users become more efficient, informed, and productive. Its key capabilities support faster reporting, easier data access, stronger security, and intelligent automation.',
+					),
+					'items'   => array(
+						array( 'title' => 'Chat with Your Data', 'icon' => 'assets/products/icons/sect-eight-support.png', 'text' => "IQ Ai allows users to ask questions about their SAP Business One data through chat. Instead of searching manually or asking someone to run a query, users can type a question and let IQ Ai retrieve the information securely.\n\nThis makes business data more accessible to users who may not be familiar with technical database tools. It also helps reduce the time spent navigating the system just to find specific information.", 'items' => array() ),
+						array( 'title' => 'Instant Charts and Visualization', 'icon' => 'assets/products/icons/sect-five-business.png', 'text' => "IQ Ai can draw charts and visualizations based on SAP Business One data. This helps users understand information faster and makes data easier to review.\n\nVisual outputs can be useful when users need to compare information, identify patterns, or present data in a clearer format. Instead of relying only on text or tables, IQ Ai helps turn business data into easier-to-read visuals.", 'items' => array() ),
+						array( 'title' => 'Smart Document Uploads', 'icon' => 'assets/products/icons/sect-four-data.png', 'text' => "IQ Ai supports smart document uploads, helping users work with documents more efficiently inside their SAP Business One environment.\n\nThis feature gives users a more convenient way to handle uploaded documents through the AI assistant. It can help reduce manual effort and support smoother data-related tasks.", 'items' => array() ),
+						array( 'title' => 'Create Transactions via Chat', 'icon' => 'assets/products/icons/sect-six-integrates.png', 'text' => "IQ Ai can help users create new records directly inside SAP Business One through chat. This allows supported actions to be completed with fewer manual steps.\n\nInstead of navigating multiple screens, users can provide instructions through the chat assistant. IQ Ai then helps create the record within the SAP Business One system, making the process faster and more convenient.", 'items' => array() ),
+						array( 'title' => 'Privacy and Data Masking', 'icon' => 'assets/products/icons/sect-four-compliance.png', 'text' => "IQ Ai includes privacy and data masking features to help protect sensitive business information. This helps companies control how data is shown and reduces unnecessary exposure of confidential details.\n\nFor businesses using SAP Business One, secure data handling is important. IQ Ai is designed to help users access information while supporting privacy and responsible data use.", 'items' => array() ),
+						array( 'title' => 'Smart Memory', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "IQ Ai includes Smart Memory, allowing it to remember useful context for future interactions. This helps make repeated tasks and common requests more efficient.\n\nWith Smart Memory, users can have a smoother experience because IQ Ai can retain relevant context that supports more useful responses and actions over time.", 'items' => array() ),
+						array( 'title' => 'Lightning Fast Template Memory', 'icon' => 'assets/products/icons/sect-four-simple.png', 'text' => "IQ AI’s Template Memory helps speed up repeated tasks by using saved patterns or commonly requested formats. This is useful for businesses that regularly generate similar reports, summaries, workflows, or transaction requests.\n\nInstead of starting from scratch each time, users can rely on stored templates to get faster responses and more consistent outputs. This helps improve productivity, standardize reporting, and reduce manual effort.", 'items' => array() ),
+						array( 'title' => 'Secure and Controlled Access', 'icon' => 'assets/products/icons/sect-four-deployment.png', 'text' => "IQ Ai is built with secure and controlled access in mind. This helps ensure that users interact with SAP Business One data in a managed environment.\n\nSecurity and control are important for any business system, especially when working with company data. IQ Ai supports a more convenient AI-powered experience while keeping access organized and protected.", 'items' => array() ),
 					),
 				),
 			),
 		),
 		'desk' => array(
+			/* Revamp Dynamiq design (Figma, Sept 2026) — copy transcribed from the frames. The hero
+			   paragraph in the design is IQ Barcode's (a paste error), so the live IQDesk hero copy
+			   stays; the "License Structure" intro in the design also refers to IQ Barcode and is left
+			   out. Both flagged to the SEO team. */
 			'title'           => 'IQDesk: Smarter IT Service, All in One Place.',
 			'description'     => 'IQDesk is DynamIQ’s all-in-one IT Service Management (ITSM) and helpdesk solution built to make IT support simpler, faster, and easier to manage.',
 			'seo_title'       => 'IT Service Management Module for SAP B1 - DynamIQes',
@@ -415,61 +776,118 @@ function dq_product_live_content() {
 			'closing'         => '',
 			'faqs'            => array(),
 			'sections'        => array(
-				array(
-					'type'    => 'overview',
-				),
+				array( 'type' => 'overview' ),
 				array(
 					'type'    => 'generic',
 					'title'   => 'Smarter Tools for Modern Workflows',
-					'intro'   => array(
-						'Explore IQ Desk’s latest features designed to improve efficiency, simplify processes, and support effective day-to-day business operations.',
-					),
+					'image'   => 'assets/products/site-media/desk-tools.png',
+					'columns' => 3,
+					'intro'   => array( 'Explore IQ Desk’s latest features designed to improve efficiency, simplify processes, and support effective day-to-day business operations.' ),
 					'items'   => array(
-						array( 'title' => 'Smart Help Desk', 'text' => '', 'items' => array(
-							'AI-assisted ticketing',
-							'Auto-drafted replies',
-							'Live agent escalation',
-							'Multi-channel support via portal, email, and chat',
-							'24/7 first-line assistance',
-						) ),
-						array( 'title' => 'Ticket Management', 'text' => '', 'items' => array(
-							'Open, working, solved, and closed statuses',
-							'Resolution tracking',
-							'Timeline logs',
-							'Confidence-based AI response suggestions',
-						) ),
-						array( 'title' => 'Asset Management', 'text' => '', 'items' => array(
-							'Hardware and software asset tracking',
-							'Asset barcode support',
-							'Serial number and technical profile recording',
-							'Warranty, vendor, and purchase cost tracking',
-							'Property acknowledgement receipt with e-signature',
-						) ),
-						array( 'title' => 'Asset Audit & Reports', 'text' => '', 'items' => array(
-							'Barcode-based asset checking',
-							'Audit mode for asset validation',
-							'Check if the asset still exists/is still assigned',
-							'Upload and update assets using reports',
-							'Generate asset-based reports, including Belarc-style asset/system reports',
-						) ),
-						array( 'title' => 'User & Access Control', 'text' => '', 'items' => array(
-							'User directory',
-							'Department and company assignment',
-							'Check if the asset still exists/is still assigned',
-							'Role-based permissions',
-							'Module authorization',
-						) ),
-						array( 'title' => 'Automation & Integrations', 'text' => '', 'items' => array(
-							'AI knowledge-based assistance',
-							'Notification and email settings',
-							'Import/export and bulk upload',
-							'Integration with Telegram, WhatsApp, Slack, and Teams',
-						) ),
+						array( 'title' => 'Smart Help Desk', 'text' => '', 'items' => array( 'AI-assisted ticketing', 'Auto-drafted replies', 'Live agent escalation', 'Multi-channel support via portal, email, and chat', '24/7 first-line assistance' ) ),
+						array( 'title' => 'Ticket Management', 'text' => '', 'items' => array( 'Open, working, solved, and closed statuses', 'Resolution tracking', 'Timeline logs', 'Confidence-based AI response suggestions' ) ),
+						array( 'title' => 'Asset Management', 'text' => '', 'items' => array( 'Hardware and software asset tracking', 'Asset barcode support', 'Serial number and technical profile recording', 'Warranty, vendor, and purchase cost tracking', 'Property acknowledgement receipt with e-signature' ) ),
+						array( 'title' => 'Asset Audit & Reports', 'text' => '', 'items' => array( 'Barcode-based asset checking', 'Audit mode for asset validation', 'Check if the asset still exists/is still assigned', 'Upload and update assets using reports', 'Generate asset-based reports, including Belarc-style asset/system reports' ) ),
+						array( 'title' => 'User & Access Control', 'text' => '', 'items' => array( 'User directory', 'Department and company assignment', 'Check if the asset still exists/is still assigned', 'Role-based permissions', 'Module authorization' ) ),
+						array( 'title' => 'Automation & Integrations', 'text' => '', 'items' => array( 'AI knowledge-based assistance', 'Notification and email settings', 'Import/export and bulk upload', 'Integration with Telegram, WhatsApp, Slack, and Teams' ) ),
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'AI Usage',
+					'image'   => 'assets/products/site-media/desk-ai.jpg',
+					'media'   => 'left',
+					'intro'   => array(
+						'IQDesk uses a pluggable AI provider-abstraction layer, giving each deployment flexibility over which AI model provider powers the system.',
+						'Supported providers include:',
+					),
+					'list'    => array( 'OpenAI, including the GPT-4o family', 'Anthropic Claude', 'Google Gemini', 'Azure OpenAI', 'Local models through Ollama' ),
+					'closing' => array(
+						'The provider is selected and configured per instance. API keys are stored encrypted using AES-256-CBC, with only the last 4 characters shown in the UI.',
+						'For RAG and embeddings, IQDesk uses ChromaDB with isolated vector collections per company.',
+						'Because IQDesk supports external AI providers, data may be sent to the selected provider depending on the configured model. For private or air-gapped deployments, local AI through Ollama can be used.',
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Security and Data Privacy',
+					'intro'   => array( 'IQDesk includes encryption for sensitive credentials and supports secure deployment configurations.' ),
+					'table'   => array(
+						array( 'Area', 'Details' ),
+						array( 'Credential Encryption', 'SAP passwords, AI API keys, access tokens, and other sensitive credentials are encrypted at rest using AES-256-CBC.' ),
+						array( 'User Passwords', 'User passwords are hashed using bcrypt with salt 10.' ),
+						array( 'Data in Transit', 'TLS is supported in transit through NGINX and Let’s Encrypt in the documented deployment setup.' ),
+						array( 'Hosting Model', 'IQDesk can be deployed as a self-hosted system, giving clients more control over infrastructure, data residency, and AI provider configuration.' ),
+					),
+					'closing' => array( 'IQDesk is architecturally privacy-capable because it can be self-hosted and configured with local AI. However, no formal certifications such as GDPR, SOC 2, ISO, or HIPAA are currently claimed or implemented in the codebase.' ),
+				),
+				array(
+					'type'       => 'generic',
+					'title'      => 'Deployment Model',
+					'image'      => 'assets/products/site-media/desk-deploy.png',
+					'list_style' => 'plain',
+					'intro'      => array(
+						'IQDesk supports both cloud-hosted and self-hosted deployment models, but it is primarily designed as a self-hosted, per-client deployment.',
+						'The platform is fully containerized through Docker and can run on-premise, on a client-owned cloud server, or on a private VM.',
+						'The documented stack includes:',
+					),
+					'list'       => array( 'MSSQL 2022', 'ChromaDB', 'Express backend', 'Next.js frontend', 'NGINX reverse proxy', 'Let’s Encrypt SSL' ),
+					'closing'    => array(
+						'Production images are published to GitHub Container Registry, with optional Watchtower auto-updates.',
+						'IQDesk can be cloud-hosted, but there is no managed multi-tenant SaaS billing model. It is deployed per client.',
+						'For fully private or air-gapped AI use cases, self-hosting combined with Ollama is the preferred deployment path.',
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'License Structure',
+					'image'   => 'none',
+					'columns' => 1,
+					'items'   => array(
+						array( 'title' => 'Ticket Management', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "IQDesk provides a helpdesk workflow for managing customer, internal, or IT support tickets.\\n\\nTickets can be submitted, tracked, assigned, responded to, and resolved through the platform. Ticket data can also be used for analytics such as ticket volume, backlog aging, First Response Time, MTTR, SLA compliance, and reopen rate.", 'items' => array() ),
+						array( 'title' => 'Self-Service Portal', 'icon' => 'assets/products/icons/sect-eight-support.png', 'text' => "IQDesk has partial SLA management support.\\n\\nThe current system supports SLA measurement and reporting, but does not yet include full SLA enforcement, proactive breach alerts, or escalation workflows.\\n\\nWhat exists:\\n- dueDate, which is manual and optional\\n- respondedAt, which records the first-response timestamp and is frozen on the first staff reply\\n- resolvedTime\\n- SLA Compliance %, based on tickets resolved on or before the due date\\n- First Response Time\\n- MTTR\\n\\nWhat does not currently exist:\\n- No SLA policy engine\\n- No auto-calculated targets by priority or category\\n- No proactive breach detection job\\n- No breach-warning alerts\\n- No escalation rules or workflows\\n- No dedicated “escalate” action in the automation engine\\n- The automation engine currently supports only:\\n- SET_FIELD\\n- BLOCK_SAVE\\n- TRIGGER_WEBHOOK\\nSLA breach email alerts appear in the roadmap under Phase 6, but are not yet implemented.\\n\\nIn summary, IQDesk supports SLA measurement and reporting, but SLA enforcement, breach alerts, and escalation are not yet available.", 'items' => array() ),
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Reporting and Analytics',
+					'image'   => 'assets/products/site-media/desk-reporting.jpg',
+					'intro'   => array(
+						'IQDesk includes strong helpdesk reporting and analytics, with PDF export and period-over-period deltas.',
+						'The analytics dashboard supports reporting across tickets, agents, SLA performance, resolution times, and assets.',
+					),
+					'table'   => array(
+						array( 'Reporting Area', 'Details' ),
+						array( 'Ticket Volume', 'Daily trend, priority distribution, status distribution, category distribution, and backlog aging buckets.' ),
+						array( 'Resolution Time', 'MTTR in hours.' ),
+						array( 'First Response Time', 'FRT tracking based on the first staff response.' ),
+						array( 'SLA Compliance', 'SLA Compliance % based on tickets resolved on or before the due date.' ),
+						array( 'Reopen Rate', 'Used as the closest equivalent to First Contact Resolution, although there is no true “First Contact Resolution” metric by name.' ),
+						array( 'Agent Performance', 'Per-agent assigned tickets, open tickets, closed tickets, total replies, and average resolution hours.' ),
+						array( 'Asset Reports', 'Asset state distribution and warranty expiry buckets.' ),
+					),
+					'closing' => array(
+						'Available date ranges include: Last 30 days, This month, Last month, This year, All time, Custom date range. Analytics also support 60-second caching and PDF export.',
+						'Current reporting limitations: No CSAT or satisfaction metric. No by-name First Contact Resolution rate.',
+					),
+				),
+				array(
+					'type'    => 'generic',
+					'title'   => 'License Structure',
+					'image'   => 'none',
+					'columns' => 2,
+					'items'   => array(
+						array( 'title' => 'Knowledge Base', 'icon' => 'assets/products/icons/sect-five-business.png', 'text' => "The Knowledge Base supports full article CRUD, allowing agents to create, update, publish, and manage support articles.\\n\\nIt includes:\\n- Markdown editor for agents\\n- Public and unauthenticated reading of published articles\\n- Search\\n- Category filtering\\n- Author filtering\\n- Pagination", 'items' => array() ),
+						array( 'title' => 'Self-Service Portal', 'icon' => 'assets/products/icons/sect-six-user.png', 'text' => "The self-service portal allows customers to submit and track tickets without requiring agent permissions.\\n\\nCustomers can also start live chats through the portal.\\n\\nIQDesk also includes an embeddable JavaScript chat widget using widget.js and a /widget iframe. This widget can be added to external websites and can use an AI copilot as first-line support.\\n\\nThe AI copilot can provide RAG-grounded answers, support auto-ticket creation, and hand off conversations to human agents when needed.\\n\\nPublic PAR, or Property Acknowledgement Receipt, signing is also supported through a tokenized link.", 'items' => array() ),
 					),
 				),
 			),
 		),
 		'ecom' => array(
+			/* Revamp Dynamiq design (Figma, Sept 2026) — copy transcribed from the frames. The design's
+			   "Reporting and Analytics" card carries IQDesk's copy (paste error) and repeats the IIS
+			   deployment paragraph twice; the card is kept as designed, the repeat is dropped. Both
+			   flagged to the SEO team. */
 			'title'           => 'Advance Your B2B and B2C E-commerce with IQEcom for SAP Business One',
 			'description'     => 'IQEcom is DynamIQ’s enterprise-grade B2B and B2C e-commerce platform designed for businesses that go beyond simple online selling. It is built for real-world operations where pricing is negotiated, purchases require approval, and inventory needs to be tracked across multiple locations.',
 			'seo_title'       => 'E-Commerce Platform Module for SAP B1 - DynamIQes',
@@ -480,24 +898,197 @@ function dq_product_live_content() {
 				'Multiple pricelists. One platform. Assign unique pricing per customer type, retail walk-ins, resellers, or tiered wholesalers. Each buyer logs in and sees only the price agreed with them. No manual overrides, no confusion.',
 			),
 			'closing'         => '',
-			'faqs'            => array(),
+			'faqs'            => array(
+
+			),
 			'sections'        => array(
-				array(
-					'type'    => 'overview',
-				),
+				array( 'type' => 'overview' ),
 				array(
 					'type'    => 'generic',
 					'title'   => 'Built for Smarter E-Commerce Growth',
-					'intro'   => array(
-						'Discover powerful features that enhance your online store’s performance—from product management to customer experience—helping you scale with confidence and control.',
-					),
+					'image'   => 'assets/products/site-media/ecom-growth.png',
+					'columns' => 3,
+					'intro'   => array( 'Discover powerful features that enhance your online store’s performance—from product management to customer experience—helping you scale with confidence and control.' ),
 					'items'   => array(
-						array( 'title' => 'Real Time Financial Transparency', 'text' => 'Gain immediate access to the current balance and statement of accounts.', 'items' => array() ),
-						array( 'title' => 'Real-Time Order Tracking', 'text' => 'Receive live updates on order status, including tracking numbers and courier information.', 'items' => array() ),
-						array( 'title' => 'Specialized Discount Management', 'text' => 'Allows complex pricing configurations, including percentage or fixed amounts for different types of clients.', 'items' => array() ),
-						array( 'title' => 'Multi-Warehouse Support', 'text' => 'Manage stock and fulfillment across multiple warehouse locations to ensure accurate inventory management.', 'items' => array() ),
-						array( 'title' => 'Intelligent Product Visibility', 'text' => 'A permission system that shows or hides products based on who is logged in - a system where certain products are only visible to the right people', 'items' => array() ),
-						array( 'title' => 'Seamless SAP Integration', 'text' => 'Automatically syncs warehouses and items while generating sales orders directly into SAP Business One to eliminate manual data entry.', 'items' => array() ),
+						array( 'title' => 'Real Time Financial Transparency', 'text' => "Gain immediate access to the current balance and statement of accounts.", 'items' => array() ),
+						array( 'title' => 'Real-Time Order Tracking', 'text' => "Receive live updates on order status, including tracking numbers and courier information.", 'items' => array() ),
+						array( 'title' => 'Specialized Discount Management', 'text' => "Allows complex pricing configurations, including percentage or fixed amounts for different types of clients.", 'items' => array() ),
+						array( 'title' => 'Multi-Warehouse Support', 'text' => "Manage stock and fulfillment across multiple warehouse locations to ensure accurate inventory management.", 'items' => array() ),
+						array( 'title' => 'Intelligent Product Visibility', 'text' => "A permission system that shows or hides products based on who is logged in - a system where certain products are only visible to the right people", 'items' => array() ),
+						array( 'title' => 'Seamless SAP Integration', 'text' => "Automatically syncs warehouses and items while generating sales orders directly into SAP Business One to eliminate manual data entry.", 'items' => array() ),
+					),
+				),
+				array(
+					'type'  => 'generic',
+					'title' => 'Features',
+					'image' => 'none',
+					'intro' => array( 'IQEcom is a B2B e-commerce and Warehouse Management platform designed for SAP Business One-connected businesses. It supports online ordering, catalog management, purchasing workflows, checkout, payment handling, storefront management, deployment flexibility, and SAP B1 product data import.' ),
+					'items' => array(
+						array( 'title' => 'B2B Shopping & Ordering', 'image' => 'assets/products/site-media/ecom-b2b.jpg', 'media' => 'left', 'text' => "IQEcom provides a complete shopping and ordering experience for B2B buyers.\\n\\nBuyers can browse products, use a persistent shopping cart, proceed through “Buy Now,” submit orders with shipping details and PO numbers, attach PO documents, track order status, request cancellations or returns, save products to a wishlist, and reorder past purchases with recalculated current pricing.\\n\\nOrder history includes pagination and status filtering, while order status tracking follows the flow from Processing → Shipped → Delivered.", 'items' => array() ),
+						array( 'title' => 'Reporting and Analytics', 'image' => 'assets/products/site-media/ecom-reporting.jpg', 'media' => 'right', 'text' => "IQDesk includes strong helpdesk reporting and analytics, with PDF export and period-over-period deltas.\\n\\nThe analytics dashboard supports reporting across tickets, agents, SLA performance, resolution times, and assets.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Payment Method', 'Status', 'Details' ),
+						array( 'Credit Card', 'Supported', 'Demo flow' ),
+						array( 'GCash', 'Supported', 'Demo flow with QR scan UI' ),
+						array( 'PayPal', 'Supported', 'Demo flow with login UI' ),
+						array( 'Cash on Delivery', 'Supported', 'Direct order placement' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'B2B Approval Workflow', 'image' => 'assets/products/site-media/ecom-approval.jpg', 'media' => 'left', 'text' => "IQEcom includes a built-in approval workflow for purchase orders and quotes.\\nWhen an order or quote triggers approval rules, it enters an Awaiting Approval state. The approver can review the request through the Approval Dashboard and either approve or reject it with comments.\\n\\nApproval requests are organized into Incoming and Outgoing views. Incoming requests are pending the logged-in approver’s action, while Outgoing requests are submitted by the logged-in user and awaiting someone else’s approval.\\n\\nApproved Orders move to Processing, while Rejected Orders move to Cancelled. Approved Quotes move to Submitted, while Rejected Quotes move to Rejected.\\nThe current implementation supports single-level approval, with one designated approver per request. If no specific approver is assigned, any Admin can respond.", 'items' => array() ),
+						array( 'title' => 'Product, Catalog, and Storefront Management', 'image' => 'assets/products/site-media/ecom-catalog.jpg', 'media' => 'right', 'text' => "IQEcom includes admin tools for managing products, categories, variants, product visibility, storefront banners, and branding.\\n\\nAdmins can create and update products, upload multiple product images, configure product variants, manage variant matrices, add key/value product attributes, and organize categories using a hierarchical category structure.\\nProduct visibility can be controlled through whitelist or blacklist rules by company, role, or individual user.\\n\\nStorefront management includes homepage promotional banners with configurable images, titles, subtitles, CTA button text, and CTA links. Branding and theming can also be configured through primary and secondary colors in System Settings.\\n\\nIQEcom does not currently include a general-purpose page CMS for custom pages such as “About Us” pages.", 'items' => array() ),
+						array( 'title' => 'SAP Business One Product Import', 'image' => 'assets/products/site-media/ecom-import.jpg', 'media' => 'left', 'text' => "IQEcom supports SAP Auto-Import for product data.\\n\\nAdmins can import products from SAP Business One using either the UDF-match or auto-import strategy. This allows SAP B1 product information to be brought into the IQEcom catalog without relying on CSV or Excel bulk uploads.\\n\\nCSV or Excel bulk product import is not currently implemented. Products are managed through individual CRUD forms in the admin dashboard or imported from SAP Business One.", 'items' => array() ),
+						array( 'title' => 'Promotions and Customer Pricing', 'image' => 'assets/products/site-media/ecom-promos.jpg', 'media' => 'right', 'text' => "IQEcom includes promotional and pricing tools for storefront campaigns and customer-specific pricing.\\n\\nPromotional banners are fully manageable through the admin dashboard. Discounts and promotions can be scoped by product, category, company, or role, with scheduled start and end dates for timed campaigns.\\n\\nThe platform also supports period-based discounts, discount groups, and price-based promotions for specific customer segments. When discounts apply, checkout messaging such as “You’re saving X!” can be shown to the buyer.", 'items' => array() ),
+						array( 'title' => 'B2C and Direct-to-Consumer Support', 'image' => 'assets/products/site-media/ecom-b2c.jpg', 'media' => 'left', 'text' => "Although IQEcom is primarily designed as a B2B platform, it also supports selected B2C and direct-to-consumer flows.\\n\\nAvailable B2C features include storefront browsing, hero banners, product carousels, category browsing, search and filtering, “Buy Now,” wishlist, order self-service, Cash on Delivery, GCash, PayPal, Credit Card options, promotional banners, discounts, and reorder.\\n\\nThis allows IQEcom to support both business purchasing workflows and consumer-style buying experiences when needed.", 'items' => array() ),
+					),
+				),
+				array(
+					'type'  => 'generic',
+					'title' => 'Technical Specifications',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Hosting and Deployment', 'image' => 'assets/products/site-media/ecom-hosting.jpg', 'media' => 'right', 'text' => "IQEcom supports flexible deployment through DynamIQ-hosted, self-hosted, or hybrid arrangements.\\n\\nIn a DynamIQ-hosted setup, DynamIQ provisions and manages the infrastructure on behalf of the client. This can include CI/CD through GitHub Actions, where updates to the main branch build and publish updated Docker images.\\n\\nWatchtower auto-updater can also be enabled so deployments automatically pull and apply new versions.\\n\\nFor self-hosted deployments, IQEcom uses a Docker-based setup designed for Windows Server 2019, Windows Server 2022, Windows 10, Windows 11, Linux Ubuntu, or Linux Debian.\\n\\nThe self-hosted setup includes:", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Component', 'Technology' ),
+						array( 'Frontend', 'Flutter Web served through NGINX' ),
+						array( 'Backend API', 'Node.js / Express' ),
+						array( 'Database', 'External Microsoft SQL Server' ),
+						array( 'Orchestration', 'docker-compose.yml' ),
+						array( 'Configuration', '.env file' ),
+						array( 'Auto-Updater', 'Watchtower, optional' ),
+					),
+					'table_after' => true,
+					'closing' => array( 'IQEcom can also be deployed through IIS on Windows VMs as an alternative to Docker. The database connection is injected through environment variables, allowing the same containers to point to any MSSQL instance, whether local, cloud-hosted through Azure SQL, or on-premise.' ),
+				),
+				array(
+					'type'  => 'generic',
+					'title' => '',
+					'image' => 'none',
+					'items' => array(
+						array( 'title' => 'Mobile Responsiveness and App Availability', 'image' => 'assets/products/site-media/ecom-mobile.jpg', 'media' => 'left', 'text' => "IQEcom is built with Flutter, allowing it to run across major platforms from a single codebase.\\n\\nSupported platforms include:\\n- Web Browser, including Chrome, Edge, and Firefox\\n- Windows Desktop App\\n- Android Mobile App\\n- iOS Mobile App\\n\\nThis gives businesses flexibility to support browser-based ordering, desktop-based admin or operations workflows, and mobile access for customers or internal users.", 'items' => array() ),
+						array( 'title' => 'Marketing Tools and Current Limitations', 'image' => 'assets/products/site-media/ecom-marketing.jpg', 'media' => 'right', 'text' => "IQEcom includes implemented tools for promotional banners, discounts, price-based promotions, and customer-segment pricing.", 'items' => array() ),
+					),
+					'table' => array(
+						array( 'Tool', 'Status' ),
+						array( 'Promotional Banners', 'Implemented' ),
+						array( 'Discounts &amp; Promotions', 'Implemented' ),
+						array( 'Price-Based Promotions', 'Implemented' ),
+						array( 'Meta Tags / SEO', 'Not Implemented' ),
+						array( 'Google Analytics', 'Not Implemented' ),
+						array( 'Abandoned Cart Recovery', 'Not Implemented' ),
+						array( 'Email Marketing', 'Partial; nodemailer exists for password reset, but not marketing campaigns' ),
+					),
+					'table_after' => true,
+				),
+				array(
+					'type'  => 'generic',
+					'title' => 'Pricing',
+					'image' => 'assets/products/site-media/ecom-pricing.jpg',
+					'intro' => array(
+						'IQEcom pricing is handled on a per-engagement basis and is not publicly listed as a fixed SaaS subscription.',
+						'Pricing depends on the deployment model, number of users or concurrent sessions, selected modules, SAP integration requirements, branding, custom workflows, and additional customization needs.',
+						'Pricing is handled commercially by DynamIQ based on the client’s requirements.',
+					),
+				),
+			),
+		),
+
+		/* ---- Revamp Dynamiq (Figma, Sept 2026) — new products, copy transcribed from the frames. ---- */
+		'people' => array(
+			'overview_title'  => 'Product Overview',
+			'overview'        => array(
+				'IQ People by DynamIQ is a complete Human Resource Information System purpose-built for Philippine businesses. It brings every part of your people operation — core HR, time and attendance, payroll, compliance, and talent management — into a single, secure platform, so your team stops stitching together spreadsheets and disconnected tools.',
+				'At its core is a precision payroll engine that handles statutory deductions, loans, bonuses, and allowances with exact, rounding-error-free calculations — and generates the BIR alphalists, SSS, PhilHealth, and Pag-IBIG remittances, and bank disbursement files your business is required to file. Attendance flows straight into payroll through biometric and geofenced mobile clock-in, configurable shift scheduling, and a full leave and overtime engine tuned to DOLE rules.',
+				'Beyond the essentials, IQ People give you the tools to grow your people: performance management, recruitment, succession, and compensation planning, plus an employee self-service portal and native mobile app that put payslips, leave, and requests in every employee’s pocket. Built multi-tenant with role-based access, AES-256 encryption, and a governed AI layer, IQ People is ready to scale from a single company to a full corporate group — and to run international payroll when you expand beyond the Philippines.',
+			),
+			'sections'        => array(
+				array( 'type' => 'overview' ),
+				array(
+					'type'    => 'generic',
+					'title'   => 'The Smarter Way to Manage Your Workforce',
+					'image'   => 'none',
+					'columns' => 3,
+					'intro'   => array( 'Everything you need to manage your people, all in one place. Explore the features and core modules that help simplify HR tasks, improve productivity, and support your team every step of the way.' ),
+					'items'   => array(
+						array( 'title' => 'Employee Self-Service', 'icon' => 'assets/products/icons/sect-six-user.png', 'text' => "Give employees the freedom to submit leave requests, view payslips, update personal information, request documents, and receive company announcements at any time.", 'items' => array() ),
+						array( 'title' => 'Mobile HR Anywhere', 'icon' => 'assets/products/icons/sect-five-mobility.png', 'text' => "Access HR tools on the go with the IQ People mobile app. Employees can clock in, file requests, receive notifications, and access HR services from their smartphones.", 'items' => array() ),
+						array( 'title' => 'AI-Powered HR', 'icon' => 'assets/products/icons/sect-five-business.png', 'text' => "Work smarter with AI- powered features that assist with recruitment, HR inquiries, workforce planning, scheduling, and employee insights.", 'items' => array() ),
+						array( 'title' => 'Executive Dashboard and Analytics', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "dashboards, HR reports, payroll summaries, hiring trends, labor costs, and workforce analytics.", 'items' => array() ),
+						array( 'title' => 'Enterprise Security', 'icon' => 'assets/products/icons/sect-four-data.png', 'text' => "Protect sensitive employee information with role-based access, encrypted data, audit logs, secure authentication, and multi-company support.", 'items' => array() ),
+						array( 'title' => 'Employee Management', 'icon' => 'assets/products/icons/sect-five-project.png', 'text' => "Keep all employee information in one secure place. Manage employee records, positions, departments, government IDs, documents, and employment history with ease.", 'items' => array() ),
+						array( 'title' => 'Executive Dashboard and Analytics', 'icon' => 'assets/products/icons/sect-four-simple.png', 'text' => "Track attendance accurately with web and mobile clock-ins, shift scheduling, leave management, overtime requests, and automated attendance monitoring.", 'items' => array() ),
+						array( 'title' => 'Accurate Payroll', 'icon' => 'assets/products/icons/sect-five-accounting.png', 'text' => "Process payroll with confidence using automated salary calculations, government deductions, taxes, loans, allowances, bonuses, and downloadable payslips.", 'items' => array() ),
+						array( 'title' => 'Philippine Compliance', 'icon' => 'assets/products/icons/sect-four-compliance.png', 'text' => "Keep all employee information in one secure place. Manage employee records, positions, departments, government IDs, documents, and employment history with ease.", 'items' => array() ),
+						array( 'title' => 'Recruitment & Talent  Management', 'icon' => 'assets/products/icons/sect-two-partners.png', 'text' => "Manage hiring, performance reviews, employee development, training, career planning, and succession planning from one centralized platform.", 'items' => array() ),
+					),
+				),
+			),
+		),
+		'workplace' => array(
+			'overview_title'  => 'Product Overview',
+			'overview'        => array(
+				'IQ Workplace by DynamIQ is an all-in-one work management platform that brings your projects, people, and processes together in one place. Plan work across flexible workspaces and projects, move it forward with configurable workflows and automations, and keep everyone aligned with built-in chat, meetings, and real-time updates — without ever leaving the platform.',
+				'Every project adapts to your team: custom fields, saved views from Kanban to Gantt to Timeline, stage-based workflow gating, and reusable templates mean IQ Workplace fits your process instead of forcing you into someone else’s. Money fields and payment tracking, client records, and org-wide insights give leaders a clear line of sight from a single task all the way up to portfolio performance.',
+				'Underpinning it all is IQ Ai, your built-in AI assistant that drafts tasks and automations, writes reports in plain language, summarizes threads, and surfaces the metrics that matter. With enterprise-grade multi-tenancy, fine-grained permissions, and deep integrations across Microsoft, GitHub, and beyond, IQ Workplace is ready for teams of any size — on desktop, mobile, or installed as an app.',
+			),
+			'sections'        => array(
+				array( 'type' => 'overview' ),
+				array(
+					'type'    => 'generic',
+					'title'   => 'Features',
+					'image'   => 'none',
+					'columns' => 3,
+					'items'   => array(
+						array( 'title' => 'Projects and Tasks, Your Way', 'icon' => 'assets/products/icons/sect-five-project.png', 'text' => "Full project and task management with subtasks, dependencies, and typed relations. Configurable statuses, custom fields, task templates, recurring tasks, and bulk actions let you shape every project to your workflow — then save it as a template to reuse in seconds.", 'items' => array() ),
+						array( 'title' => 'Views for Every Kind of Work', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "See work the way that suits the moment: Kanban, Table, Calendar, Gantt, Timeline, Sheet, Canvas, Dashboard, and more. Build saved views, reusable filters, and custom dashboards with drag-and-drop blocks so every team gets the perspective it needs.", 'items' => array() ),
+						array( 'title' => 'Workflows, Stages and Automation', 'icon' => 'assets/products/icons/sect-four-simple.png', 'text' => "Turn statuses into true workflow stages with entry and exit gates — required fields, approvals, attachments, and checklists that keep work on track. A rules-based automation engine handles the repetitive work for you, with AI-assisted drafting, test runs, and full execution logs.", 'items' => array() ),
+						array( 'title' => 'Real-time Collaboration', 'icon' => 'assets/products/icons/sect-six-user.png', 'text' => "Keep the conversation where the work happens: per-project channels, direct and group messages, @mentions, comments with reactions, voice and video calls, and scheduled meetings — all updating live. Org-wide announcements and an activity feed keep everyone in the loop.", 'items' => array() ),
+						array( 'title' => 'Documents, Files and Forms', 'icon' => 'assets/products/icons/sect-four-data.png', 'text' => "Upload and preview files, pick from OneDrive, and build documents from templates with variable substitution. Share documents publicly with e-signature, generate forms with public submission links, and control access with per-user permissions and redeem tokens.", 'items' => array() ),
+						array( 'title' => 'Insights and Reporting', 'icon' => 'assets/products/icons/sect-five-business.png', 'text' => "Get org-wide visibility across clients, projects, sectors, and folders. Build reports with user-defined formula columns, export to CSV, Excel, or PDF, or simply describe what you need and let \"Create report with AI\" build it for you.", 'items' => array() ),
+						array( 'title' => 'IQAi — your built-in AI assistant', 'icon' => 'assets/products/icons/sect-eight-support.png', 'text' => "A tenant-configurable AI assistant that drafts tasks, automations, and announcements, rewrites and summarizes content, explains your metrics, and answers questions in a dedicated assistant workspace — with connect-anywhere MCP integration for tools like Claude.", 'items' => array() ),
+						array( 'title' => 'Enterprise Security and Administration', 'icon' => 'assets/products/icons/sect-four-compliance.png', 'text' => "Multi-tenant architecture with row-level isolation, multi-org membership, and single sign-on via Microsoft Entra. An additive, fine-grained permission model across tenant, workspace, and project levels gives you precise control over who can see and do what.", 'items' => array() ),
+						array( 'title' => 'Integrations and Platform', 'icon' => 'assets/products/icons/sect-six-integrates.png', 'text' => "Connect GitHub, Microsoft Teams, and OneDrive, plus flexible per-project integrations. Brand the platform to your organization, install it as a PWA, and work from anywhere with a fully mobile-responsive experience.", 'items' => array() ),
+					),
+				),
+			),
+		),
+		'tech' => array(
+			'overview_title'  => 'Product Overview',
+			'overview'        => array(
+				'IQ Tech Institute by DynamIQ is a complete, interactive Learning Management System that turns training into an engaging, hands-on experience. Build interactive courses from video, documents, quizzes, and live sessions, then deliver them to learners on any device with progress tracked automatically every step of the way.',
+				'Whether you’re onboarding new employees, running a training academy, or teaching a full curriculum, it adapts to how you teach. Organize content into interactive learning paths, set prerequisites and completion rules, automate enrollments, and issue certificates the moment a learner earns them. Instructors get the tools to create, engage, and assess; administrators get the visibility to see exactly who’s learning, who’s stuck, and what’s working.',
+				'With built-in assessments, real-time analytics, and AI-assisted course building, it doesn’t just host your training—it makes learning interactive and helps you prove its impact. Secure, multi-tenant, and ready for teams of any size, it’s the interactive learning platform built for measurable outcomes.',
+			),
+			'sections'        => array(
+				array( 'type' => 'overview' ),
+				array(
+					'type'    => 'generic',
+					'title'   => 'The Smarter Way to Manage Learning',
+					'image'   => 'none',
+					'columns' => 3,
+					'intro'   => array( 'Discover the features and core modules that make IQ Tech Institute a complete Learning Management System for creating, delivering, and managing training—all from one easy-to-use platform.' ),
+					'items'   => array(
+						array( 'title' => 'Full IQ LTI Suite', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "Courses, Modules, Lessons, Quizzes, Assignments, Attendance, Announcements, Surveys, and Learner Progress Tracking – all under one tenant.", 'items' => array() ),
+						array( 'title' => 'B2B Course Marketplace', 'icon' => 'assets/products/icons/sect-five-sales.png', 'text' => "Partner tenants list courses for sales; client tenants purchase and clone into a direct-pay settlement with proof upload.", 'items' => array() ),
+						array( 'title' => 'AI-Powered Authoring', 'icon' => 'assets/products/icons/sect-five-business.png', 'text' => "Generate entire courses, quizzes, and illustrated PDFs on demand via OpenAI or Gemini’s media stored on Bunny.net CDN global delivery.", 'items' => array() ),
+					),
+				),
+				array(
+					'type'       => 'generic',
+					'title'      => 'IQ Tech Institute Core Modules',
+					'image'      => 'assets/products/site-media/tech-modules.png',
+					'list_style' => 'checks',
+					'list'       => array(
+						'Courses and Content', 'Assignments', 'Companies (Multi-Tenant)', 'Marketplace', 'AI Content Generation', 'Announcement and Messaging',
+						'Support/Help Center', 'Import/Export', 'Interactive Learning', 'Quizzes and Assessment', 'User, Role, and Groups', 'Subscriptions',
+						'Billing and Collection', 'Attendance and Progress', 'Ratings and Reviews', 'Reports and Logs', 'Settings and Terminology',
 					),
 				),
 			),

@@ -32,7 +32,7 @@ $showcase = $p['feature_image']; // mockup shown beside the first feature group 
  * icons rather than a bare list (item C1). Everything else keeps the card treatment the
  * review asked us to restore (item D2).
  */
-$render_items = function ( $items ) {
+$render_items = function ( $items, $columns = 0 ) {
 	$titles_only = true;
 	foreach ( $items as $g ) {
 		if ( ! empty( $g['text'] ) || ! empty( $g['items'] ) ) {
@@ -51,15 +51,35 @@ $render_items = function ( $items ) {
 		echo '</ul>';
 		return;
 	}
-	echo '<div class="feature-grid">';
+	$has_media = false;
 	foreach ( $items as $g ) {
+		if ( ! empty( $g['image'] ) ) {
+			$has_media = true;
+			break;
+		}
+	}
+	$grid_class = 'feature-grid' . ( $has_media ? ' is-media' : ( 1 === (int) $columns ? ' is-one-up' : ( 2 === (int) $columns ? ' is-two-up' : ( 3 === (int) $columns ? ' is-three-up' : '' ) ) ) );
+	echo '<div class="' . esc_attr( $grid_class ) . '">';
+	foreach ( $items as $n => $g ) {
+		if ( ! empty( $g['image'] ) ) { /* 2026 design: a photo beside the copy, alternating sides */
+			$side = ! empty( $g['media'] ) ? $g['media'] : ( $n % 2 ? 'right' : 'left' );
+			echo '<article class="feature-group is-media-card media-' . esc_attr( $side ) . '"' . dq_reveal_attr() . '>';
+			echo '<figure class="feature-media"><img src="' . esc_url( dq_asset( $g['image'] ) ) . '" alt="' . esc_attr( $g['title'] ) . '" loading="lazy" decoding="async"></figure>';
+			echo '<div class="feature-body">';
+			echo '<h3>' . esc_html( $g['title'] ) . '</h3>';
+			if ( ! empty( $g['text'] ) ) {
+				echo dq_rich_text_html( $g['text'] ); // phpcs:ignore WordPress.Security.EscapeOutput
+			}
+			echo '</div></article>';
+			continue;
+		}
 		echo '<article class="feature-group"' . dq_reveal_attr() . '>';
 		if ( ! empty( $g['icon'] ) ) { /* the live page's own card icon */
 			echo '<span class="feature-icon">' . dq_product_item_icon( $g ) . '</span>'; // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 		echo '<h3>' . esc_html( $g['title'] ) . '</h3>';
 		if ( ! empty( $g['text'] ) ) {
-			echo '<p>' . dq_inline_html( $g['text'] ) . '</p>'; // phpcs:ignore WordPress.Security.EscapeOutput
+			echo dq_rich_text_html( $g['text'] ); // paragraphs, with "- " lines as bullet lists (2026 design cards) // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 		if ( ! empty( $g['items'] ) ) {
 			echo '<ul>';
@@ -82,7 +102,7 @@ $render_items = function ( $items ) {
 				<div class="hero-copy">
 					<?php if ( $p['logo'] ) : ?><img class="hero-logo" src="<?php echo esc_url( $p['logo'] ); ?>" alt="<?php echo esc_attr( $p['name'] ); ?>"<?php dq_reveal(); ?>><?php endif; ?>
 					<h1<?php dq_reveal(); ?>><?php echo esc_html( $p['title'] ); ?></h1>
-					<p<?php dq_reveal(); ?>><?php echo dq_inline_html( $p['description'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
+					<?php foreach ( dq_paragraphs( $p['description'] ) as $para ) : ?><p<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 					<div class="hero-actions">
 						<a class="btn btn-primary" href="<?php echo esc_url( $demo_url ); ?>"><?php esc_html_e( 'INQUIRE NOW', 'dynamiqes' ); ?> <span aria-hidden="true">→</span></a><?php /* live hero: this one link only */ ?>
 					</div>
@@ -103,6 +123,10 @@ $render_items = function ( $items ) {
 	<?php $overview_done = false; foreach ( $sections as $i => $s ) :
 		/* Each section's own illustration (the live page has one per section); a product with
 		   no per-section art falls back to the single feature mockup, on the first section. */
+		if ( 'none' === $s['image'] ) { // a designed page that wants no fallback mockup here or further down
+			$s['image'] = '';
+			$showcase   = '';
+		}
 		$sec_img = ! empty( $s['image'] ) ? dq_asset( $s['image'] ) : '';
 		$sec_src = ! empty( $s['image'] ) ? $s['image'] : '';
 		if ( '' === $sec_img && 'generic' === $s['type'] && $showcase ) {
@@ -111,13 +135,18 @@ $render_items = function ( $items ) {
 			$showcase = '';
 		}
 		?>
-		<?php if ( 'overview' === $s['type'] ) : ?>
+		<?php if ( 'diagram' === $s['type'] && ! empty( $s['image'] ) ) : /* 2026 design: the IQ Link integration map above the overview */ ?>
+	<section class="showcase product-diagram">
+		<div class="wrap"><div class="showcase-frame"<?php dq_reveal( 'scale' ); ?>><img src="<?php echo esc_url( dq_asset( $s['image'] ) ); ?>" alt="<?php echo esc_attr( ! empty( $s['alt'] ) ? $s['alt'] : $p['name'] . ' overview diagram' ); ?>" loading="lazy"></div></div>
+	</section>
+		<?php elseif ( 'overview' === $s['type'] ) : ?>
 	<section class="overview"<?php echo $overview_done ? '' : ' id="overview"'; ?>>
 		<div class="wrap overview-grid">
 			<div class="overview-media"<?php dq_reveal(); ?>>
 				<?php if ( $p['overview_image'] ) : ?><img src="<?php echo esc_url( $p['overview_image'] ); ?>" alt="<?php echo esc_attr( $p['name'] . ' product overview' ); ?>" loading="lazy"><?php endif; ?>
 			</div>
 			<div class="overview-copy">
+				<span class="eyebrow overview-eyebrow"<?php dq_reveal(); ?>><?php echo esc_html( $p['name'] ); ?></span>
 				<h2<?php dq_reveal(); ?>><?php echo esc_html( $p['overview_title'] ); ?></h2>
 				<?php foreach ( $p['overview'] as $para ) : ?><p<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 				<?php if ( $p['closing'] ) : ?><p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $p['closing'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endif; ?>
@@ -129,29 +158,50 @@ $render_items = function ( $items ) {
 		<?php if ( ! empty( $s['items'] ) ) : ?><div class="wrap overview-items"><?php $render_items( $s['items'] ); ?></div><?php endif; ?>
 	</section>
 		<?php $overview_done = true; elseif ( 'generic' === $s['type'] ) : ?>
-	<section class="features portal-features<?php echo $sec_img ? ' has-showcase' : ''; ?>" id="<?php echo esc_attr( 'section-' . sanitize_title( $s['title'] ) ); ?>">
-		<div class="wrap portal-features-layout">
+	<section class="features portal-features<?php echo $sec_img ? ' has-showcase' : ''; echo '' === $s['title'] ? ' is-untitled' : ''; ?>" id="<?php echo esc_attr( 'section-' . ( '' !== $s['title'] ? sanitize_title( $s['title'] ) : $i ) ); ?>">
+		<div class="wrap portal-features-layout<?php echo ( $sec_img && 'left' === $s['media'] ) ? ' is-media-left' : ''; ?>">
 			<div class="portal-features-copy">
 				<?php /* one shared measure for the eyebrow, H2 and intro: the copy under a heading
 				   now wraps to the same width and left edge as the heading itself (review item D1). */ ?>
 				<div class="portal-features-head">
-					<h2<?php dq_reveal(); ?>><?php echo esc_html( $s['title'] ); ?></h2>
+					<?php if ( '' !== $s['title'] ) : ?><h2<?php dq_reveal(); ?>><?php echo esc_html( $s['title'] ); ?></h2><?php endif; ?>
 					<?php foreach ( $s['intro'] as $para ) : ?><p<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 				</div>
 				<?php if ( ! empty( $s['list'] ) ) : ?>
-				<ul class="feature-list"<?php dq_reveal(); ?>><?php foreach ( $s['list'] as $li ) : ?><li><?php echo dq_inline_html( $li ); // phpcs:ignore WordPress.Security.EscapeOutput ?></li><?php endforeach; ?></ul>
+				<ul class="feature-list<?php echo ( $sec_img && dq_is_photo_image( $sec_src ) ) ? ' is-plain' : ''; echo 'checks' === $s['list_style'] ? ' is-checks' : ( 'plain' === $s['list_style'] ? ' is-plain' : '' ); ?>"<?php dq_reveal(); ?>><?php foreach ( $s['list'] as $li ) : ?><li><?php echo dq_inline_html( $li ); // phpcs:ignore WordPress.Security.EscapeOutput ?></li><?php endforeach; ?></ul>
 				<?php endif; ?>
 			</div>
 			<?php if ( $sec_img ) : ?>
 			<div class="showcase-frame<?php echo dq_is_photo_image( $sec_src ) ? ' is-photo' : ''; ?>"<?php dq_reveal(); ?>><img src="<?php echo esc_url( $sec_img ); ?>" alt="<?php echo esc_attr( $s['title'] ? $s['title'] : $p['name'] . ' feature interface' ); ?>" loading="lazy"></div>
 			<?php endif; ?>
-			<?php if ( ! empty( $s['items'] ) || $s['closing'] ) : ?>
+			<?php $spec_table = function () use ( $s ) { ?>
+			<div class="spec-table-wrap"<?php dq_reveal(); ?>>
+				<table class="spec-table">
+					<?php $rows = $s['table']; $head = array_shift( $rows ); ?>
+					<thead><tr><?php foreach ( (array) $head as $cell ) : ?><th scope="col"><?php echo dq_inline_html( $cell ); // phpcs:ignore WordPress.Security.EscapeOutput ?></th><?php endforeach; ?></tr></thead>
+					<tbody>
+					<?php foreach ( $rows as $row ) : ?>
+						<tr><?php foreach ( (array) $row as $cell ) : ?><td><?php echo dq_inline_html( $cell ); // phpcs:ignore WordPress.Security.EscapeOutput ?></td><?php endforeach; ?></tr>
+					<?php endforeach; ?>
+					</tbody>
+				</table>
+			</div>
+			<?php }; ?>
+			<?php if ( ! empty( $s['table'] ) && empty( $s['table_after'] ) ) { $spec_table(); } /* 2026 design: specification tables with a dark header row */ ?>
+			<?php if ( ! empty( $s['items'] ) || $s['closing'] || ( ! empty( $s['table'] ) && ! empty( $s['table_after'] ) ) ) : ?>
 			<?php /* The cards run the full width beneath the head + illustration row rather than
 			   stacking two-up inside the copy column: eight benefit cards in a narrow column ran
 			   to two and a half screens. Reading order is unchanged. */ ?>
 			<div class="portal-features-items">
-				<?php if ( ! empty( $s['items'] ) ) { $render_items( $s['items'] ); } ?>
-				<?php foreach ( $s['closing'] as $para ) : ?><p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
+				<?php if ( ! empty( $s['items'] ) ) { $render_items( $s['items'], $s['columns'] ); } ?>
+				<?php if ( ! empty( $s['table'] ) && ! empty( $s['table_after'] ) ) { $spec_table(); } // a table that follows the cards (IQ Ecom) ?>
+				<?php foreach ( $s['closing'] as $para ) : ?>
+					<?php if ( false !== strpos( $para, "\n" ) ) : /* a closing block with its own bullet list (IQ Link pricing "What’s Included") */ ?>
+					<div class="closing closing-rich"<?php dq_reveal(); ?>><?php echo dq_rich_text_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
+					<?php else : ?>
+					<p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
+					<?php endif; ?>
+				<?php endforeach; ?>
 			</div>
 			<?php endif; ?>
 		</div>

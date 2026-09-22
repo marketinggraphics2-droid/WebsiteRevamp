@@ -9,7 +9,7 @@
                 "-NoProfile",
                 "-ExecutionPolicy", "Bypass",
                 "-Command",
-                "if ((Test-NetConnection localhost -Port 8787 -InformationLevel Quiet -WarningAction SilentlyContinue)) { Write-Host 'WordPress already running on http://localhost:8787/' } else { & '${workspaceFolder}\\run-local.ps1' }"
+                "if ((Test-NetConnection localhost -Port 8788 -InformationLevel Quiet -WarningAction SilentlyContinue)) { Write-Host 'WordPress already running on http://localhost:8788/' } else { & '${workspaceFolder}\\run-local.ps1' -Port 8788 }"
             ],
             "isBackground": true,
             "problemMatcher": {

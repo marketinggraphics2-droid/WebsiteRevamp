@@ -245,9 +245,10 @@ function dq_ensure_blogs_page() {
  * without a title tag / description the live ones. Returns how many fields were reset.
  */
 function dq_refresh_product_content() {
-	$base = dq_product_defaults( true );
-	$live = dq_product_defaults();
-	$n    = 0;
+	$base    = dq_product_defaults( true );
+	$live    = dq_product_defaults();
+	$shipped = function_exists( 'dq_product_live_content' ) ? dq_product_live_content() : array();
+	$n       = 0;
 	foreach ( get_posts( array( 'post_type' => 'dq_product', 'post_status' => 'any', 'posts_per_page' => -1 ) ) as $post ) {
 		$key = get_post_meta( $post->ID, '_dq_product_key', true );
 		if ( ! $key || ! isset( $base[ $key ] ) ) {
@@ -273,7 +274,17 @@ function dq_refresh_product_content() {
 					break;
 			}
 			$cur = get_post_meta( $post->ID, '_dq_' . $field, true );
-			if ( '' !== $cur && trim( (string) $cur ) === trim( (string) $old ) ) {
+			if ( '' === $cur ) {
+				continue;
+			}
+			$cur    = trim( (string) $cur );
+			$stale  = $cur === trim( (string) $old );                                       // the old catalogue copy
+			$stale  = $stale || $cur === trim( (string) dq_product_field_text( $live[ $key ], $field ) ); // repeats the current theme copy
+			/* Copy that ships in inc/product-content.php is the SEO source: it replaces whatever an
+			   earlier theme version seeded, unless the editor changed that field in WP Admin. */
+			$edited = (array) get_post_meta( $post->ID, '_dq_edited_fields', true );
+			$stale  = $stale || ( isset( $shipped[ $key ] ) && array_key_exists( $field, $shipped[ $key ] ) && ! in_array( $field, $edited, true ) );
+			if ( $stale ) {
 				delete_post_meta( $post->ID, '_dq_' . $field );
 				$n++;
 			}
@@ -296,6 +307,173 @@ add_action( 'init', function () {
 	update_option( 'dq_live_content_v1', time() );
 	dq_refresh_product_content();
 }, 26 );
+
+/* Every theme version: product copy that changed in inc/product-content.php reaches the pages
+   (the seeder writes copy into post meta once, and meta beats code). Runs on the first admin
+   load of a version, like the landing-page re-import; fields edited in WP Admin are kept. */
+add_action( 'init', function () {
+	if ( ! is_admin() || ! current_user_can( 'manage_options' ) || ! get_option( 'dq_seeded' ) ) {
+		return;
+	}
+	if ( get_option( 'dq_product_content_ver' ) === DQ_VERSION ) {
+		return;
+	}
+	update_option( 'dq_product_content_ver', DQ_VERSION ); // first, so a failure cannot loop
+	dq_create_missing_products();
+	dq_refresh_product_content();
+	dq_add_missing_product_menu_items();
+	dq_order_product_menu_items();
+}, 27 );
+
+/**
+ * Put the "Our Products" sub-items in the order dq_product_menu_order() names. Items are matched
+ * to products by post ID, then by URL; unmatched items keep their relative order at the end.
+ * Returns the number of items moved.
+ */
+function dq_order_product_menu_items() {
+	$locations = get_theme_mod( 'nav_menu_locations', array() );
+	$menu      = empty( $locations['primary'] ) ? null : wp_get_nav_menu_object( (int) $locations['primary'] );
+	if ( ! $menu ) {
+		$menu = wp_get_nav_menu_object( 'Primary Menu' );
+	}
+	if ( ! $menu ) {
+		return 0;
+	}
+	$items  = wp_get_nav_menu_items( $menu->term_id );
+	$parent = 0;
+	foreach ( $items as $mi ) {
+		if ( ! $mi->menu_item_parent && ( 'Our Products' === trim( $mi->title ) || untrailingslashit( $mi->url ) === untrailingslashit( dq_products_url() ) ) ) {
+			$parent = (int) $mi->ID;
+			break;
+		}
+	}
+	if ( ! $parent ) {
+		return 0;
+	}
+	$by_id  = array();
+	$by_url = array();
+	foreach ( dq_get_products() as $p ) {
+		if ( $p['id'] ) {
+			$by_id[ (int) $p['id'] ] = $p['key'];
+		}
+		$by_url[ untrailingslashit( $p['url'] ) ] = $p['key'];
+	}
+	$rank = array_flip( dq_product_menu_order() );
+	$kids = array();
+	foreach ( $items as $mi ) {
+		if ( (int) $mi->menu_item_parent !== $parent ) {
+			continue;
+		}
+		$key = isset( $by_id[ (int) $mi->object_id ] ) ? $by_id[ (int) $mi->object_id ] : ( isset( $by_url[ untrailingslashit( $mi->url ) ] ) ? $by_url[ untrailingslashit( $mi->url ) ] : '' );
+		$kids[] = array( 'item' => $mi, 'rank' => isset( $rank[ $key ] ) ? $rank[ $key ] : 1000 + (int) $mi->menu_order );
+	}
+	usort( $kids, function ( $a, $b ) { return $a['rank'] <=> $b['rank']; } );
+	$moved = 0;
+	$pos   = 1;
+	foreach ( $kids as $k ) {
+		$mi = $k['item'];
+		if ( (int) $mi->menu_order !== $pos ) {
+			wp_update_post( array( 'ID' => $mi->ID, 'menu_order' => $pos ) );
+			$moved++;
+		}
+		$pos++;
+	}
+	return $moved;
+}
+
+/**
+ * Products added to the catalogue after a site was seeded (IQ People, IQ Workplace, IQ Tech
+ * Institute, Sept 2026) get their dq_product post here — the same record the seeder would have
+ * written, so the page, the listing row, the home card and the sitemap all appear. Returns the
+ * number created.
+ */
+function dq_create_missing_products() {
+	$n = 0;
+	foreach ( dq_product_defaults() as $key => $p ) {
+		if ( dq_find_post_by_meta( 'dq_product', '_dq_product_key', $key ) ) {
+			continue;
+		}
+		$id = wp_insert_post( array(
+			'post_type'    => 'dq_product',
+			'post_status'  => 'publish',
+			'post_title'   => $p['name'],
+			'post_name'    => $p['slug'],
+			'post_excerpt' => $p['description'],
+			'post_content' => '',
+			'menu_order'   => $p['order'],
+		) );
+		if ( ! $id || is_wp_error( $id ) ) {
+			continue;
+		}
+		update_post_meta( $id, '_dq_product_key', $key );
+		if ( ! empty( $p['seo_title'] ) ) {
+			update_post_meta( $id, '_dq_seo_title', $p['seo_title'] );
+		}
+		if ( ! empty( $p['seo_description'] ) ) {
+			update_post_meta( $id, '_dq_seo_description', $p['seo_description'] );
+		}
+		/* No field meta: the record reads straight from the catalogue until an editor changes it. */
+		$n++;
+	}
+	if ( $n ) {
+		flush_rewrite_rules();
+	}
+	return $n;
+}
+
+/**
+ * Every product has an entry under "Our Products" in the saved primary menu. Products with no
+ * item yet (matched by post, then by URL) are appended after the last existing product item.
+ * Returns the number added.
+ */
+function dq_add_missing_product_menu_items() {
+	$locations = get_theme_mod( 'nav_menu_locations', array() );
+	$menu      = empty( $locations['primary'] ) ? null : wp_get_nav_menu_object( (int) $locations['primary'] );
+	if ( ! $menu ) {
+		$menu = wp_get_nav_menu_object( 'Primary Menu' );
+	}
+	if ( ! $menu ) {
+		return 0;
+	}
+	$items  = wp_get_nav_menu_items( $menu->term_id );
+	$parent = 0;
+	foreach ( $items as $mi ) {
+		if ( ! $mi->menu_item_parent && ( 'Our Products' === trim( $mi->title ) || untrailingslashit( $mi->url ) === untrailingslashit( dq_products_url() ) ) ) {
+			$parent = (int) $mi->ID;
+			break;
+		}
+	}
+	if ( ! $parent ) {
+		return 0;
+	}
+	$have_ids = array();
+	$have_url = array();
+	$last_pos = 0;
+	foreach ( $items as $mi ) {
+		if ( (int) $mi->menu_item_parent !== $parent ) {
+			continue;
+		}
+		$have_ids[] = (int) $mi->object_id;
+		$have_url[] = untrailingslashit( $mi->url );
+		$last_pos   = max( $last_pos, (int) $mi->menu_order );
+	}
+	$n = 0;
+	foreach ( dq_get_products() as $p ) {
+		if ( ( $p['id'] && in_array( (int) $p['id'], $have_ids, true ) ) || in_array( untrailingslashit( $p['url'] ), $have_url, true ) ) {
+			continue;
+		}
+		$args = array( 'menu-item-title' => $p['menu_label'], 'menu-item-status' => 'publish', 'menu-item-parent-id' => $parent, 'menu-item-position' => ++$last_pos );
+		if ( $p['id'] ) {
+			$args += array( 'menu-item-type' => 'post_type', 'menu-item-object' => 'dq_product', 'menu-item-object-id' => (int) $p['id'] );
+		} else {
+			$args += array( 'menu-item-type' => 'custom', 'menu-item-url' => $p['url'] );
+		}
+		if ( ! is_wp_error( wp_update_nav_menu_item( $menu->term_id, 0, $args ) ) ) {
+			$n++;
+		}
+	}
+	return $n;
+}
 
 /** Slugs, Blogs page, rewrite rules — the whole parity pass. Returns a report for DynamIQ Setup. */
 function dq_adopt_live_urls() {

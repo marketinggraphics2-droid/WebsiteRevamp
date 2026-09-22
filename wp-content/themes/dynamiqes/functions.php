@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DQ_VERSION', '1.3.8' );
+define( 'DQ_VERSION', '1.4.3' );
 define( 'DQ_DIR', get_template_directory() );
 define( 'DQ_URI', get_template_directory_uri() );
 
@@ -24,7 +24,9 @@ require DQ_DIR . '/inc/contact-form.php';
 require DQ_DIR . '/inc/seeder.php';
 require DQ_DIR . '/inc/landing-import.php';
 require DQ_DIR . '/inc/landing-sections.php';
+require DQ_DIR . '/inc/landing-additions.php'; // 2026 redesign: comparison / checklist / step tables on the landing pages
 require DQ_DIR . '/inc/careers.php';
 require DQ_DIR . '/inc/live-urls.php';
 require DQ_DIR . '/inc/page-content.php';
 require DQ_DIR . '/inc/testimonial-media.php';
+require DQ_DIR . '/inc/author-profile.php'; // Users → Profile fields + the author page (author.php)

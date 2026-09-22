@@ -6,7 +6,7 @@
             "type": "msedge",
             "request": "launch",
             "name": "Run DynamIQ site (Edge)",
-            "url": "http://localhost:8787/",
+            "url": "http://localhost:8788/",
             "webRoot": "${workspaceFolder}/wp-content/themes/dynamiqes",
             "preLaunchTask": "Start local WordPress"
         },
@@ -14,7 +14,7 @@
             "type": "chrome",
             "request": "launch",
             "name": "Run DynamIQ site (Chrome)",
-            "url": "http://localhost:8787/",
+            "url": "http://localhost:8788/",
             "webRoot": "${workspaceFolder}/wp-content/themes/dynamiqes",
             "preLaunchTask": "Start local WordPress"
         }

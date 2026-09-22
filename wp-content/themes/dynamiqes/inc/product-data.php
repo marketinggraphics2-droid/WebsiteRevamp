@@ -53,7 +53,7 @@ function dq_product_field_map() {
 		'features'       => array( 'features', __( 'Feature groups', 'dynamiqes' ), __( 'One group per line: Title | item; item; item  — or  Title > paragraph', 'dynamiqes' ) ),
 		'faqs'           => array( 'faqs', __( 'FAQs', 'dynamiqes' ), __( 'One per line: Question | Answer (the answer may hold <p>, <ul>, <li>).', 'dynamiqes' ) ),
 		'faq_heading'    => array( 'text', __( 'FAQ question tag', 'dynamiqes' ), __( '"h3" marks every question up as a heading (the live SAP Business One page); "p" keeps them plain text (the other live pages).', 'dynamiqes' ) ),
-		'sections'       => array( 'blocks', __( 'Page sections', 'dynamiqes' ), __( 'The page in order, mirroring dynamiqes.com. "## @overview" and "## @faq" place the overview / FAQ blocks; "## Heading" starts a section, "##cta Heading" a call-to-action band; "#> Kicker | text" adds the small heading above a CTA; "### Item | li; li" or "### Item > paragraph" adds an H3 card; "- text" a bullet; other lines are paragraphs.', 'dynamiqes' ) ),
+		'sections'       => array( 'blocks', __( 'Page sections', 'dynamiqes' ), __( 'The page in order, mirroring dynamiqes.com. "## @overview" and "## @faq" place the overview / FAQ blocks; "## Heading" starts a section, "##cta Heading" a call-to-action band; "#> Kicker | text" adds the small heading above a CTA; "### Item | li; li" or "### Item > paragraph" adds an H3 card; "- text" a bullet; "| cell | cell" a table row (the first row is the header); "#img path" the section illustration, "#img-left path" the same on the left; other lines are paragraphs.', 'dynamiqes' ) ),
 	);
 }
 
@@ -115,6 +115,8 @@ function dq_faqs_to_text( $arr ) {
  *   #> Kicker | kicker text                  small H3 + line above a CTA heading (live "Ready To Get Started?")
  *   ### Item | li; li  ·  ### Item > text    an H3 card with a list or a paragraph
  *   - text                                   bullet (section list, or the current item's list)
+ *   | cell | cell                            table row; the first row is the header (spec tables)
+ *   #img path  ·  #img-left path             the section illustration (right, or left of the copy)
  *   anything else                            paragraph (intro before the items, closing after them)
  */
 function dq_parse_sections( $text ) {
@@ -141,7 +143,7 @@ function dq_parse_sections( $text ) {
 			} elseif ( '@faq' === $title || '@faq-plain' === $title ) {
 				$cur = array( 'type' => 'faq', 'heading' => '@faq' === $title );
 			} else {
-				$cur = array( 'type' => $m[1] ? 'cta' : 'generic', 'title' => $title, 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array() );
+				$cur = array( 'type' => $m[1] ? 'cta' : 'generic', 'title' => $title, 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array(), 'table' => array(), 'image' => '', 'media' => '' );
 			}
 			continue;
 		}
@@ -152,6 +154,16 @@ function dq_parse_sections( $text ) {
 			$parts              = array_map( 'trim', explode( '|', substr( $line, 2 ), 2 ) );
 			$cur['kicker']      = $parts[0];
 			$cur['kicker_text'] = isset( $parts[1] ) ? $parts[1] : '';
+			continue;
+		}
+		if ( preg_match( '/^#img(-left)?\s+(.+)$/', $line, $im ) ) {
+			$cur['image'] = trim( $im[2] );
+			$cur['media'] = $im[1] ? 'left' : '';
+			continue;
+		}
+		if ( 0 === strpos( $line, '|' ) ) {
+			$cells          = array_map( 'trim', explode( '|', trim( $line, '| ' ) ) );
+			$cur['table'][] = $cells;
 			continue;
 		}
 		if ( 0 === strpos( $line, '- ' ) ) {
@@ -193,8 +205,14 @@ function dq_sections_to_text( $arr ) {
 		foreach ( (array) ( isset( $s['intro'] ) ? $s['intro'] : array() ) as $p ) {
 			$lines[] = $p;
 		}
+		if ( ! empty( $s['image'] ) ) {
+			$lines[] = ( ! empty( $s['media'] ) && 'left' === $s['media'] ? '#img-left ' : '#img ' ) . $s['image'];
+		}
 		foreach ( (array) ( isset( $s['list'] ) ? $s['list'] : array() ) as $l ) {
 			$lines[] = '- ' . $l;
+		}
+		foreach ( (array) ( isset( $s['table'] ) ? $s['table'] : array() ) as $row ) {
+			$lines[] = '| ' . implode( ' | ', (array) $row );
 		}
 		foreach ( (array) ( isset( $s['items'] ) ? $s['items'] : array() ) as $g ) {
 			$lines[] = '### ' . $g['title'] . ( ! empty( $g['text'] ) ? ' > ' . $g['text'] : '' ) . ( ! empty( $g['items'] ) ? ' | ' . implode( '; ', $g['items'] ) : '' );
@@ -231,11 +249,14 @@ function dq_product_sections( $p ) {
 	}
 	$out = array();
 	foreach ( $list as $s ) {
-		$s = wp_parse_args( $s, array( 'type' => 'generic', 'title' => '', 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array(), 'heading' => true, 'image' => '' ) );
+		$s = wp_parse_args( $s, array( 'type' => 'generic', 'title' => '', 'kicker' => '', 'kicker_text' => '', 'intro' => array(), 'list' => array(), 'items' => array(), 'closing' => array(), 'heading' => true, 'image' => '', 'media' => '', 'table' => array(), 'table_after' => false, 'columns' => 0, 'list_style' => '' ) );
 		if ( 'faq' === $s['type'] && empty( $p['faqs'] ) ) {
 			continue;
 		}
 		if ( 'overview' === $s['type'] && empty( $p['overview'] ) && empty( $s['items'] ) ) {
+			continue;
+		}
+		if ( 'diagram' === $s['type'] && empty( $s['image'] ) ) {
 			continue;
 		}
 		$out[] = $s;
@@ -244,6 +265,87 @@ function dq_product_sections( $p ) {
 }
 
 /** Copy with only inline formatting kept (links, emphasis) — the live paragraphs carry internal links. */
+/**
+ * Order of the "Our Products" dropdown (catalogue keys), as requested by DynamIQ, Sept 2026.
+ * Products missing from this list follow in catalogue order. Applied to the saved menu once per
+ * theme version by dq_order_product_menu_items() (inc/live-urls.php).
+ */
+function dq_product_menu_order() {
+	return apply_filters( 'dq_product_menu_order', array( 'sap', 'ai', 'people', 'ecom', 'portal', 'tax', 'workplace', 'desk', 'barcode', 'link', 'tech', 'rem' ) );
+}
+
+/** A product field from the code catalogue, serialised the way the meta box stores it. */
+function dq_product_field_text( array $product, $field ) {
+	$map = dq_product_field_map();
+	if ( ! isset( $map[ $field ] ) || ! array_key_exists( $field, $product ) ) {
+		return '';
+	}
+	$v = $product[ $field ];
+	switch ( $map[ $field ][0] ) {
+		case 'lines':
+			return dq_lines_to_text( $v );
+		case 'features':
+			return dq_features_to_text( $v );
+		case 'faqs':
+			return dq_faqs_to_text( $v );
+		case 'blocks':
+			return dq_sections_to_text( $v );
+	}
+	return (string) $v;
+}
+
+/**
+ * Card / section copy as HTML: blank lines separate paragraphs, and lines starting with "- "
+ * inside a block become a bullet list (the 2026 design's cards mix both).
+ */
+function dq_rich_text_html( $text ) {
+	$html = '';
+	foreach ( dq_paragraphs( $text ) as $block ) {
+		$lines = preg_split( '/\r\n|\r|\n/', $block );
+		$para  = array();
+		$items = array();
+		$flush = function () use ( &$html, &$para, &$items ) {
+			if ( $para ) {
+				$html .= '<p>' . dq_inline_html( implode( '<br>', $para ) ) . '</p>';
+				$para  = array();
+			}
+			if ( $items ) {
+				$html .= '<ul>';
+				foreach ( $items as $it ) {
+					$html .= '<li>' . dq_inline_html( $it ) . '</li>';
+				}
+				$html .= '</ul>';
+				$items = array();
+			}
+		};
+		foreach ( $lines as $line ) {
+			$line = trim( $line );
+			if ( '' === $line ) {
+				continue;
+			}
+			if ( 0 === strpos( $line, '- ' ) ) {
+				if ( $para ) {
+					$html .= '<p>' . dq_inline_html( implode( '<br>', $para ) ) . '</p>';
+					$para  = array();
+				}
+				$items[] = substr( $line, 2 );
+			} else {
+				if ( $items ) {
+					$flush();
+				}
+				$para[] = $line;
+			}
+		}
+		$flush();
+	}
+	return $html;
+}
+
+/** Split copy on blank lines into paragraphs (a single paragraph comes back as a one-item array). */
+function dq_paragraphs( $text ) {
+	$parts = preg_split( '/(\r\n|\r|\n)\s*(\r\n|\r|\n)/', (string) $text );
+	return array_values( array_filter( array_map( 'trim', (array) $parts ), 'strlen' ) );
+}
 function dq_inline_html( $text ) {
 	return wp_kses( (string) $text, array(
 		'a'      => array( 'href' => true, 'target' => true, 'rel' => true, 'title' => true ),
@@ -623,6 +725,89 @@ function dq_product_defaults( $raw = false ) {
 				array( 'Does IQ Ecom support multiple warehouses?', 'It supports customer-specific pricing and multi-warehouse management for efficient operations.' ),
 			),
 		),
+		/* ---- Revamp Dynamiq (Sept 2026): three new IQ Suite products. Slugs are provisional
+		   until the SEO team's URL list arrives; images are cropped from the design exports. ---- */
+		'people' => array(
+			'slug'           => 'iq-people',
+			'name'           => 'IQ People',
+			'menu_label'     => 'IQ People',
+			'title'          => 'IQ People: The complete HR and payroll platform, built for the Philippines',
+			'description'    => 'IQ People is an all-in-one Human Resource Information System that streamlines HR operations, payroll, timekeeping, employee engagement, talent management, and Philippine statutory compliance. Designed with intelligent automation, AI-powered capabilities, and mobile accessibility, it helps organizations build a more productive, connected, and future-ready workforce.',
+			'logo'           => 'assets/products/iq-people.svg',
+			'logo_light'     => 'assets/products/iq-people-wht.svg',
+			'background'     => 'assets/products/photos/portal.jpg',
+			'hero'           => 'assets/products/main/people.png',
+			'overview_image' => 'assets/products/site-media/people-overview.png',
+			'feature_image'  => '',
+			'card_art'       => 'assets/products/official/people.png',
+			'card_photo'     => 'assets/products/photos/portal.jpg',
+			'card_tagline'   => 'Your people, one platform',
+			'card_title'     => 'HR & Payroll',
+			'card_desc'      => 'HR, payroll, timekeeping and Philippine statutory compliance in one system, with an employee self-service app.',
+			'strip_desc'     => 'HR, payroll and compliance in one platform.',
+			'listing'        => array(
+				'IQ People is an all-in-one Human Resource Information System that streamlines HR operations, payroll, timekeeping, employee engagement, talent management, and Philippine statutory compliance. Designed with intelligent automation, AI-powered capabilities, and mobile accessibility, it helps organizations build a more productive, connected, and future-ready workforce.',
+			),
+			'overview'       => array(),
+			'closing'        => '',
+			'features_intro' => '',
+			'features'       => array(),
+			'faqs'           => array(),
+		),
+		'workplace' => array(
+			'slug'           => 'iq-workplace',
+			'name'           => 'IQ Workplace',
+			'menu_label'     => 'IQ Workplace',
+			'title'          => 'IQ Workplace — Where work, communication, and AI finally live in one place',
+			'description'    => 'From projects and tasks to chat, approvals, documents, and AI-assisted insight — IQ Workplace replaces the tangle of disconnected tools with a single, secure platform built for how modern teams actually work.',
+			'logo'           => 'assets/products/iq-workplace.svg',
+			'logo_light'     => 'assets/products/iq-workplace-wht.svg',
+			'background'     => 'assets/products/photos/desk.jpg',
+			'hero'           => 'assets/products/main/workplace.png',
+			'overview_image' => 'assets/products/site-media/workplace-overview.png',
+			'feature_image'  => '',
+			'card_art'       => 'assets/products/official/workplace.png',
+			'card_photo'     => 'assets/products/photos/desk.jpg',
+			'card_tagline'   => 'Work, chat and AI in one place',
+			'card_title'     => 'Work Management',
+			'card_desc'      => 'Projects, tasks, chat, approvals and documents on one secure platform, with IQ Ai built in.',
+			'strip_desc'     => 'Projects, tasks and collaboration in one platform.',
+			'listing'        => array(
+				'IQ Workplace is a centralized digital workspace that helps teams manage projects, tasks, and collaboration in one platform. Improve visibility, streamline workflows, and keep work organized across your organization.',
+			),
+			'overview'       => array(),
+			'closing'        => '',
+			'features_intro' => '',
+			'features'       => array(),
+			'faqs'           => array(),
+		),
+		'tech' => array(
+			'slug'           => 'iq-tech-institute',
+			'name'           => 'IQ Tech Institute',
+			'menu_label'     => 'IQ Tech Institute',
+			'title'          => 'IQ Tech Institute: AI-Powered Learning Management System',
+			'description'    => 'IQ Tech Institute is DynamIQ’s all-in-one Learning Management System (LMS) that helps you create, manage, and deliver training with ease. From course creation to learner management and billing, everything you need is in one place.',
+			'logo'           => 'assets/products/iq-tech.svg',
+			'logo_light'     => 'assets/products/iq-tech-wht.svg',
+			'background'     => 'assets/products/photos/all.jpg',
+			'hero'           => 'assets/products/main/tech.png',
+			'overview_image' => 'assets/products/site-media/tech-overview.png',
+			'feature_image'  => '',
+			'card_art'       => 'assets/products/official/tech.png',
+			'card_photo'     => 'assets/products/photos/all.jpg',
+			'card_tagline'   => 'Train your team, prove the impact',
+			'card_title'     => 'Learning Management',
+			'card_desc'      => 'Create, deliver and track training with quizzes, certificates, analytics and AI-assisted course building.',
+			'strip_desc'     => 'AI-powered learning management system.',
+			'listing'        => array(
+				'IQ Tech Institute provides SAP Business One training programs that help users develop practical ERP skills and improve system utilization. Equip your team with the knowledge needed to support more efficient day-to-day business operations.',
+			),
+			'overview'       => array(),
+			'closing'        => '',
+			'features_intro' => '',
+			'features'       => array(),
+			'faqs'           => array(),
+		),
 	);
 	$i = 0;
 	foreach ( $data as $k => &$p ) {
@@ -745,6 +930,16 @@ function dq_get_products() {
 			$out[] = $prod;
 		}
 	}
+	/* One order everywhere — nav dropdown, home strip and cards, /products/ listing:
+	   dq_product_menu_order() (DynamIQ, Sept 2026). Unlisted products keep menu_order after it. */
+	$rank = array_flip( dq_product_menu_order() );
+	$i    = 0;
+	foreach ( $out as &$prod ) {
+		$prod['_sort'] = isset( $rank[ $prod['key'] ] ) ? $rank[ $prod['key'] ] : 1000 + $i;
+		$i++;
+	}
+	unset( $prod );
+	usort( $out, function ( $a, $b ) { return $a['_sort'] <=> $b['_sort']; } );
 	if ( empty( $out ) ) {
 		foreach ( dq_product_defaults() as $key => $p ) {
 			$p['id']  = 0;
