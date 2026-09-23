@@ -4008,3 +4008,8 @@ h4.post-share-label{margin:0}
 
 /* home strip entries for products without a wordmark */
 .banner-strip-track .strip-text{font-weight:900;font-size:clamp(.9rem,1.6vh,1.1rem);letter-spacing:-.01em;color:#fff;white-space:nowrap}
+
+/* byline: author name on every post (link once the author has a profile) */
+.post-hero .post-author{font-weight:600;color:rgba(var(--rgb-white),.9)}
+.post-hero a.post-author{text-decoration:underline;text-decoration-color:rgba(var(--rgb-brand),.7);text-underline-offset:3px}
+.post-hero a.post-author:hover{color:var(--orange)}
