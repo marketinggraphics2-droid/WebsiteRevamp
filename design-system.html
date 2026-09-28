@@ -1176,7 +1176,7 @@ comp({ id:'hero', group:'home', title:'Home hero (banner video)', used:['Home'],
           <div class="banner-strip-track">
             <a href="#" data-name="IQ Portal" data-desc="Approvals and reports anywhere."><img src="${A('products/iq-portal-wht.svg')}" alt="IQ Portal"></a>
             <a href="#" data-name="IQ Tax" data-desc="BIR-compliant tax filing."><img src="${A('products/iq-tax-wht.svg')}" alt="IQ Tax"></a>
-            <a href="#" data-name="IQ Desk" data-desc="Helpdesk and ticketing."><img src="${A('products/iq-desk-wht.png')}" alt="IQ Desk"></a>
+            <a href="#" data-name="IQ Desk" data-desc="Helpdesk and ticketing."><img src="${A('products/iq-desk-wht.svg')}" alt="IQ Desk"></a>
             <a href="#" data-name="IQ Link" data-desc="Integrations for SAP B1."><img src="${A('products/iq-link-wht.svg')}" alt="IQ Link"></a>
             <a href="#" data-name="IQ Barcode" data-desc="Warehouse scanning."><img src="${A('products/iq-barcode-wht.svg')}" alt="IQ Barcode"></a>
             <a href="#" data-name="IQ eCom" data-desc="Online store sync."><img src="${A('products/iq-ecom-wht.svg')}" alt="IQ eCom"></a>
@@ -1185,7 +1185,7 @@ comp({ id:'hero', group:'home', title:'Home hero (banner video)', used:['Home'],
             <!-- duplicate the set once more for the seamless loop -->
             <a href="#" aria-hidden="true" tabindex="-1"><img src="${A('products/iq-portal-wht.svg')}" alt=""></a>
             <a href="#" aria-hidden="true" tabindex="-1"><img src="${A('products/iq-tax-wht.svg')}" alt=""></a>
-            <a href="#" aria-hidden="true" tabindex="-1"><img src="${A('products/iq-desk-wht.png')}" alt=""></a>
+            <a href="#" aria-hidden="true" tabindex="-1"><img src="${A('products/iq-desk-wht.svg')}" alt=""></a>
             <a href="#" aria-hidden="true" tabindex="-1"><img src="${A('products/iq-link-wht.svg')}" alt=""></a>
             <a href="#" aria-hidden="true" tabindex="-1"><img src="${A('products/iq-barcode-wht.svg')}" alt=""></a>
             <a href="#" aria-hidden="true" tabindex="-1"><img src="${A('products/iq-ecom-wht.svg')}" alt=""></a>
@@ -1303,7 +1303,7 @@ comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:
     '<b>On hover:</b> the card flips to the light gradient surface, black logo, the monitor artwork slides in on the right, and the tagline cross-fades to title + description + orange arrow chip. The footer is absolutely positioned so hovering never shifts the grid.',
     'The flagship stays in its photo state with a 4-stop night scrim and white copy; its arrow is always visible.'
   ],
-  resp:['≤1200px: two columns; the flagship spans both columns in one row (320px min).', '≤560px: one column, natural row height.', 'Touch (<code>hover:none</code>): arrow chip always visible, footer flows in the card, description shown in white over the photo and the title row is hidden.'],
+  resp:['≤1200px: two columns; the flagship spans both columns in one row (320px min).', '≤560px: one column, natural row height.', 'Touch (<code>hover:none</code>): arrow chip always visible top-right, footer flows in the card, description shown in white over the photo and the title row is hidden.'],
   html:`<section class="iq" id="products">
   <div class="wrap">
     <div class="sec-head" data-reveal><h2>Our Products</h2></div>
@@ -1311,9 +1311,10 @@ comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:
       <a class="iq-card all feature" href="#" data-reveal>
         <span class="iq-art no-lazyload skip-lazy" style="background-image:url('${A('products/photos/all.jpg')}')"></span>
         <span class="iq-logo sap-card-logo"><img class="lg-d no-lazyload skip-lazy" src="${A('brand/sap-business-one-grad-blk.png')}" alt="SAP Business One"><img class="lg-l no-lazyload skip-lazy" src="${A('brand/sap-business-one-grad-blk.png')}" alt="" aria-hidden="true"></span>
+        <span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span>
         <div class="iq-foot"><div class="iq-copy">
           <span class="iq-tagline">The ERP built for growing Philippine businesses.</span>
-          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">SAP Business One</span><span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span></span>
+          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">SAP Business One</span></span>
           <p class="iq-desc">One system for finance, sales, purchasing, inventory and reporting — implemented and supported by an SAP Premier Partner.</p></div>
         </div></div>
       </a>
@@ -1321,9 +1322,10 @@ comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:
         <span class="iq-art no-lazyload skip-lazy" style="background-image:url('${A('products/main/portal.png')}')"></span>
         <span class="iq-hover-art no-lazyload skip-lazy" style="background-image:url('${A('products/photos/portal.jpg')}')"></span>
         <span class="iq-logo"><img class="lg-d no-lazyload skip-lazy" src="${A('products/iq-portal.svg')}" alt="IQ Portal"><img class="lg-l no-lazyload skip-lazy" src="${A('products/iq-portal-wht.svg')}" alt="" aria-hidden="true"></span>
+        <span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span>
         <div class="iq-foot"><div class="iq-copy">
           <span class="iq-tagline">Approvals and reports, anywhere.</span>
-          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">IQ Portal</span><span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span></span>
+          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">IQ Portal</span></span>
           <p class="iq-desc">A web portal for SAP Business One so managers approve, review and report without a full client.</p></div>
         </div></div>
       </a>
@@ -1331,19 +1333,21 @@ comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:
         <span class="iq-art no-lazyload skip-lazy" style="background-image:url('${A('products/main/tax.png')}')"></span>
         <span class="iq-hover-art no-lazyload skip-lazy" style="background-image:url('${A('products/photos/tax.jpg')}')"></span>
         <span class="iq-logo"><img class="lg-d no-lazyload skip-lazy" src="${A('products/iq-tax.svg')}" alt="IQ Tax"><img class="lg-l no-lazyload skip-lazy" src="${A('products/iq-tax-wht.svg')}" alt="" aria-hidden="true"></span>
+        <span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span>
         <div class="iq-foot"><div class="iq-copy">
           <span class="iq-tagline">BIR-ready tax filing from SAP.</span>
-          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">IQ Tax</span><span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span></span>
+          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">IQ Tax</span></span>
           <p class="iq-desc">Generates BIR forms and CAS-compliant books directly from your SAP Business One data.</p></div>
         </div></div>
       </a>
       <a class="iq-card" href="#" data-reveal style="--d:140ms">
         <span class="iq-art no-lazyload skip-lazy" style="background-image:url('${A('products/main/desk.png')}')"></span>
         <span class="iq-hover-art no-lazyload skip-lazy" style="background-image:url('${A('products/photos/desk.jpg')}')"></span>
-        <span class="iq-logo"><img class="lg-d no-lazyload skip-lazy" src="${A('products/iq-desk.png')}" alt="IQ Desk"><img class="lg-l no-lazyload skip-lazy" src="${A('products/iq-desk-wht.png')}" alt="" aria-hidden="true"></span>
+        <span class="iq-logo"><img class="lg-d no-lazyload skip-lazy" src="${A('products/iq-desk.svg')}" alt="IQ Desk"><img class="lg-l no-lazyload skip-lazy" src="${A('products/iq-desk-wht.svg')}" alt="" aria-hidden="true"></span>
+        <span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span>
         <div class="iq-foot"><div class="iq-copy">
           <span class="iq-tagline">Support tickets your team can track.</span>
-          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">IQ Desk</span><span class="iq-go"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6l6 6-6 6"/></svg></span></span>
+          <div class="iq-detail"><span class="iq-title-row"><span class="iq-title">IQ Desk</span></span>
           <p class="iq-desc">Helpdesk and ticketing connected to your SAP master data.</p></div>
         </div></div>
       </a>
@@ -1355,13 +1359,13 @@ comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:
 .iq-grid{ display:grid; grid-template-columns:repeat(3,1fr); grid-auto-rows:minmax(clamp(200px,18.5vw,248px),auto); gap:14px; }
 .iq-card{ position:relative; isolation:isolate; overflow:hidden; min-height:0; border-radius:14px; border:1px solid var(--line); background:var(--card-grad);
   --iq-pad-x:26px; --iq-pad-b:24px; --iq-text-shadow:0 1px 2px rgba(var(--rgb-night),.7),0 2px 14px rgba(var(--rgb-night),.5);
-  padding:21px var(--iq-pad-x) var(--iq-pad-b); display:flex; flex-direction:column; justify-content:flex-start; transition:transform .55s cubic-bezier(.16,1,.3,1),border-color .45s,box-shadow .55s; }
+  --iq-pad-t:21px; --iq-logo-h:clamp(25px,2.5vw,31px);
+  padding:var(--iq-pad-t) var(--iq-pad-x) var(--iq-pad-b); display:flex; flex-direction:column; justify-content:flex-start; transition:transform .55s cubic-bezier(.16,1,.3,1),border-color .45s,box-shadow .55s; }
 .iq-card:hover{ transform:translateY(-6px); border-color:rgba(var(--rgb-brand),.55); box-shadow:0 34px 66px -26px rgba(var(--rgb-ink),.32); }
 /* flagship 2×2 */
-.iq-card.feature{ grid-column:span 2; grid-row:span 2; --iq-pad-x:32px; --iq-pad-b:28px; padding-top:28px; }
+.iq-card.feature{ grid-column:span 2; grid-row:span 2; --iq-pad-x:32px; --iq-pad-b:28px; --iq-pad-t:28px; --iq-logo-h:clamp(30px,3vw,42px); }
 .iq-card.feature .iq-art{ inset:0; z-index:0; opacity:1; transform:none; background-size:cover; background-position:center; background-repeat:no-repeat; filter:none; }
 .iq-card.feature::after{ content:""; position:absolute; inset:0; z-index:1; pointer-events:none; background:linear-gradient(180deg,rgba(var(--rgb-night),.5) 0%,rgba(var(--rgb-night),.32) 32%,rgba(var(--rgb-night),.6) 66%,rgba(var(--rgb-night),.9) 100%); }
-.iq-card.feature .iq-logo{ height:clamp(30px,3vw,42px); }
 .iq-card.feature .iq-logo .lg-d{ opacity:0; }
 .iq-card.feature .iq-logo .lg-l{ opacity:1; }
 .iq-card.feature .iq-title{ color:var(--color-white); font-size:var(--fs-card); }
@@ -1379,7 +1383,7 @@ comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:
 .iq-card:not(.all):hover .iq-art{ opacity:1; transform:none; }
 .iq-card:not(.all):hover .iq-hover-art{ opacity:0; transform:scale(1.06); }
 /* logo lockup: white at rest, black on hover */
-.iq-logo{ position:relative; z-index:3; height:clamp(25px,2.5vw,31px); }
+.iq-logo{ position:relative; z-index:3; height:var(--iq-logo-h); }
 .iq-logo img{ height:100%; width:auto; max-width:82%; object-fit:contain; object-position:left center; transition:opacity .45s ease; }
 .iq-logo .lg-l{ position:absolute; left:0; top:0; opacity:0; }
 .sap-card-logo .lg-l{ filter:none; }
@@ -1400,7 +1404,8 @@ comp({ id:'iqcards', group:'home', title:'Our Products — product cards', used:
 .iq-title-row{ display:block; }
 .iq-title{ display:inline; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-body); line-height:var(--lh-heading); letter-spacing:-.01em; color:var(--text); }
 .iq-desc{ min-height:0; overflow:hidden; font-size:var(--fs-sm); line-height:1.45; color:var(--soft); display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:5; }
-.iq-go{ width:34px; height:34px; margin:-7px 0 -7px 10px; vertical-align:middle; border-radius:50%; border:1px solid var(--line); display:inline-grid; place-items:center; flex:0 0 auto; color:var(--soft); opacity:0; transform:translateX(-6px); transition:opacity .4s,transform .4s cubic-bezier(.16,1,.3,1),background .3s,color .3s,border-color .3s; }
+/* arrow chip pinned top-right, centred on the logo row — one spot on every card */
+.iq-go{ position:absolute; z-index:4; top:calc(var(--iq-pad-t) + var(--iq-logo-h) / 2 - 17px); right:var(--iq-pad-x); width:34px; height:34px; border-radius:50%; border:1px solid var(--line); display:grid; place-items:center; color:var(--soft); opacity:0; transform:translateX(6px); transition:opacity .4s,transform .4s cubic-bezier(.16,1,.3,1),background .3s,color .3s,border-color .3s; }
 .iq-card:hover .iq-go{ opacity:1; transform:none; background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
 .iq-go svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
 /* responsive */
@@ -1544,24 +1549,27 @@ comp({ id:'gallery', group:'home', title:'Life at DynamIQ — photo marquee', us
   notes:[
     'Centred eyebrow + one-line H2 (“Less friction, more flow.”) above an edge-to-edge strip of portrait campaign posters.',
     'Tiles share a height (300–480px) and take their natural width so baked-in headlines are never cropped; 16px radius, hairline, soft shadow; the image zooms 4% on hover.',
-    'Same −50% marquee mechanic as the trust logos (46s), pausing on hover. The video wall above the footer reuses this exact treatment with 16:9 video tiles.'
+    'Same −50% marquee mechanic as the trust logos (46s), pausing on hover. The video wall above the footer reuses this exact treatment with 16:9 video tiles.',
+    'Controls (main.js 9b): the strip can be dragged with the mouse (grab / grabbing cursor) or swiped on touch, with a fling that decays; auto-scroll resumes ~2s after a release. Round hairline prev / next arrows sit centred under the strip (44px, orange on hover) and step one poster for keyboard users; they are hidden until the script takes over, so nothing dead ships without JS.'
   ],
-  resp:['Reduced motion: static wrapped grid, the duplicate set (<code>aria-hidden</code>) is hidden.'],
+  resp:['Reduced motion: static wrapped grid, the duplicate set (<code>aria-hidden</code>) is hidden, no drag engine and no arrows.', 'Touch: <code>touch-action:pan-y</code> keeps vertical page scrolling native over the strip; only horizontal moves are taken as a swipe.'],
   html:`<section class="gallery" aria-labelledby="gallery-hook">
   <div class="wrap"><div class="sec-head center gallery-head" data-reveal><span class="eyebrow">Life at DynamIQ</span><h2 id="gallery-hook">Less friction, more flow.</h2></div></div>
   <div class="gallery-marq" data-reveal="fade">
     <div class="gallery-track">
       <figure class="gallery-item"><img src="${A('gallery/less-friction-more-flow.jpg')}" alt="Less friction, more flow"></figure>
-      <figure class="gallery-item"><img src="${A('gallery/work-should-feel-like-this.jpg')}" alt="Work should feel like this"></figure>
-      <figure class="gallery-item"><img src="${A('gallery/your-business-is-growing.jpg')}" alt="Your business is growing"></figure>
-      <figure class="gallery-item"><img src="${A('gallery/drowning-in-manual-work.jpg')}" alt="Drowning in manual work?"></figure>
-      <figure class="gallery-item"><img src="${A('gallery/big-business-problems.jpg')}" alt="Big business problems"></figure>
+      <figure class="gallery-item"><img src="${A('gallery/work-shouldnt-follow-you-to-bed.jpg')}" alt="Work shouldn’t follow you to bed"></figure>
+      <figure class="gallery-item"><img src="${A('gallery/dashboard-answers-or-questions.jpg')}" alt="Does your dashboard give you answers or just more questions?"></figure>
+      <figure class="gallery-item"><img src="${A('gallery/never-meant-to-do-everything-manually.jpg')}" alt="You were never meant to do everything manually"></figure>
       <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/less-friction-more-flow.jpg')}" alt=""></figure>
-      <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/work-should-feel-like-this.jpg')}" alt=""></figure>
-      <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/your-business-is-growing.jpg')}" alt=""></figure>
-      <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/drowning-in-manual-work.jpg')}" alt=""></figure>
-      <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/big-business-problems.jpg')}" alt=""></figure>
+      <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/work-shouldnt-follow-you-to-bed.jpg')}" alt=""></figure>
+      <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/dashboard-answers-or-questions.jpg')}" alt=""></figure>
+      <figure class="gallery-item" aria-hidden="true"><img src="${A('gallery/never-meant-to-do-everything-manually.jpg')}" alt=""></figure>
     </div>
+  </div>
+  <div class="gallery-nav">
+    <button type="button" class="gallery-btn" data-dir="-1" aria-label="Previous poster"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+    <button type="button" class="gallery-btn" data-dir="1" aria-label="Next poster"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
   </div>
 </section>`,
   css:`/* ═══ GALLERY · photo marquee ═══ */
@@ -1578,6 +1586,19 @@ comp({ id:'gallery', group:'home', title:'Life at DynamIQ — photo marquee', us
 .gallery-item{ --gh:clamp(300px,34vw,480px); margin:0; flex:0 0 auto; height:var(--gh); width:auto; overflow:hidden; border-radius:16px; border:1px solid var(--line); background:var(--color-night); box-shadow:0 22px 44px -28px rgba(var(--rgb-ink),.35); }
 .gallery-item img{ display:block; width:auto; height:100%; object-fit:contain; transition:transform .6s cubic-bezier(.16,1,.3,1); }
 .gallery-item:hover img{ transform:scale(1.04); }
+/* controls · drag / swipe (main.js 9b) + prev / next arrows */
+.gallery-marq.is-js{ cursor:grab; touch-action:pan-y; -webkit-user-select:none; user-select:none; }
+.gallery-marq.is-js.is-dragging{ cursor:grabbing; }
+.gallery-marq.is-js .gallery-track{ animation:none; }
+.gallery-marq.is-js .gallery-item img{ -webkit-user-drag:none; pointer-events:none; }
+.gallery-marq.is-dragging .gallery-item img{ transform:none; }
+.gallery-nav{ display:flex; justify-content:center; gap:12px; margin-top:clamp(18px,2.4vw,28px); }
+.gallery-nav[hidden]{ display:none; }
+.gallery-btn{ width:44px; height:44px; border-radius:50%; border:1.5px solid var(--line); background:var(--ghost-bg); color:var(--text); display:grid; place-items:center; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent; transition:border-color .25s, color .25s, transform .25s, box-shadow .25s; }
+.gallery-btn svg{ width:18px; height:18px; }
+.gallery-btn:hover{ border-color:var(--brand); color:var(--brand); transform:translateY(-2px); box-shadow:0 10px 24px -14px rgba(var(--rgb-brand),.6); }
+.gallery-btn:active{ transform:translateY(0); }
+.gallery-btn:focus-visible{ outline:2px solid var(--brand); outline-offset:3px; }
 @media (prefers-reduced-motion:reduce){ .gallery-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; } .gallery-item[aria-hidden]{ display:none; } .gallery-marq::before,.gallery-marq::after{ display:none; } }
 
 /* ═══ VIDEO WALL · same treatment with 16:9 clips (home, above the footer) ═══ */
@@ -1919,7 +1940,7 @@ comp({ id:'ctaband', group:'sub', title:'CTA band (dark panel)', used:['Products
       <!-- optional kicker: only the product pages render it -->
       <p class="cta-kicker">Ready when you are</p>
       <p class="cta-title">We'd like to hear from you</p>
-      <p>Tell us about your business and we will show you how SAP Business One and our ERP add-ons can streamline your operations, compliance and growth.</p>
+      <p>Tell us about your business and we will show you how SAP Business One and the IQ Suite can streamline your operations, compliance and growth.</p>
       <div class="dynamiq-cta"><a href="#">Get Your Free Business Analysis <span class="arr" aria-hidden="true">→</span></a></div>
       <p class="cta-phone"><a href="tel:+6328000000"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1L6.6 10.8z"/></svg> (02) 8000 0000</a></p>
     </div>

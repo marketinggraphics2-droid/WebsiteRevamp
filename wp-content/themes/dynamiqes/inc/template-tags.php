@@ -404,20 +404,20 @@ function dq_gallery_photos() {
 	return apply_filters( 'dq_gallery_photos', array(
 		array( 'Less friction, more flow.', 'assets/gallery/less-friction-more-flow.jpg' ),
 		array( 'If your back office feels like laundry day, we can help you automate the mess so your business runs cleaner.', 'assets/gallery/back-office-laundry-day.jpg' ),
-		array( 'Big business problems? Let us carry the heavy IT.', 'assets/gallery/big-business-problems.jpg' ),
+		array( 'Does your dashboard give you answers or just more questions?', 'assets/gallery/dashboard-answers-or-questions.jpg' ),
 		array( 'Work shouldn’t follow you to bed. Reliable systems and responsive support keep business problems from becoming after-hours problems.', 'assets/gallery/work-shouldnt-follow-you-to-bed.jpg' ),
-		array( 'Drowning in manual work? We can always help.', 'assets/gallery/drowning-in-manual-work.jpg' ),
-		array( 'Work should feel like this. We’ll take care of the IT so you can enjoy the results.', 'assets/gallery/work-should-feel-like-this.jpg' ),
-		array( 'Your business is growing, but your system is not. Evolve with SAP Business One and future-proof your business.', 'assets/gallery/your-business-is-growing.jpg' ),
+		array( 'Business should feel like progress, not a daily struggle to keep up.', 'assets/gallery/business-should-feel-like-progress.jpg' ),
+		array( 'Wherever, whenever. Your business at your fingertips.', 'assets/gallery/wherever-whenever.jpg' ),
+		array( 'Work feels better when everything just works. Smarter IT solutions for smoother days.', 'assets/gallery/work-feels-better-when-everything-works.jpg' ),
+		array( 'You were never meant to do everything manually.', 'assets/gallery/never-meant-to-do-everything-manually.jpg' ),
 	) );
 }
 
 
 /** Footer video wall: the newest video uploads in the media library, normalised to
  *  video / poster / label. Poster = the attachment's featured image if one is set
- *  (Media > edit > "Featured image" on a video). When fewer than $count clips have
- *  been uploaded, the strip is topped up with bundled placeholder clips so it is
- *  never thin; with no uploads at all it is placeholders only. */
+ *  (Media > edit > "Featured image" on a video). Product clips only: no bundled
+ *  placeholders, and with no uploads at all there is no wall. */
 function dq_video_wall_items( $count = 4 ) {
 	$out   = array();
 	$posts = get_posts( array(
@@ -428,38 +428,31 @@ function dq_video_wall_items( $count = 4 ) {
 		'orderby'        => 'date',
 		'order'          => 'DESC',
 	) );
+	/* Clips for products the site does not sell stay out of the wall (user, 2026-09-23: "remove
+	   POS, Vision, Property System"). Matched on the attachment title and file name. */
+	$skip = apply_filters( 'dq_video_wall_skip', '/(^|[^a-z])(pos|vision|property)([^a-z]|$)/i' );
 	foreach ( $posts as $a ) {
 		$url = wp_get_attachment_url( $a->ID );
 		if ( ! $url || preg_match( '/-240p\.[a-z0-9]+$/i', $url ) ) {
 			continue; // a preview rendition is not a wall item of its own
 		}
+		$title = trim( get_the_title( $a ) );
+		if ( $skip && preg_match( $skip, $title . ' ' . basename( (string) wp_parse_url( $url, PHP_URL_PATH ) ) ) ) {
+			continue;
+		}
 		if ( count( $out ) >= $count ) {
 			break;
 		}
 		$poster   = has_post_thumbnail( $a->ID ) ? get_the_post_thumbnail_url( $a->ID, 'dq-wide' ) : '';
-		$title    = trim( get_the_title( $a ) );
 		$out[]    = array(
 			'video'  => $url,
 			'poster' => $poster ? $poster : '',
-			'label'  => '' !== $title ? $title : __( 'Video', 'dynamiqes' ),
+			'label'  => dq_video_wall_label( $title ),
 		);
 	}
-	if ( count( $out ) < $count ) {
-		$fill = array(
-			array( 'video' => dq_hero_video_url(), 'poster' => dq_hero_poster_url(), 'label' => __( 'DynamIQ in motion', 'dynamiqes' ) ),
-			array( 'video' => file_exists( DQ_DIR . '/assets/video/contact-gradient.mp4' ) ? DQ_URI . '/assets/video/contact-gradient.mp4' : '', 'poster' => '', 'label' => __( 'Brand reel', 'dynamiqes' ) ),
-			array( 'video' => 'https://dynamiqes.com/wp-content/themes/dynamiqes/assets/images/homepage/dynamiqes-video-banner.mp4', 'poster' => '', 'label' => __( 'SAP Business One overview', 'dynamiqes' ) ),
-		);
-		$have = wp_list_pluck( $out, 'video' );
-		foreach ( $fill as $f ) {
-			if ( count( $out ) >= $count ) {
-				break;
-			}
-			if ( $f['video'] && ! in_array( $f['video'], $have, true ) ) {
-				$out[] = $f;
-			}
-		}
-	}
+	/* No placeholder top-up (user, 2026-09-23: the "Brand reel" gradient and the "DynamIQ in motion"
+	   hero clip are not wanted here). The wall shows real product clips only; main.js clones the
+	   set to fill the width, and with no uploads at all footer.php renders no wall. */
 	$out = array_slice( $out, 0, $count );
 	foreach ( $out as &$item ) {
 		$p = dq_video_previews( $item['video'] );          // 240p strip renditions (fall back to the full clip)
@@ -468,6 +461,29 @@ function dq_video_wall_items( $count = 4 ) {
 	}
 	unset( $item );
 	return apply_filters( 'dq_video_wall_items', $out );
+}
+
+/**
+ * Caption shown on a wall tile. An upload titled "IQ People Demo" is captioned with the product
+ * it shows ("IQ People") so viewers know which product they are looking at; a title that names
+ * no product is used as typed. The longest product name wins ("IQ Tax" vs "IQ Tax Module").
+ */
+function dq_video_wall_label( $title ) {
+	$title = trim( (string) $title );
+	$best  = '';
+	if ( function_exists( 'dq_get_products' ) ) {
+		foreach ( dq_get_products() as $prod ) {
+			foreach ( array_unique( array_filter( array( $prod['name'], isset( $prod['menu_label'] ) ? $prod['menu_label'] : '' ) ) ) as $name ) {
+				if ( '' !== $name && false !== stripos( $title, $name ) && strlen( $name ) > strlen( $best ) ) {
+					$best = $prod['name'];
+				}
+			}
+		}
+	}
+	if ( '' !== $best ) {
+		return $best;
+	}
+	return '' !== $title ? $title : __( 'Video', 'dynamiqes' );
 }
 
 /** The small strip renditions of a clip: "<name>-240p.webm" (VP9) and "<name>-240p.mp4" (H.264)
@@ -994,3 +1010,18 @@ function dq_strip_srcless_images( $html ) {
 	}, $html );
 }
 add_filter( 'the_content', 'dq_strip_srcless_images', 7 );
+
+/**
+ * Prev / next arrows for a draggable marquee. main.js (9b) un-hides them once its drag engine
+ * owns the strip; without JS or under prefers-reduced-motion they stay hidden and the CSS
+ * loop / wrapped layout applies. Place the block right after the marquee element.
+ */
+function dq_marquee_nav( $prev_label, $next_label, $class = '' ) {
+	$arrow = function ( $dir ) {
+		return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' . ( $dir < 0 ? 'M15 6l-6 6 6 6' : 'M9 6l6 6-6 6' ) . '"/></svg>';
+	};
+	echo '<div class="marq-nav' . ( $class ? ' ' . esc_attr( $class ) : '' ) . '" hidden>'
+		. '<button type="button" class="marq-btn" data-dir="-1" aria-label="' . esc_attr( $prev_label ) . '">' . $arrow( -1 ) . '</button>'
+		. '<button type="button" class="marq-btn" data-dir="1" aria-label="' . esc_attr( $next_label ) . '">' . $arrow( 1 ) . '</button>'
+		. '</div>';
+}

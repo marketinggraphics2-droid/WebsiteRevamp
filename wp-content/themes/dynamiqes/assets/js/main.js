@@ -351,6 +351,115 @@
     stTrack.appendChild(frag2);
   }
 
+  /* 9b · Draggable marquees · the Life-at-DynamIQ gallery, the video wall and the testimonial
+     strips (home, About). The CSS keyframe loop cannot be grabbed, so once JS runs the script owns the motion:
+     an offset x in [0, half) where half = one set + one gap (the same distance the CSS loop
+     covered), painted as a translate every frame. Auto-scroll keeps the CSS pace (o.seconds per
+     set), pauses while the mouse is over the strip, and holds for a moment after a drag or arrow
+     press. A release with speed flings the strip and decays; the arrows tween one item. A drag
+     never counts as a click on a card's link. Only the CSS fallback stays without JS or under
+     prefers-reduced-motion. One engine, one instance per strip. */
+  var dragMarquee = function (marq, track, o) {
+    var nav = o.nav || null;
+    marq.classList.add('is-js');
+    var x = 0, half = 0, speed = 0, vel = 0, target = null, drag = false, hover = false, hold = 0, lastT = 0, moved = 0;
+    var wrap = function (v) { return half ? ((v % half) + half) % half : 0; };
+    var gap = function () { var cs = getComputedStyle(track); return parseFloat(cs.columnGap) || parseFloat(cs.gap) || 0; };
+    var measure = function () {
+      half = (track.scrollWidth + gap()) / 2;
+      speed = half / o.seconds;
+      if (target === null) { x = wrap(x); }
+    };
+    var paint = function () { track.style.transform = 'translate3d(' + (-x).toFixed(2) + 'px,0,0)'; };
+    var step = function () {
+      var first = track.querySelector(o.item);
+      return (first ? first.getBoundingClientRect().width : 320) + gap();
+    };
+    var tick = function (t) {
+      var dt = lastT ? Math.min(0.05, (t - lastT) / 1000) : 0;
+      lastT = t;
+      if (!drag && half) {
+        if (target !== null) {                  /* arrow tween */
+          var d = target - x;
+          if (Math.abs(d) < 0.5) { x = wrap(target); target = null; }
+          else { x += d * Math.min(1, dt * 9); }
+        } else if (Math.abs(vel) > 4) {         /* fling after a release */
+          x = wrap(x + vel * dt);
+          vel *= Math.pow(0.03, dt);
+        } else {                                /* idle auto-scroll */
+          vel = 0;
+          if (!hover && t > hold && !marq.classList.contains('is-held')) { x = wrap(x + speed * dt); }   /* is-held: the lightbox is open */
+        }
+        paint();
+      }
+      requestAnimationFrame(tick);
+    };
+    /* pointer drag: primary button / any touch or pen. Capture keeps the drag alive when the
+       pointer leaves the strip; velocity is a low-pass of the last moves so a fling feels natural */
+    var id = null, startX = 0, startOff = 0, prevX = 0, prevT = 0, captured = false;
+    marq.addEventListener('pointerdown', function (e) {
+      if (e.pointerType === 'mouse' && e.button !== 0) { return; }
+      drag = true; id = e.pointerId; vel = 0; target = null; moved = 0; captured = false;
+      startX = prevX = e.clientX; startOff = x; prevT = performance.now();
+      marq.classList.add('is-dragging');
+    });
+    marq.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== id) { return; }
+      var now = performance.now(), dt = (now - prevT) / 1000;
+      if (dt > 0.004) { vel = vel * 0.4 + (-(e.clientX - prevX) / dt) * 0.6; prevX = e.clientX; prevT = now; }
+      moved = Math.max(moved, Math.abs(e.clientX - startX));
+      /* capture only once this is really a drag: capturing on pointerdown would retarget the
+         follow-up click to the strip itself, and a plain click on a card, link or tile would die */
+      if (!captured && moved > 4) { captured = true; try { marq.setPointerCapture(id); } catch (err) {} }
+      x = wrap(startOff - (e.clientX - startX));
+      paint();
+    });
+    var release = function (e) {
+      if (!drag || (e && e.pointerId !== id)) { return; }
+      drag = false; id = null; captured = false;
+      marq.classList.remove('is-dragging');
+      if (performance.now() - prevT > 90) { vel = 0; }           /* held still before letting go: no fling */
+      vel = Math.max(-2400, Math.min(2400, vel));
+      hold = performance.now() + 2200;                              /* auto-scroll resumes after a breather */
+    };
+    marq.addEventListener('pointerup', release);
+    marq.addEventListener('pointercancel', release);
+    marq.addEventListener('lostpointercapture', release);
+    marq.addEventListener('dragstart', function (e) { e.preventDefault(); });
+    marq.addEventListener('click', function (e) { if (moved > 6) { e.preventDefault(); e.stopPropagation(); } }, true); /* a drag is not a click */
+    marq.addEventListener('pointerenter', function (e) { if (e.pointerType === 'mouse') { hover = true; } });
+    marq.addEventListener('pointerleave', function (e) { if (e.pointerType === 'mouse') { hover = false; } });
+    /* arrows · one item per press */
+    if (nav) {
+      nav.hidden = false;
+      nav.addEventListener('click', function (ev) {
+        var b = ev.target.closest('[data-dir]'); if (!b) { return; }
+        var base = target !== null ? target : x;
+        vel = 0; target = base + step() * (parseInt(b.getAttribute('data-dir'), 10) || 1);
+        hold = performance.now() + 3000;
+      });
+    }
+    measure();
+    window.addEventListener('resize', measure);
+    window.addEventListener('load', measure);                       /* item widths can follow their images once loaded */
+    [].forEach.call(track.querySelectorAll('img'), function (img) { if (!img.complete) { img.addEventListener('load', measure); } });
+    if ('ResizeObserver' in window) { new ResizeObserver(measure).observe(track); }
+    requestAnimationFrame(tick);
+  };
+  if (!reduce && 'PointerEvent' in window) {
+    var gMarq = document.querySelector('.gallery-marq');
+    var gTrack = gMarq && gMarq.querySelector('.gallery-track');
+    if (gMarq && gTrack) { dragMarquee(gMarq, gTrack, { item: '.gallery-item', nav: document.querySelector('.gallery-nav'), seconds: 46 }); }
+    var wMarq = document.querySelector('.video-marq');
+    var wTrack = wMarq && wMarq.querySelector('.video-track');
+    if (wMarq && wTrack) { dragMarquee(wMarq, wTrack, { item: '.video-tile', nav: null, seconds: 46 }); }   /* after 5b filled the track */
+    [].forEach.call(document.querySelectorAll('.stories-marq'), function (m) {   /* runs after 9 cloned the set */
+      var t = m.querySelector('.stories-track'); if (!t) { return; }
+      var n = m.nextElementSibling;
+      dragMarquee(m, t, { item: '.story', nav: (n && n.classList.contains('marq-nav')) ? n : null, seconds: 80 });
+    });
+  }
+
   /* 10 · Product-detail hero background parallax — now pure CSS (scroll-driven animation on
      .product-hero-bg in main.css). The old scroll listener rewrote a CSS variable on every tick,
      forcing a style recalc per frame on a full-viewport layer and stuttering the hero. */

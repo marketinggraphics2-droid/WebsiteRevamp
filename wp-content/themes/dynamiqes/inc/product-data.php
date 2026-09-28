@@ -94,7 +94,7 @@ function dq_lines_to_text( $arr ) {
 function dq_features_to_text( $arr ) {
 	$lines = array();
 	foreach ( (array) $arr as $g ) {
-		$lines[] = $g['title'] . ( ! empty( $g['text'] ) ? ' > ' . $g['text'] : '' ) . ( ! empty( $g['items'] ) ? ' | ' . implode( '; ', $g['items'] ) : '' );
+		$lines[] = $g['title'] . ( ! empty( $g['text'] ) ? ' > ' . str_replace( "\n", '\n', $g['text'] ) : '' ) . ( ! empty( $g['items'] ) ? ' | ' . implode( '; ', $g['items'] ) : '' );
 	}
 	return implode( "\n", $lines );
 }
@@ -215,7 +215,7 @@ function dq_sections_to_text( $arr ) {
 			$lines[] = '| ' . implode( ' | ', (array) $row );
 		}
 		foreach ( (array) ( isset( $s['items'] ) ? $s['items'] : array() ) as $g ) {
-			$lines[] = '### ' . $g['title'] . ( ! empty( $g['text'] ) ? ' > ' . $g['text'] : '' ) . ( ! empty( $g['items'] ) ? ' | ' . implode( '; ', $g['items'] ) : '' );
+			$lines[] = '### ' . $g['title'] . ( ! empty( $g['text'] ) ? ' > ' . str_replace( "\n", '\n', $g['text'] ) : '' ) . ( ! empty( $g['items'] ) ? ' | ' . implode( '; ', $g['items'] ) : '' );
 		}
 		foreach ( (array) ( isset( $s['closing'] ) ? $s['closing'] : array() ) as $p ) {
 			$lines[] = $p;
@@ -343,7 +343,9 @@ function dq_rich_text_html( $text ) {
 
 /** Split copy on blank lines into paragraphs (a single paragraph comes back as a one-item array). */
 function dq_paragraphs( $text ) {
-	$parts = preg_split( '/(\r\n|\r|\n)\s*(\r\n|\r|\n)/', (string) $text );
+	// copy seeded by an earlier theme version can carry a literal backslash-n where a newline was meant
+	$text  = str_replace( array( '\r\n', '\n' ), "\n", (string) $text );
+	$parts = preg_split( '/(\r\n|\r|\n)\s*(\r\n|\r|\n)/', $text );
 	return array_values( array_filter( array_map( 'trim', (array) $parts ), 'strlen' ) );
 }
 function dq_inline_html( $text ) {
@@ -382,7 +384,7 @@ function dq_product_defaults( $raw = false ) {
 			'menu_label'     => 'SAP Business One',
 			'title'          => 'Run Your Entire Business with SAP Business One',
 			'description'    => 'SAP Business One is an application that lets you manage your entire business operations easily and effectively. It comes with built-in modules that represent the business areas of your operation.',
-			'logo'           => 'assets/products/official/sap-business-one-logo.png',
+			'logo'           => 'assets/products/official/sap-business-one-logo.svg',
 			'logo_light'     => 'assets/products/official/sap-business-one-logo-wht.svg',
 			'background'     => 'assets/products/site-media/bg-products.jpg',
 			'hero'           => 'assets/products/site-media/sap-business-one-banner.png',
@@ -655,8 +657,8 @@ function dq_product_defaults( $raw = false ) {
 			'menu_label'     => 'IQ Desk',
 			'title'          => 'Simplify Support and Asset Tracking with IQ Desk',
 			'description'    => 'IQ Desk is an all-in-one IT service management and helpdesk solution that simplifies support and asset tracking.',
-			'logo'           => 'assets/products/iq-desk.png',
-			'logo_light'     => 'assets/products/iq-desk-wht.png',
+			'logo'           => 'assets/products/iq-desk.svg',
+			'logo_light'     => 'assets/products/iq-desk-wht.svg',
 			'background'     => 'assets/products/photos/desk.jpg',
 			'hero'           => 'assets/products/main/desk.png',
 			'overview_image' => 'assets/products/site-media/desk-overview.png',
@@ -696,7 +698,7 @@ function dq_product_defaults( $raw = false ) {
 			'logo'           => 'assets/products/iq-ecom.svg',
 			'logo_light'     => 'assets/products/iq-ecom-wht.svg',
 			'background'     => 'assets/products/photos/ecom.jpg',
-			'hero'           => 'assets/products/main/ecom.png',
+			'hero'           => 'assets/products/official/ecom.png',
 			'overview_image' => 'assets/products/site-media/ecom-overview.png',
 			'feature_image'  => 'assets/products/official/ecom.png',
 			'card_art'       => 'assets/products/official/ecom.png',
@@ -735,12 +737,12 @@ function dq_product_defaults( $raw = false ) {
 			'description'    => 'IQ People is an all-in-one Human Resource Information System that streamlines HR operations, payroll, timekeeping, employee engagement, talent management, and Philippine statutory compliance. Designed with intelligent automation, AI-powered capabilities, and mobile accessibility, it helps organizations build a more productive, connected, and future-ready workforce.',
 			'logo'           => 'assets/products/iq-people.svg',
 			'logo_light'     => 'assets/products/iq-people-wht.svg',
-			'background'     => 'assets/products/photos/portal.jpg',
+			'background'     => 'assets/products/photos/people.jpg',
 			'hero'           => 'assets/products/main/people.png',
 			'overview_image' => 'assets/products/site-media/people-overview.png',
 			'feature_image'  => '',
 			'card_art'       => 'assets/products/official/people.png',
-			'card_photo'     => 'assets/products/photos/portal.jpg',
+			'card_photo'     => 'assets/products/photos/people.jpg',
 			'card_tagline'   => 'Your people, one platform',
 			'card_title'     => 'HR & Payroll',
 			'card_desc'      => 'HR, payroll, timekeeping and Philippine statutory compliance in one system, with an employee self-service app.',
@@ -762,12 +764,12 @@ function dq_product_defaults( $raw = false ) {
 			'description'    => 'From projects and tasks to chat, approvals, documents, and AI-assisted insight — IQ Workplace replaces the tangle of disconnected tools with a single, secure platform built for how modern teams actually work.',
 			'logo'           => 'assets/products/iq-workplace.svg',
 			'logo_light'     => 'assets/products/iq-workplace-wht.svg',
-			'background'     => 'assets/products/photos/desk.jpg',
+			'background'     => 'assets/products/photos/workplace.jpg',
 			'hero'           => 'assets/products/main/workplace.png',
 			'overview_image' => 'assets/products/site-media/workplace-overview.png',
 			'feature_image'  => '',
 			'card_art'       => 'assets/products/official/workplace.png',
-			'card_photo'     => 'assets/products/photos/desk.jpg',
+			'card_photo'     => 'assets/products/photos/workplace.jpg',
 			'card_tagline'   => 'Work, chat and AI in one place',
 			'card_title'     => 'Work Management',
 			'card_desc'      => 'Projects, tasks, chat, approvals and documents on one secure platform, with IQ Ai built in.',
@@ -789,12 +791,12 @@ function dq_product_defaults( $raw = false ) {
 			'description'    => 'IQ Tech Institute is DynamIQ’s all-in-one Learning Management System (LMS) that helps you create, manage, and deliver training with ease. From course creation to learner management and billing, everything you need is in one place.',
 			'logo'           => 'assets/products/iq-tech.svg',
 			'logo_light'     => 'assets/products/iq-tech-wht.svg',
-			'background'     => 'assets/products/photos/all.jpg',
+			'background'     => 'assets/products/photos/tech.jpg',
 			'hero'           => 'assets/products/main/tech.png',
 			'overview_image' => 'assets/products/site-media/tech-overview.png',
 			'feature_image'  => '',
 			'card_art'       => 'assets/products/official/tech.png',
-			'card_photo'     => 'assets/products/photos/all.jpg',
+			'card_photo'     => 'assets/products/photos/tech.jpg',
 			'card_tagline'   => 'Train your team, prove the impact',
 			'card_title'     => 'Learning Management',
 			'card_desc'      => 'Create, deliver and track training with quizzes, certificates, analytics and AI-assisted course building.',

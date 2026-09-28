@@ -81,6 +81,15 @@ add_action( 'customize_register', function ( WP_Customize_Manager $wp ) {
 		$text( 'dq_social_' . $k, ucfirst( $k ), $d, 'dq_social', 'url' );
 	}
 
+	/* Authors */
+	$wp->add_section( 'dq_authors', array( 'title' => __( 'Authors', 'dynamiqes' ), 'panel' => $panel, 'description' => __( 'The byline on Blogs and News & Events posts. Every post is credited to its own author; the account chosen here only fills in for a post that has no author at all.', 'dynamiqes' ) ) );
+	$authors = array( 0 => __( 'None (each post keeps its own author)', 'dynamiqes' ) );
+	foreach ( get_users( array( 'capability' => 'edit_posts', 'orderby' => 'display_name', 'number' => 200 ) ) as $u ) {
+		$authors[ (int) $u->ID ] = $u->display_name . ' (' . $u->user_login . ')';
+	}
+	$wp->add_setting( 'dq_default_author', array( 'default' => 0, 'sanitize_callback' => 'absint' ) );
+	$wp->add_control( 'dq_default_author', array( 'label' => __( 'Default author', 'dynamiqes' ), 'section' => 'dq_authors', 'type' => 'select', 'choices' => $authors ) );
+
 	/* SEO */
 	$wp->add_section( 'dq_seo', array( 'title' => __( 'SEO defaults', 'dynamiqes' ), 'panel' => $panel ) );
 	$text( 'dq_seo_home_title', __( 'Home page title tag', 'dynamiqes' ), 'DynamIQ — SAP Premier Partner Philippines', 'dq_seo' );

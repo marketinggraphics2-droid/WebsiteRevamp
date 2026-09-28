@@ -504,17 +504,17 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   border:1px solid var(--line); background:var(--card-grad);
   --iq-pad-x:26px; --iq-pad-b:24px;
   --iq-text-shadow:0 1px 2px rgba(var(--rgb-night),.7), 0 2px 14px rgba(var(--rgb-night),.5);
-  padding:21px var(--iq-pad-x) var(--iq-pad-b); display:flex; flex-direction:column; justify-content:flex-start;
+  --iq-pad-t:21px; --iq-logo-h:clamp(25px,2.5vw,31px);
+  padding:var(--iq-pad-t) var(--iq-pad-x) var(--iq-pad-b); display:flex; flex-direction:column; justify-content:flex-start;
   transition:transform .55s cubic-bezier(.16,1,.3,1), border-color .45s, box-shadow .55s;
 }
 .iq-card:hover{ transform:translateY(-6px); border-color:rgba(var(--rgb-brand),.55); box-shadow:0 34px 66px -26px rgba(var(--rgb-ink),.32); }
 /* flagship tile — spans 2×2, full product photo behind white logo + copy */
-.iq-card.feature{ grid-column:span 2; grid-row:span 2; --iq-pad-x:32px; --iq-pad-b:28px; padding-top:28px; }
+.iq-card.feature{ grid-column:span 2; grid-row:span 2; --iq-pad-x:32px; --iq-pad-b:28px; --iq-pad-t:28px; --iq-logo-h:clamp(30px,3vw,42px); }
 .iq-card.feature .iq-art{ inset:0; z-index:0; opacity:1; transform:none;
   background-size:cover; background-position:center; background-repeat:no-repeat; filter:none; }
 .iq-card.feature::after{ content:""; position:absolute; inset:0; z-index:1; pointer-events:none;
   background:linear-gradient(180deg,rgba(var(--rgb-night),.5) 0%,rgba(var(--rgb-night),.32) 32%,rgba(var(--rgb-night),.6) 66%,rgba(var(--rgb-night),.9) 100%); }
-.iq-card.feature .iq-logo{ height:clamp(30px,3vw,42px); }
 .iq-card.feature .iq-logo .lg-d{ opacity:0; }
 .iq-card.feature .iq-logo .lg-l{ opacity:1; }
 .iq-card.feature .iq-title{ color:var(--color-white); font-size:var(--fs-card); }
@@ -541,7 +541,7 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .iq-card:not(.all):hover .iq-art{ opacity:1; transform:none; }
 .iq-card:not(.all):hover .iq-hover-art{ opacity:0; transform:scale(1.06); }
 /* logo lockup pinned top-left: white over the photo at rest, black on the light hover card */
-.iq-logo{ position:relative; z-index:3; height:clamp(25px,2.5vw,31px); }
+.iq-logo{ position:relative; z-index:3; height:var(--iq-logo-h); }
 .iq-logo img{ height:100%; width:auto; max-width:82%; object-fit:contain; object-position:left center;
   transition:opacity .45s ease; }
 .iq-logo .lg-l{ position:absolute; left:0; top:0; opacity:0; }
@@ -564,8 +564,7 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .iq-card:hover .iq-detail{ opacity:1; transform:none; pointer-events:auto; }
 /* at rest the tagline may run across most of the photo; on the light hover card the detail
    copy is capped at under half the card so it stays left of the monitor artwork (which starts
-   at 48%). The arrow flows inline after the title's last word, so a long title wraps inside
-   the column instead of pushing the arrow onto the artwork. */
+   at 48%). */
 .iq-card:not(.all) .iq-tagline{ max-width:72%; }
 .iq-card:not(.all) .iq-detail{ max-width:46%; }
 .iq-card.feature .iq-detail{ max-width:52ch; }
@@ -577,8 +576,11 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 /* the flagship tile is always the photo state, so its detail copy stays white */
 .iq-card.feature .iq-title, .iq-card.feature .iq-desc{ color:var(--color-white); text-shadow:var(--iq-text-shadow); }
 .iq-card.feature .iq-tagline{ font-size:var(--fs-card); }
-.iq-go{ width:34px; height:34px; margin:-7px 0 -7px 10px; vertical-align:middle; border-radius:50%; border:1px solid var(--line); display:inline-grid; place-items:center;
-  flex:0 0 auto; color:var(--soft); opacity:0; transform:translateX(-6px);
+/* arrow chip pinned to the top-right corner, centred on the logo row, so it sits in the same
+   spot on every card regardless of how the title wraps or how long the description runs */
+.iq-go{ position:absolute; z-index:4; top:calc(var(--iq-pad-t) + var(--iq-logo-h) / 2 - 17px); right:var(--iq-pad-x);
+  width:34px; height:34px; border-radius:50%; border:1px solid var(--line); display:grid; place-items:center;
+  color:var(--soft); opacity:0; transform:translateX(6px);
   transition:opacity .4s, transform .4s cubic-bezier(.16,1,.3,1), background .3s, color .3s, border-color .3s; }
 .iq-card:hover .iq-go{ opacity:1; transform:none; background:var(--orange); border-color:var(--orange); color:var(--color-on-accent); }
 .iq-go svg{ width:15px; height:15px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
@@ -623,6 +625,24 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
   border-radius:16px; border:1px solid var(--line); background:var(--color-night); box-shadow:0 22px 44px -28px rgba(var(--rgb-ink),.35); }
 .gallery-item img{ display:block; width:auto; height:100%; object-fit:contain; transition:transform .6s cubic-bezier(.16,1,.3,1); }
 .gallery-item:hover img{ transform:scale(1.04); }
+/* controls (main.js 9b): once the script owns the motion the CSS loop is switched off and the
+   strip can be dragged with the mouse or swiped on touch — pan-y keeps vertical page scrolling
+   native, the images stop being draggable/selectable so a grab never lifts a ghost image */
+.gallery-marq.is-js{ cursor:grab; touch-action:pan-y; -webkit-user-select:none; user-select:none; }
+.gallery-marq.is-js.is-dragging{ cursor:grabbing; }
+.gallery-marq.is-js .gallery-track{ animation:none; }
+.gallery-marq.is-js .gallery-item img{ -webkit-user-drag:none; pointer-events:none; }
+.gallery-marq.is-dragging .gallery-item img{ transform:none; }
+/* prev / next arrows under the strip · round ghost buttons on the shared tokens */
+.gallery-nav,.marq-nav{ display:flex; justify-content:center; gap:12px; margin-top:clamp(18px,2.4vw,28px); }
+.gallery-nav[hidden],.marq-nav[hidden]{ display:none; }
+.gallery-btn,.marq-btn{ width:44px; height:44px; border-radius:50%; border:1.5px solid var(--line); background:var(--ghost-bg); color:var(--text);
+  display:grid; place-items:center; padding:0; cursor:pointer; -webkit-tap-highlight-color:transparent;
+  transition:border-color .25s, color .25s, transform .25s, box-shadow .25s; }
+.gallery-btn svg,.marq-btn svg{ width:18px; height:18px; }
+.gallery-btn:hover,.marq-btn:hover{ border-color:var(--brand); color:var(--brand); transform:translateY(-2px); box-shadow:0 10px 24px -14px rgba(var(--rgb-brand),.6); }
+.gallery-btn:active,.marq-btn:active{ transform:translateY(0); }
+.gallery-btn:focus-visible,.marq-btn:focus-visible{ outline:2px solid var(--brand); outline-offset:3px; }
 @media (prefers-reduced-motion:reduce){
   .gallery-track{ animation:none; width:auto; flex-wrap:wrap; justify-content:center; }
   .gallery-item[aria-hidden]{ display:none; }
@@ -860,6 +880,15 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .stories-track{ display:flex; gap:18px; width:-webkit-max-content; width:max-content;
   will-change:transform; animation:storiesMarq 80s linear infinite; }
 .stories-marq:hover .stories-track{ animation-play-state:paused; }
+/* controls (main.js 9b): the gallery's drag engine on the testimonial strip — grab with the
+   mouse, swipe on touch (pan-y keeps page scrolling native), arrows below; the hover lift is
+   parked while dragging so cards don't jump under the pointer */
+.stories-marq.is-js{ cursor:grab; touch-action:pan-y; -webkit-user-select:none; user-select:none; }
+.stories-marq.is-js.is-dragging{ cursor:grabbing; }
+.stories-marq.is-js .stories-track{ animation:none; }
+.stories-marq.is-js .story img{ -webkit-user-drag:none; pointer-events:none; }
+.stories-marq.is-dragging .story{ transform:none; }
+.stories-nav{ position:relative; z-index:3; }
 @keyframes storiesMarq{ from{ transform:translate3d(0,0,0); } to{ transform:translate3d(-50%,0,0); } }
 /* Longhands, not `flex:0 0 clamp(...)` — Safari has historically failed to
    parse a clamp() basis inside the flex shorthand, dropping the whole rule. */
@@ -1065,6 +1094,18 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .video-tile:hover .video-tile-hint, .video-tile:focus-visible .video-tile-hint{ opacity:1; }
 .video-tile:hover .video-tile-hint svg{ transform:none; }
 .video-marq.is-held .video-track{ animation-play-state:paused; }
+/* product caption, bottom-left of the tile, on the chip idiom (uppercase 2xs, blurred night pill) */
+.video-tile-label{ position:absolute; left:14px; bottom:14px; z-index:1; max-width:calc(100% - 28px); margin:0; padding:7px 12px; border-radius:999px;
+  font-family:var(--font-sans); font-weight:700; font-size:var(--fs-2xs); letter-spacing:.12em; text-transform:uppercase; line-height:1.2;
+  color:var(--color-white); background:rgba(var(--rgb-night),.55); border:1px solid rgba(var(--rgb-white),.28);
+  backdrop-filter:blur(6px); -webkit-backdrop-filter:blur(6px); pointer-events:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+/* controls (main.js 9b): the same drag engine as the gallery — grab / swipe the strip; a drag
+   never opens the lightbox, a tap or click still does */
+.video-marq.is-js{ cursor:grab; touch-action:pan-y; -webkit-user-select:none; user-select:none; }
+.video-marq.is-js.is-dragging{ cursor:grabbing; }
+.video-marq.is-js .video-track{ animation:none; }
+.video-marq.is-js .video-tile video{ pointer-events:none; }
+.video-marq.is-js .video-tile[role="button"]{ cursor:inherit; }
 /* ── lightbox ── sits above the chat widget (1200); the backdrop blurs the page */
 .video-lightbox{ position:fixed; inset:0; z-index:1300; display:grid; place-items:center; padding:clamp(16px,3vw,40px); }
 /* the author display:grid above beats the UA [hidden]{display:none}; without this the invisible
@@ -2203,7 +2244,13 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
 .post-hero .news-meta{margin-bottom:16px;gap:12px}
 .post-hero .news-tag{background:rgba(var(--rgb-brand),.22);border-color:rgba(var(--rgb-brand),.5);color:var(--orange-2)}
 .post-hero .news-date{color:rgba(var(--rgb-white),.78)}
-.post-hero .post-read::before{content:"·";margin-right:12px;color:rgba(var(--rgb-white),.45)}
+.post-hero .post-read::before,.post-hero .post-author::before{content:"·";margin-right:12px;color:rgba(var(--rgb-white),.45)}
+/* "By Author" byline: on the Blogs / News & Events cards it follows the date with the same dot;
+   it is a link to the author page only when that author has a profile */
+.post-card-body .post-author::before,.post-feature-body .post-author::before{content:"·";margin-right:10px;color:var(--faint)}
+a.post-author{transition:color .2s}
+a.post-author:hover{color:var(--orange-deep);text-decoration:underline}
+.post-hero a.post-author:hover{color:var(--orange-2)}
 .post-hero h1{font-size:clamp(1.9rem,1.2rem + 2.6vw,3.6rem);line-height:1.08;letter-spacing:-.035em;max-width:24ch;color:var(--color-white);text-wrap:balance}
 .post-hero .lede{margin-top:16px;max-width:62ch;color:rgba(var(--rgb-white),.86)}
 
@@ -2383,6 +2430,10 @@ h3{font-size:var(--fs-h3);line-height:var(--lh-heading);letter-spacing:-.015em}
   color:var(--orange); background:rgba(var(--rgb-brand),.12); border:1px solid rgba(var(--rgb-brand),.35); }
 .svc-phases li:hover .svc-phase-num{ background:linear-gradient(135deg,var(--orange) 12%,var(--orange-2)); color:var(--color-on-accent); border-color:var(--orange); }
 .svc-phase-label{ font-size:var(--fs-xs); font-weight:700; line-height:1.3; color:var(--text); }
+/* on a dark band the cards go translucent (like .svc-ic) so the white labels stay readable */
+.svc-dark .svc-phases li{ background:rgba(var(--rgb-white),.07); border-color:rgba(var(--rgb-white),.16); }
+.svc-dark .svc-phases li:hover{ background:rgba(var(--rgb-white),.11); box-shadow:0 20px 44px -22px rgba(0,0,0,.5); }
+.svc-dark .svc-phase-num{ background:rgba(var(--rgb-brand),.2); border-color:rgba(var(--rgb-brand),.5); }
 
 /* Why Trust: photo left, tighter copy measure */
 .svc-trust .svc-grid{ grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr); }
@@ -2534,12 +2585,23 @@ h4.post-share-label{margin:0}
 .news-page .news-list{padding-block:var(--section)}
 .news-page .sec-head{margin-bottom:clamp(20px,3vw,34px)}
 /* about us */
+.about-page .about-hero-grid{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);gap:clamp(32px,5vw,80px);align-items:center}
+.about-page .about-hero-visual{position:relative;margin:0;width:100%;aspect-ratio:16/10;overflow:hidden;border-radius:16px;border:1px solid var(--line);background:var(--card-grad);box-shadow:var(--shadow-lg)}
+.about-page .about-hero-photo{width:100%;height:100%;object-fit:cover;object-position:center;display:block}
+@media(max-width:900px){.about-page .about-hero-grid{grid-template-columns:1fr;gap:28px}}
 .about-page .about-mv{padding-block:var(--section)}
 .about-page .about-mv-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px}
 .about-page .about-card{padding:clamp(28px,3vw,44px);border:1px solid var(--line);border-radius:16px;background:var(--card-grad)}
+/* breaker photo under Mission / Vision: centred, as wide as two Core Values cards, wide-landscape */
 .about-page .about-card h2{margin:8px 0 14px}
 .about-page .about-card p{color:var(--soft);font-size:var(--fs-lede);line-height:var(--lh-body)}
 .about-page .about-values{padding-block:var(--section);background:var(--bg-2)}
+/* core values on the team photo: ink scrim over the cover photo (the page-hero--photo idiom), white heading, frosted white cards */
+.about-page .about-values--photo{position:relative;isolation:isolate;color:var(--color-white);background:linear-gradient(180deg,rgba(var(--rgb-ink),.88) 0%,rgba(var(--rgb-ink),.74) 100%),var(--values-photo) center/cover no-repeat}
+.about-page .about-values--photo .sec-head h2{color:var(--color-white)}
+.about-page .about-values--photo .feature-group{background:rgba(var(--rgb-white),.94);border-color:rgba(var(--rgb-white),.5);box-shadow:0 24px 50px -30px rgba(var(--rgb-night),.6);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.about-page .about-values--photo .feature-group h4{color:var(--ink)}
+.about-page .about-values--photo .feature-group p{color:var(--soft)}
 .about-page .about-values .feature-group h4{position:relative;font-size:var(--h3);line-height:1.1;letter-spacing:-.03em;margin:0 0 16px}
 .about-page .about-values .feature-group p{position:relative;color:var(--soft);line-height:var(--lh-body)}
 .about-page .about-products{padding-block:var(--section)}
@@ -3493,7 +3555,6 @@ h4.post-share-label{margin:0}
 @media (min-width:901px) and (max-height:820px){
   .lp-section,
   .lp-cta,
-  .product-detail-page main>section:not(.detail-hero),
   .career-page .career-jobs,
   .career-page .career-join,
   .career-page .career-culture,
@@ -3570,8 +3631,8 @@ h4.post-share-label{margin:0}
 @media (min-width:1180px){
   .lp-cards .feature-grid:has(> :last-child:nth-child(5)),
   .lp-cards .feature-grid:has(> :last-child:nth-child(9)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(5)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(9)){
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(5)),
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(9)){
     grid-template-columns:repeat(5,minmax(0,1fr));
   }
 }
@@ -3625,24 +3686,37 @@ h4.post-share-label{margin:0}
    3 + 1 once the auto-fit grid dropped a column; and every section was stretched to a full
    screen, leaving 300–550px of dead space around an overview, a card set or the FAQ. */
 @media (min-width:901px){
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr))}
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(3)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(6)){grid-template-columns:repeat(3,minmax(0,1fr))}
-  /* sections are as tall as their content, on the site's section rhythm */
-  .product-detail-page main>section:not(.detail-hero){min-height:0}
-  .product-detail-page .overview,
-  .product-detail-page .features,
-  .product-detail-page .showcase,
-  .product-detail-page .faq{padding-block:clamp(56px,7vw,96px)}
-  .product-detail-page .portal-features{padding-block:clamp(56px,7vw,96px)}
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(2)){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(3)),
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(6)){grid-template-columns:repeat(3,minmax(0,1fr))}
+  /* Sections are as tall as their content, on the "Revamp Dynamiq" mockup's rhythm: the design
+     frame is 1920 wide and its sections carry ~100px above and below (H2-to-H2 gaps of 190–230px
+     including line-height), so the padding scales with the width — 100px at 1920, 75px at 1440,
+     71px at 1366. The fixed 56–96px value it replaces was 96px at every laptop width, and the
+     short-laptop override collapsed the same gap to ~25px, so the spacing jumped with screen
+     height — the review caught the 200px band under a spec table. */
+  .product-detail-page main>section:not(.detail-hero){min-height:0;padding-block:clamp(48px,5.2vw,100px)}
+  /* Continuation blocks (an untitled section carrying on the H2 above it — IQ Link, IQ Ecom):
+     the mockup runs table → next head row at ~72px and head row → table at ~100px, not two
+     full section paddings stacked. */
+  .product-detail-page main>section:has(+ .portal-features.is-untitled){padding-bottom:clamp(10px,1vw,20px)}
+  .product-detail-page main>section.portal-features.is-untitled{padding-top:clamp(12px,1.2vw,24px)}
 }
+/* A lone photo card followed by a table is the mockup's "head row" (IQ Link): the picture panel and
+   the copy sit straight on the page, no card around them. Multi-card photo sets (IQ REM, IQ Ecom)
+   keep their cards, as drawn. */
+.product-detail-page .portal-features .feature-grid.is-media>.is-media-card:only-child{padding:0;border:0;background:none;box-shadow:none}
+/* an untitled continuation block has an empty copy column; left in the grid it still cost a row
+   gap plus the card grid's top margin above the items (:has() cannot nest, hence the sibling form) */
+.product-detail-page .portal-features .portal-features-layout>.portal-features-copy:not(:has(h2,p,ul,ol)){display:none}
+.product-detail-page .portal-features .portal-features-layout>.portal-features-copy:not(:has(h2,p,ul,ol))~.portal-features-items .feature-grid{margin-top:0}
 @media (min-width:1180px){
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(4)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(8)){grid-template-columns:repeat(4,minmax(0,1fr))}
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(4)),
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(8)){grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 @media (min-width:901px) and (max-width:1179px){
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(4)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(8)){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(4)),
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(8)){grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 
 /* The showcase beside a product section's head runs the full height of the copy, as a panel.
@@ -3692,6 +3766,59 @@ h4.post-share-label{margin:0}
 }
 @media (max-width:620px){
   .product-detail-page.product-template-page .hero-media img{max-height:min(34dvh,260px)}
+}
+
+/* ONE SCREEN, held from the inside. The hero is min-height one viewport, but nothing stopped the
+   copy column from outgrowing it: 5dvh + 7dvh of grid padding plus the copy's own 7dvh bottom
+   padding (~167px at 900 tall) sat under a logo, a three-line H1, a 56ch description and the CTA,
+   so IQ Ai ran 75px past the fold at 1440×900 and most products ran over at 1366×768 and on phones.
+   Every part of the column is sized from the viewport height now, the way the home banner is, so
+   the copy shrinks with the screen instead of pushing the fold down. */
+@media (min-width:981px){
+  .product-detail-page.product-template-page .hero-grid{padding-block:clamp(12px,2.4dvh,28px) clamp(16px,3dvh,36px)}
+  .product-detail-page.product-template-page .hero-copy{padding-bottom:0}
+  .product-detail-page.product-template-page .hero-logo{max-height:clamp(40px,7dvh,68px);margin-bottom:clamp(8px,1.6dvh,16px)}
+  .product-detail-page.product-template-page .hero-copy h1{font-size:min(clamp(2.2rem,1.35rem + 1.7vw,3.3rem),6.2dvh)}
+  .product-detail-page.product-template-page .hero-copy p{margin-top:clamp(8px,1.5dvh,14px);font-size:clamp(.95rem,.55rem + 1.1dvh,1.125rem);line-height:1.5}
+  .product-detail-page.product-template-page .hero-actions{margin-top:clamp(12px,2dvh,16px)}
+}
+@media (min-width:981px) and (max-height:800px){
+  .product-detail-page.product-template-page .hero-copy h1{max-width:20ch}
+  .product-detail-page.product-template-page .hero-copy p{font-size:.95rem;line-height:1.45}
+  /* a three-paragraph description (IQ Ai) on a 720px-tall laptop */
+  .product-detail-page.product-template-page .detail-hero:has(.hero-copy p:nth-of-type(3)) .hero-copy h1{font-size:min(clamp(2.2rem,1.35rem + 1.7vw,3.3rem),5.6dvh)}
+  .product-detail-page.product-template-page .detail-hero:has(.hero-copy p:nth-of-type(3)) .hero-copy p{font-size:.9rem;line-height:1.4}
+}
+@media (max-width:620px){
+  .product-detail-page.product-template-page .breadcrumbs{padding-top:8px}
+  .product-detail-page.product-template-page .hero-grid{gap:clamp(12px,1.8dvh,20px);padding-block:clamp(6px,1.2dvh,12px) clamp(14px,2.4dvh,28px)}
+  .product-detail-page.product-template-page .hero-media{padding:clamp(10px,3vw,18px)}
+  .product-detail-page.product-template-page .hero-media img{width:auto;max-width:100%;max-height:min(24dvh,220px)}
+  .product-detail-page.product-template-page .hero-logo{max-height:36px;margin-bottom:8px}
+  .product-detail-page.product-template-page .hero-copy h1{font-size:clamp(1.5rem,1.05rem + 2.4vw,2.4rem)}
+  .product-detail-page.product-template-page .hero-copy p{margin-top:8px;font-size:.95rem;line-height:1.45}
+  .product-detail-page.product-template-page .hero-actions{margin-top:10px}
+  .product-detail-page.product-template-page .hero-actions .btn{min-height:48px;padding-block:12px}
+  /* a three-paragraph description (IQ Ai) cannot share a phone screen with a full-size shot */
+  .product-detail-page.product-template-page .detail-hero:has(.hero-copy p:nth-of-type(3)) .hero-media img{max-height:min(14dvh,120px)}
+  .product-detail-page.product-template-page .detail-hero:has(.hero-copy p:nth-of-type(3)) .hero-copy h1{font-size:clamp(1.4rem,1rem + 2.2vw,2.2rem)}
+  .product-detail-page.product-template-page .detail-hero:has(.hero-copy p:nth-of-type(3)) .hero-copy p{font-size:.9rem;line-height:1.4}
+}
+/* Short phones (375×667, 360×640): the top bar and nav leave ~480px. The shot becomes a thumbnail
+   above the copy and the type steps down one notch so the CTA stays on the first screen. */
+@media (max-width:620px) and (max-height:700px){
+  .product-detail-page.product-template-page .hero-grid{gap:10px;padding-block:4px 14px}
+  .product-detail-page.product-template-page .hero-media{padding:8px}
+  .product-detail-page.product-template-page .hero-media img{max-height:clamp(72px,13dvh,110px)}
+  /* a 60px thumbnail no longer earns its row under a three-paragraph description; the overview
+     section right below carries the product shot */
+  .product-detail-page.product-template-page .detail-hero:has(.hero-copy p:nth-of-type(3)) .hero-media{display:none}
+  .product-detail-page.product-template-page .hero-logo{max-height:28px;margin-bottom:6px}
+  .product-detail-page.product-template-page .hero-copy h1{font-size:clamp(1.3rem,.95rem + 1.9vw,1.6rem);line-height:1.08}
+  .product-detail-page.product-template-page .hero-copy p{margin-top:6px;font-size:.9rem;line-height:1.38}
+  .product-detail-page.product-template-page .detail-hero:has(.hero-copy p:nth-of-type(3)) .hero-copy p{font-size:.85rem;line-height:1.32}
+  .product-detail-page.product-template-page .hero-actions{margin-top:8px}
+  .product-detail-page.product-template-page .hero-actions .btn{min-height:44px;padding-block:10px}
 }
 
 /* Titles-only card sets (IQ Ai's "Key Capabilities"): a row of equal cards with a check mark
@@ -3760,11 +3887,11 @@ h4.post-share-label{margin:0}
    per row. Two, three, five and six keep their rules from 1.3.1. */
 @media (min-width:901px){
   .lp-cards .feature-grid:has(> :last-child:nth-child(4)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(4)){grid-template-columns:repeat(2,minmax(0,1fr))}
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(4)){grid-template-columns:repeat(2,minmax(0,1fr))}
   .lp-cards .feature-grid:has(> :last-child:nth-child(8)),
   .lp-cards .feature-grid:has(> :last-child:nth-child(9)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(8)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(9)){grid-template-columns:repeat(3,minmax(0,1fr))}
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(8)),
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(9)){grid-template-columns:repeat(3,minmax(0,1fr))}
 }
 
 /* The check panel ("What Does an IT Solutions Company Do?"): three columns of pill items rather
@@ -3839,7 +3966,7 @@ h4.post-share-label{margin:0}
 /* seven cards read 4 + 3, not 3 + 3 + 1 */
 @media (min-width:1180px){
   .lp-cards .feature-grid:has(> :last-child:nth-child(7)),
-  .product-detail-page .portal-features .feature-grid:has(> :last-child:nth-child(7)){grid-template-columns:repeat(4,minmax(0,1fr))}
+  .product-detail-page .portal-features .feature-grid:not(.is-media,.is-one-up,.is-two-up,.is-three-up):has(> :last-child:nth-child(7)){grid-template-columns:repeat(4,minmax(0,1fr))}
 }
 /* Career: the openings, "join" and culture sections are as tall as their content (the apply rail
    already was, since 1.3.2) */
@@ -3882,6 +4009,8 @@ h4.post-share-label{margin:0}
 .author-avatar-wrap{position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:center;transform:translateY(50%);pointer-events:none}
 .author-avatar{position:relative;width:var(--author-avatar);aspect-ratio:1;border-radius:50%;padding:4px;background:linear-gradient(135deg,rgba(var(--rgb-white),.35) 35%,var(--orange) 100%);box-shadow:0 26px 50px -24px rgba(var(--rgb-ink),.55);pointer-events:auto}
 .author-avatar img{width:100%;height:100%;border-radius:50%;object-fit:cover;background:var(--color-surface-muted)}
+/* the design keeps the author content on a narrower column than the site wrap (about 1080px on a 1440 canvas) */
+.author-intro .wrap,.author-info .wrap{max-width:1080px}
 .author-intro{padding-block:calc(var(--author-avatar,300px)/2 + clamp(28px,4vw,52px)) clamp(56px,7vw,96px);--author-avatar:clamp(190px,24vw,360px)}
 .author-name{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;text-align:center;font-size:var(--fs-h2);letter-spacing:-.03em;line-height:var(--lh-tight)}
 .author-linkedin{display:grid;place-items:center;width:44px;height:44px;border-radius:9px;background:var(--orange);color:#fff;transition:transform .25s,background .25s}
@@ -3891,7 +4020,7 @@ h4.post-share-label{margin:0}
 .author-about-grid{display:grid;grid-template-columns:1.15fr .95fr;gap:clamp(32px,5vw,80px);align-items:start;margin-top:clamp(40px,5vw,72px)}
 .author-about-grid.is-single{grid-template-columns:minmax(0,760px);justify-content:center}
 .author-about h2{font-size:var(--fs-subheading);letter-spacing:-.03em;line-height:var(--lh-tight)}
-.author-about p{margin-top:18px;color:var(--text);font-size:var(--fs-lede);line-height:var(--lh-relaxed)}
+.author-about p{margin-top:18px;color:var(--text);font-size:var(--fs-body);line-height:var(--lh-relaxed)}
 .author-about h2+p{margin-top:26px}
 .author-side{display:grid;gap:22px;align-content:start}
 .author-card{position:relative;padding:clamp(22px,2.6vw,32px);border:1px solid var(--line);border-radius:16px;background:linear-gradient(180deg,var(--color-surface) 0%,var(--color-surface-warm) 100%);box-shadow:0 22px 44px -34px rgba(var(--rgb-ink),.35);overflow:hidden}
@@ -3914,7 +4043,6 @@ h4.post-share-label{margin:0}
 .author-expertise+.author-info{padding-top:clamp(16px,2vw,28px)}
 .author-info-title{text-align:center;font-size:var(--fs-h2);letter-spacing:-.03em;line-height:var(--lh-tight)}
 .author-info-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(18px,2.4vw,32px);margin-top:clamp(32px,4vw,56px)}
-.author-info-card::before{content:"";position:absolute;width:170px;height:170px;border-radius:50%;right:-60px;top:-70px;background:rgba(var(--rgb-brand),.12);pointer-events:none}
 .author-info-card h3{max-width:none}
 .author-info-card .author-bullets{margin-top:16px;gap:9px;font-size:var(--fs-body)}
 @media(max-width:980px){
@@ -3935,8 +4063,7 @@ h4.post-share-label{margin:0}
 .spec-table-wrap{grid-column:1 / -1;margin-top:clamp(22px,3vw,34px);overflow-x:auto;-webkit-overflow-scrolling:touch}
 .spec-table{width:100%;border-collapse:separate;border-spacing:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--color-surface);font-size:var(--fs-sm);line-height:var(--lh-body)}
 .spec-table th,.spec-table td{padding:15px 20px;text-align:left;vertical-align:top}
-.spec-table thead th{background:linear-gradient(90deg,#2b2729,var(--color-ink) 45%);color:#fff;font-weight:700;letter-spacing:.01em}
-.spec-table thead th:first-child{background:linear-gradient(90deg,rgba(var(--rgb-brand),.55),#2b2729 70%)}
+.spec-table thead th{background:var(--color-ink);color:#fff;font-weight:700;letter-spacing:.01em} /* flat ink — the orange→ink sweep was rejected in review */
 .spec-table tbody td{border-top:1px solid var(--line);color:var(--soft)}
 .spec-table tbody td:first-child{color:var(--text);font-weight:600}
 .spec-table tbody tr:nth-child(even) td{background:var(--color-surface-warm)}
@@ -3979,8 +4106,7 @@ h4.post-share-label{margin:0}
 .feature-media{position:relative;margin:0;padding:clamp(14px,1.8vw,26px);border-radius:16px;background:var(--color-surface-muted)}
 .feature-media img{display:block;width:100%;aspect-ratio:16/9;object-fit:cover;border-radius:12px;box-shadow:6px 6px 0 var(--orange)}
 .feature-body h3{margin-bottom:12px}
-.product-detail-page .portal-features .is-untitled{padding-top:0}
-.product-detail-page .portal-features .is-untitled .portal-features-head:empty{display:none}
+.product-detail-page .portal-features.is-untitled .portal-features-head:empty{display:none}
 .spec-table-wrap+.closing{margin-top:clamp(18px,2.4vw,28px)}
 @media(max-width:820px){
   .product-detail-page .portal-features .feature-group.is-media-card{grid-template-columns:1fr}
@@ -4008,8 +4134,3 @@ h4.post-share-label{margin:0}
 
 /* home strip entries for products without a wordmark */
 .banner-strip-track .strip-text{font-weight:900;font-size:clamp(.9rem,1.6vh,1.1rem);letter-spacing:-.01em;color:#fff;white-space:nowrap}
-
-/* byline: author name on every post (link once the author has a profile) */
-.post-hero .post-author{font-weight:600;color:rgba(var(--rgb-white),.9)}
-.post-hero a.post-author{text-decoration:underline;text-decoration-color:rgba(var(--rgb-brand),.7);text-underline-offset:3px}
-.post-hero a.post-author:hover{color:var(--orange)}

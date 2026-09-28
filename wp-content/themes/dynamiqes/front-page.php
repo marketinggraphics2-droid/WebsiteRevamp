@@ -89,13 +89,13 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 					<img class="lg-d no-lazyload skip-lazy" src="<?php echo esc_url( $sap['logo'] ); ?>" alt="<?php echo esc_attr( $sap['name'] ); ?>">
 					<img class="lg-l no-lazyload skip-lazy" src="<?php echo esc_url( $sap['logo_light'] ); ?>" alt="" aria-hidden="true">
 				</span>
+				<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 				<div class="iq-foot">
 					<div class="iq-copy">
 						<span class="iq-tagline"><?php echo esc_html( $sap['card_tagline'] ); ?></span>
 						<div class="iq-detail">
 							<span class="iq-title-row">
 								<span class="iq-title"><?php echo esc_html( $sap['card_title'] ); ?></span>
-								<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 							</span>
 							<p class="iq-desc"><?php echo esc_html( $sap['card_desc'] ); ?></p>
 						</div>
@@ -115,13 +115,13 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 					<span class="iq-logo-text"><?php echo esc_html( $p['menu_label'] ); ?></span>
 					<?php endif; ?>
 				</span>
+				<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 				<div class="iq-foot">
 					<div class="iq-copy">
 						<span class="iq-tagline"><?php echo esc_html( $p['card_tagline'] ); ?></span>
 						<div class="iq-detail">
 							<span class="iq-title-row">
 								<span class="iq-title"><?php echo esc_html( $p['card_title'] ); ?></span>
-								<span class="iq-go"><?php echo $svg_arrow; // phpcs:ignore WordPress.Security.EscapeOutput ?></span>
 							</span>
 							<p class="iq-desc"><?php echo esc_html( $p['card_desc'] ); ?></p>
 						</div>
@@ -197,12 +197,17 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 	<div class="gallery-marq"<?php dq_reveal( 'fade' ); ?>>
 		<div class="gallery-track">
 			<?php foreach ( dq_gallery_photos() as $g ) : ?>
-				<figure class="gallery-item"><img src="<?php echo esc_url( dq_asset( $g[1] ) ); ?>" alt="<?php echo esc_attr( $g[0] ); ?>" loading="lazy"></figure>
+				<figure class="gallery-item"><img src="<?php echo esc_url( dq_asset( $g[1] ) ); ?>" alt="<?php echo esc_attr( $g[0] ); ?>" loading="lazy" draggable="false"></figure>
 			<?php endforeach; ?>
 			<?php foreach ( dq_gallery_photos() as $g ) : ?>
-				<figure class="gallery-item" aria-hidden="true"><img src="<?php echo esc_url( dq_asset( $g[1] ) ); ?>" alt="" loading="lazy"></figure>
+				<figure class="gallery-item" aria-hidden="true"><img src="<?php echo esc_url( dq_asset( $g[1] ) ); ?>" alt="" loading="lazy" draggable="false"></figure>
 			<?php endforeach; ?>
 		</div>
+	</div>
+	<?php /* arrows for keyboard / no-pointer users; main.js (9b) shows them once the drag engine is running */ ?>
+	<div class="gallery-nav" hidden>
+		<button type="button" class="gallery-btn" data-dir="-1" aria-label="<?php esc_attr_e( 'Previous poster', 'dynamiqes' ); ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></button>
+		<button type="button" class="gallery-btn" data-dir="1" aria-label="<?php esc_attr_e( 'Next poster', 'dynamiqes' ); ?>"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
 	</div>
 </section>
 
@@ -254,6 +259,7 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 			<?php endforeach; ?>
 		</div>
 	</div>
+	<?php dq_marquee_nav( __( 'Previous testimonial', 'dynamiqes' ), __( 'Next testimonial', 'dynamiqes' ), 'stories-nav' ); ?>
 </section>
 
 <!-- ═══ NEWS AND ANNOUNCEMENTS ═══ -->

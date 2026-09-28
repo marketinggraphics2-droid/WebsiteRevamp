@@ -24,10 +24,22 @@ $headline = get_post_meta( get_the_ID(), '_dq_about_h1', true );
 $headline = $headline ? $headline : $copy['h1'];
 $intro    = trim( get_the_content() );
 $intro    = '' === $intro ? implode( '', array_map( function ( $p ) { return '<p>' . dq_inline_html( $p ) . '</p>'; }, $copy['intro'] ) ) : apply_filters( 'the_content', $intro );
-$products = dq_get_products();
-$by_name  = array();
-foreach ( $products as $prod ) {
-	$by_name[ strtolower( $prod['name'] ) ] = $prod;
+/* The product list follows the catalogue order (dq_product_menu_order — the same order as the
+   nav dropdown, home strip and /products/) and shows every published product. The About copy
+   in inc/page-content.php supplies the live page's paragraphs and heading where it has an entry
+   for the product (matched by name); newer products fall back to their listing paragraphs. */
+$about_copy = array();
+foreach ( $copy['products'] as $ap ) {
+	$about_copy[ strtolower( $ap['name'] ) ] = $ap;
+}
+$about_products = array();
+foreach ( dq_get_products() as $prod ) {
+	$ap    = $about_copy[ strtolower( $prod['name'] ) ] ?? null;
+	$paras = $ap ? $ap['paras'] : ( ! empty( $prod['listing'] ) ? (array) $prod['listing'] : array_filter( array( $prod['description'] ) ) );
+	if ( empty( $paras ) ) {
+		continue; // nothing to say about it yet
+	}
+	$about_products[] = array( 'name' => $ap ? $ap['name'] : $prod['name'], 'paras' => $paras, 'prod' => $prod );
 }
 $testimonials = dq_testimonials();
 
@@ -55,10 +67,16 @@ $about_img = function ( $name ) {
 ?>
 <main id="main">
 	<article <?php post_class( 'about-page' ); ?>>
-		<header class="page-hero">
-			<div class="wrap">
-				<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
-				<div class="page-hero-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div>
+		<header class="page-hero about-hero">
+			<div class="wrap about-hero-grid">
+				<div class="about-hero-copy">
+					<h1<?php dq_reveal(); ?>><?php echo esc_html( $headline ); ?></h1>
+					<div class="page-hero-intro"<?php dq_reveal( '', 80 ); ?>><?php echo wp_kses_post( $intro ); ?></div>
+				</div>
+				<?php /* photo beside the intro: the page's Featured Image, else the bundled DynamIQ photo (assets/pages/about/about-hero.jpg) */ ?>
+				<figure class="about-hero-visual"<?php dq_reveal( '', 160 ); ?>>
+					<img class="about-hero-photo" src="<?php echo esc_url( dq_page_hero_photo( 'about/about-hero.jpg' ) ); ?>" alt="<?php esc_attr_e( 'The DynamIQ team working together around laptops in the office', 'dynamiqes' ); ?>" width="1200" height="800" fetchpriority="high">
+				</figure>
 			</div>
 		</header>
 
@@ -77,7 +95,8 @@ $about_img = function ( $name ) {
 			</div>
 		</section>
 
-		<section class="about-values">
+		<?php $values_photo = dq_page_asset( 'career/experience.jpg' ); /* the team photo sits behind the whole section (user, 2026-09-23); the about/team-breaker.jpg crop below was cut from this same file */ ?>
+		<section class="about-values<?php echo $values_photo ? ' about-values--photo' : ''; ?>"<?php if ( $values_photo ) : ?> style="--values-photo:url('<?php echo esc_url( $values_photo ); ?>')"<?php endif; ?>>
 			<div class="wrap">
 				<div class="sec-head center"<?php dq_reveal(); ?>>
 					<h2><?php echo esc_html( $copy['values_h2'] ); ?></h2>
@@ -102,8 +121,8 @@ $about_img = function ( $name ) {
 				</div>
 				<div class="product-list">
 					<?php
-					foreach ( $copy['products'] as $i => $ap ) :
-						$prod = $by_name[ strtolower( $ap['name'] ) ] ?? null;
+					foreach ( $about_products as $i => $ap ) :
+						$prod = $ap['prod'];
 						$shot = $about_img( $ap['name'] );
 						$shot = $shot ? $shot : ( $prod && $prod['hero'] ? $prod['hero'] : '' );
 						?>
@@ -156,6 +175,7 @@ $about_img = function ( $name ) {
 					<?php endforeach; ?>
 				</div>
 			</div>
+			<?php dq_marquee_nav( __( 'Previous testimonial', 'dynamiqes' ), __( 'Next testimonial', 'dynamiqes' ), 'stories-nav' ); ?>
 		</section>
 		<?php endif; ?>
 	</article>

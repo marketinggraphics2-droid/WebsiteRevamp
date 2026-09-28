@@ -22,6 +22,7 @@ $cats  = array_values( array_filter( get_the_category(), function ( $c ) { retur
 		<div class="news-meta">
 			<?php if ( $cats ) : ?><span class="news-tag"><?php echo esc_html( $cats[0]->name ); ?></span><?php endif; ?>
 			<span class="news-date"><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></span>
+			<?php if ( function_exists( 'dq_post_byline' ) ) { dq_post_byline(); } ?>
 		</div>
 		<<?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput ?> class="card-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></<?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 		<p><?php echo esc_html( get_the_excerpt() ); /* untrimmed: WordPress' own 55-word auto-excerpt is what the live listings show, and a hand-written excerpt shows whole there too */ ?></p>

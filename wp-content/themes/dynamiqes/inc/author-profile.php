@@ -174,6 +174,52 @@ function dq_author_has_profile( $user_id ) {
 	return false;
 }
 
+/**
+ * The "By Author" byline for the current post's meta row (single hero, Blogs / News & Events
+ * cards). Always a link to the author's page: author.php renders any account (sections whose
+ * fields are empty stay hidden), and inc/seo.php keeps a page with no profile out of the index.
+ */
+/**
+ * The site's default author (Customizer → Authors → Default author), used only for a post that
+ * has no author of its own. Unset, there is none: every post is credited to its own account
+ * (user decision 2026-09-23: the site already has its authors; nobody is credited by default).
+ */
+function dq_default_author_id() {
+	$id = (int) get_theme_mod( 'dq_default_author', 0 );
+	return ( $id && get_userdata( $id ) ) ? $id : 0;
+}
+
+/** Who a post is credited to: its own author when that account still exists, else the default author. */
+function dq_post_author_id() {
+	$own = (int) get_post_field( 'post_author', get_the_ID() );
+	if ( $own && get_userdata( $own ) ) {
+		return $own;
+	}
+	return dq_default_author_id();
+}
+
+/** New or re-saved posts with no author get the default author, so the archive counts line up too. */
+add_filter( 'wp_insert_post_data', function ( $data ) {
+	if ( 'post' === $data['post_type'] && empty( $data['post_author'] ) && function_exists( 'dq_default_author_id' ) ) {
+		$id = dq_default_author_id();
+		if ( $id ) {
+			$data['post_author'] = $id;
+		}
+	}
+	return $data;
+} );
+
+function dq_post_byline() {
+	$user_id = dq_post_author_id();
+	$name    = $user_id ? get_the_author_meta( 'display_name', $user_id ) : '';
+	if ( ! $user_id || '' === trim( (string) $name ) ) {
+		return;
+	}
+	/* translators: %s: author name */
+	$label = sprintf( __( 'By %s', 'dynamiqes' ), $name );
+	echo '<a class="news-date post-author" href="' . esc_url( get_author_posts_url( $user_id ) ) . '" rel="author">' . esc_html( $label ) . '</a>';
+}
+
 /** Author pages with a profile are real content: let them be indexed (inc/seo.php noindexes bare author archives). */
 add_filter( 'wp_robots', function ( $robots ) {
 	if ( is_author() && dq_author_has_profile( get_queried_object_id() ) ) {
@@ -216,10 +262,19 @@ function dq_author_lines_html( array $lines ) {
 
 /** Icon for an expertise card, picked from its wording (reuses the landing-page icon set). */
 function dq_author_expertise_icon( $title ) {
+	/* The three icons drawn in the Author Page design (assets/author/, cut from the design PDF)
+	   cover the sales / leadership / consulting wording; other topics fall back to product icons. */
+	$design = array(
+		'/sales|channel|partner|ecosystem|revenue/i'          => 'expertise-sales',
+		'/leader|manage|team|director/i'                       => 'expertise-leadership',
+		'/consult|digital|transform|strateg|advis/i'           => 'expertise-consulting',
+	);
+	foreach ( $design as $rx => $icon ) {
+		if ( preg_match( $rx, (string) $title ) ) {
+			return DQ_URI . '/assets/author/' . $icon . '.png';
+		}
+	}
 	$map = array(
-		'/sales|channel|partner|ecosystem|revenue/i'          => 'sect-five-sales',
-		'/leader|manage|team|director/i'                       => 'sect-five-management',
-		'/consult|digital|transform|strateg|advis/i'           => 'sect-five-business',
 		'/erp|sap|implement|system/i'                          => 'sect-six-integrates',
 		'/financ|account|audit|tax/i'                          => 'sect-five-accounting',
 		'/supply|logistic|inventory|warehouse|distribut/i'     => 'sect-seven-distribution',

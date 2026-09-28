@@ -19,6 +19,7 @@ $cats = array_values( array_filter( get_the_category(), function ( $c ) { return
 		<div class="news-meta">
 			<?php if ( $cats ) : ?><span class="news-tag"><?php echo esc_html( $cats[0]->name ); ?></span><?php endif; ?>
 			<span class="news-date"><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></span>
+			<?php if ( function_exists( 'dq_post_byline' ) ) { dq_post_byline(); } ?>
 		</div>
 		<<?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput ?> class="feature-title"><a href="<?php the_permalink(); ?>"><?php the_title(); ?></a></<?php echo $tag; // phpcs:ignore WordPress.Security.EscapeOutput ?>>
 		<p><?php echo esc_html( wp_trim_words( get_the_excerpt(), 40 ) ); ?></p>

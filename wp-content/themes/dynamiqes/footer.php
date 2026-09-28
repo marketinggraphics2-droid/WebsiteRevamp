@@ -23,7 +23,7 @@ $explore  = array(
 );
 /* Home-page video marquee above the footer — same treatment as the Life-at-DynamIQ
  * photo marquee mid-page, but with clips: the four newest video uploads in the media
- * library (see dq_video_wall_items() for the placeholder top-up rules). Sources are
+ * library (product clips only, see dq_video_wall_items()). Sources are
  * attached lazily by main.js so the clips never delay the rest of the page. */
 $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 ?>
@@ -42,6 +42,7 @@ $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 					         lightbox after a click (see "5c"). */ ?>
 					<video muted loop playsinline preload="none"<?php if ( ! empty( $v['poster'] ) ) : ?> poster="<?php echo esc_url( $v['poster'] ); ?>"<?php endif; ?>></video>
 					<span class="video-tile-hint" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+					<figcaption class="video-tile-label"><?php echo esc_html( $v['label'] ); ?></figcaption>
 				</figure>
 			<?php endforeach; ?>
 			<?php endforeach; ?>

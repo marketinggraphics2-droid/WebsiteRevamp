@@ -8,7 +8,7 @@
  * Content is NOT hard-coded here: it is the page content imported from the live site by the
  * landing importer (H2 per service, paragraphs, caption lists) — editable in WP Admin and kept
  * verbatim for SEO. This template only lays it out; dq_svc_section_meta() adds the presentation
- * extras (tone, photo, icons, CTA, phases) keyed by the H2 text.
+ * extras (photo, icons, CTA, phases) keyed by the H2 text.
  *
  * @package dynamiqes
  */
@@ -78,6 +78,29 @@ foreach ( $chunks as $chunk ) {
 	}
 }
 
+/* The five services run in the order of the home-page timeline (01 Consultation → 05 Technical &
+   Helpdesk Support) rather than the live page's order. They swap within the slots they already
+   occupy, so every other band (SAP BIR CAS first, Why Trust last) keeps its place and its side. */
+$svc_key  = function ( $title ) { return sanitize_title( str_replace( '&', 'and', $title ) ); };
+$svc_rank = array();
+foreach ( dq_services() as $k => $s ) {
+	$svc_rank[ $svc_key( $s['title'] ) ] = $k;
+}
+$svc_slots = array();
+$svc_secs  = array();
+foreach ( $sections as $i => $sec ) {
+	$key = $svc_key( $sec['title'] );
+	if ( isset( $svc_rank[ $key ] ) ) {
+		$svc_slots[]                    = $i;
+		$svc_secs[ $svc_rank[ $key ] ] = $sec;
+	}
+}
+ksort( $svc_secs );
+$svc_secs = array_values( $svc_secs );
+foreach ( $svc_slots as $j => $i ) {
+	$sections[ $i ] = $svc_secs[ $j ];
+}
+
 /**
  * Presentation extras per section, keyed by the H2 slug. Photos are the old page's composites
  * (assets/services/page/), icons the old caption icons (assets/services/page/icons/).
@@ -87,7 +110,6 @@ function dq_svc_section_meta( $title ) {
 	$icons = $base . 'icons/';
 	$map   = array(
 		'sap-bir-cas-accreditation-assistance' => array(
-			'tone'  => 'dark',
 			'image' => $base . 'sap-accreditation.png',
 			'icons' => array(
 				'a-streamlined-accounting-process'  => 'streamline-accounting.png',
@@ -100,7 +122,6 @@ function dq_svc_section_meta( $title ) {
 			),
 		),
 		'consultation' => array(
-			'tone'  => 'light',
 			'image' => $base . 'consultation-new.png',
 			'icons' => array(
 				'embrace-digital-transformation'     => 'embrace-digital.svg',
@@ -110,10 +131,9 @@ function dq_svc_section_meta( $title ) {
 				'consolidate-critical-data'          => 'consolidate-critical.svg',
 			),
 		),
-		'training'    => array( 'tone' => 'dark', 'image' => $base . 'training-new.png' ),
-		'development' => array( 'tone' => 'light', 'image' => $base . 'development-new.png' ),
+		'training'    => array( 'image' => $base . 'training-new.png' ),
+		'development' => array( 'image' => $base . 'development-new.png' ),
 		'technical-and-helpdesk-support' => array(
-			'tone'  => 'dark',
 			'image' => $base . 'tech-helpdesk.png',
 			'icons' => array(
 				'basic-sap-functionality-inquiries'          => 'basic-sap-functionality.png',
@@ -124,15 +144,14 @@ function dq_svc_section_meta( $title ) {
 			),
 		),
 		'implementation' => array(
-			'tone'   => 'light',
 			'image'  => $base . 'implementation-new.png',
 			/* SAP's five-phase methodology — drawn as an image on the old page, rebuilt as markup */
 			'phases' => array( 'Project Preparation', 'Business Blueprint', 'Project Realization', 'Final Preparation', 'Go-Live' ),
 		),
-		'why-trust-dynamiq-and-our-services' => array( 'tone' => 'dark', 'image' => $base . 'why-trust-dynamiqes.png', 'layout' => 'trust' ),
+		'why-trust-dynamiq-and-our-services' => array( 'image' => $base . 'why-trust-dynamiqes.png', 'layout' => 'trust' ),
 	);
 	$key  = sanitize_title( $title );
-	$meta = isset( $map[ $key ] ) ? $map[ $key ] : array( 'tone' => 'light', 'image' => '' );
+	$meta = isset( $map[ $key ] ) ? $map[ $key ] : array( 'image' => '' );
 	if ( ! empty( $meta['icons'] ) ) {
 		foreach ( $meta['icons'] as $k => $f ) {
 			$meta['icons'][ $k ] = $icons . $f;
@@ -174,11 +193,12 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 			$trust  = ! empty( $meta['layout'] ) && 'trust' === $meta['layout'];
 			$image  = ! empty( $meta['image'] ) ? dq_asset( $meta['image'] ) : ( ! empty( $sec['images'] ) ? $sec['images'][0] : '' );
 			$flip   = ( $i % 2 ) === 1; // photo left on every second band
+			$tone   = $flip ? 'light' : 'dark'; // bands alternate by position, whatever service lands there
 			if ( ! $trust ) { $n++; }
 			$paras  = $sec['paras'];
 			/* a lead-in ending with ":" introduces the list / phases — keep it as the last paragraph */
 		?>
-		<section class="svc-band svc-<?php echo esc_attr( $meta['tone'] ); ?><?php echo $flip ? ' svc-flip' : ''; ?><?php echo $trust ? ' svc-trust' : ''; ?>" id="svc-<?php echo esc_attr( sanitize_title( $sec['title'] ) ); ?>">
+		<section class="svc-band svc-<?php echo esc_attr( $tone ); ?><?php echo $flip ? ' svc-flip' : ''; ?><?php echo $trust ? ' svc-trust' : ''; ?>" id="svc-<?php echo esc_attr( sanitize_title( $sec['title'] ) ); ?>">
 			<div class="wrap svc-grid">
 				<div class="svc-copy">
 					<h2<?php dq_reveal( '', 60 ); ?>><?php echo esc_html( $sec['title'] ); ?></h2>

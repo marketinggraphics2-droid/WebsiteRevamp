@@ -79,12 +79,7 @@ if ( $related->post_count < 3 ) {
 						<?php if ( $cat ) : ?><span class="news-tag"><?php echo esc_html( $cat->name ); ?></span><?php endif; ?>
 						<time class="news-date" datetime="<?php echo esc_attr( get_the_date( 'c' ) ); ?>"><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></time>
 						<span class="news-date post-read"><?php echo esc_html( sprintf( /* translators: %d: minutes */ _n( '%d min read', '%d min read', $minutes, 'dynamiqes' ), $minutes ) ); ?></span>
-						<?php /* byline on every post; it links to the author page (author.php) once that author's profile is filled in */ ?>
-						<?php if ( function_exists( 'dq_author_has_profile' ) && dq_author_has_profile( get_the_author_meta( 'ID' ) ) ) : ?>
-						<a class="news-date post-author" href="<?php echo esc_url( get_author_posts_url( get_the_author_meta( 'ID' ) ) ); ?>" rel="author"><?php echo esc_html( sprintf( /* translators: %s: author name */ __( 'By %s', 'dynamiqes' ), get_the_author() ) ); ?></a>
-						<?php else : ?>
-						<span class="news-date post-author"><?php echo esc_html( sprintf( /* translators: %s: author name */ __( 'By %s', 'dynamiqes' ), get_the_author() ) ); ?></span>
-						<?php endif; ?>
+						<?php if ( function_exists( 'dq_post_byline' ) ) { dq_post_byline(); /* "By Author" → the author page (author.php) when a profile exists */ } ?>
 					</div>
 					<h1<?php dq_reveal( 'fade', 80 ); ?>><?php the_title(); ?></h1>
 					<?php if ( has_excerpt() ) : ?><p class="lede"<?php dq_reveal( 'fade', 160 ); ?>><?php echo esc_html( get_the_excerpt() ); ?></p><?php endif; ?>
