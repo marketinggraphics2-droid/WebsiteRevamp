@@ -182,3 +182,53 @@ The importer changes (F4 in-text links, F5 the partner tier, F6 word spacing, an
 size probe) rewrite what is *stored* for each landing page, so they only take effect after
 **Appearance → DynamIQ Setup → Import landing pages** is run again on staging. The section
 design (F1/F2/F3/F7/F8) is template-side and applies immediately.
+
+---
+
+# SEO Hacker pre-live check — "0928 Pre Live Checks" (2026-09-28)
+
+Source: `DynamIQ - Website Redesign.xlsx`, sheet **0928 Pre Live Checks**. 81 rows marked
+**Rejected**; every row carries an IQ remark in column F. All fixed in **Theme 3.0**.
+
+## J. Headings and tags
+
+- [x] **J1** About — DRIVEN / DEPENDABLE / DEDICATED / DATA SECURITY are H3, not H4. Rows 3–6.
+      → `page-about-us.php`, `.about-page .about-values .feature-group h3`
+- [x] **J2** "Ready To Get Started?" CTA kicker is a P, not an H3 — landing pages and product pages.
+      Rows 8, 17, 39, 84, 141, 210, 229. → `inc/landing-sections.php`, `single-dq_product.php`
+- [x] **J3** /blogs/ card titles are H2. Row 42. → `index.php`
+- [x] **J4** /news-events/ card titles are H3. Row 167. → `page-news-events.php`
+- [x] **J5** /products/ product names are H2. Rows 173–183. → `archive-dq_product.php`, `.products-page .product-copy h2`
+- [x] **J6** /our-services/ hidden "Consult with our SAP Business One Specialist today!" H3 removed. Row 169.
+
+## K. Title tags and meta descriptions
+
+- [x] **K1** Brand spelling: every title tag / description that read "DynamIQes" or "Dynamiqes" now reads
+      "DynamIQ" (site name in the DB is "DynamIQes"; Yoast `%%sitename%%`). Rows 16, 36–38, 44–45, 50, 54, 83,
+      132, 160–161, 165–166, 168, 170, 184–186, 201–203, 228, 234–238, 242–245, 247.
+      → `dq_seo_brand()` in `inc/seo.php`, hooked on `wpseo_title` / `wpseo_metadesc` (+ OG/Twitter) and the theme's own tags
+- [x] **K2** Testimonials without a Yoast title get "Client Testimonials - <client> - DynamIQ". Rows 239, 249.
+- [x] **K3** /barcode-inventory-system/ title tag "How Barcoding Improves Inventory Tracking and Business Operations"
+      (post has no Yoast title; a Yoast title typed later wins). Row 18. → `dq_seo_title_overrides()`
+
+## L. Listings and contact
+
+- [x] **L1** /blogs/ — featured story + 9 cards on page 1, 9 cards on every later page (was 10). Row 40.
+      → `inc/setup.php` (offset + `found_posts`), `index.php`
+- [x] **L2** Blog card category chip links to the category page. Row 41. → `template-parts/post-card.php`
+- [x] **L3** Address links to the Google Maps listing (contact block + footer); URL in Customizer → Contact details → Map link.
+      Rows 43, 77. → `template-parts/contact-section.php`, `footer.php`, `dq_contact_info()['map']`
+
+## M. Product copy (`inc/product-content.php`)
+
+- [x] **M1** IQ Barcode — 2nd "Technical Specifications" → "Feature List". Row 187.
+- [x] **M2** IQ Link — 2nd "Features" → "Named Compatible Platforms"; 2nd "Generic REST API Compatibility" →
+      "Implementation Timeline" with the supplied copy. Rows 188–190.
+- [x] **M3** IQ REM — "Implementation" → "Payment Plan"; new copy under "Unit Owner / Buyer Information List Details";
+      2nd "Unit Owner / Buyer Information List" → "Payment Plan Details" with the payment-plan copy. Rows 192–195.
+- [x] **M4** IQ People — 1st "Executive Dashboard and Analytics" copy completed; 2nd → "Time & Attendance". Rows 197–198.
+- [x] **M5** IQ Desk — 1st "License Structure" → "Helpdesk and Workflow Features"; "Self-Service Portal" card → "SLA Management";
+      2nd "License Structure" → "Knowledge Base and Self-Service Portal"; closing copy under AI Usage, Deployment Model and
+      Reporting and Analytics not bold (`'closing_style' => 'plain'`). Rows 204–209.
+
+Product sections live in code (not post meta), so M1–M5 apply as soon as the theme is deployed; no re-import needed.

@@ -66,7 +66,7 @@ $news     = new WP_Query( array_merge( $base, array( 'posts_per_page' => 9, 'pag
 				</div>
 				<?php if ( $news->have_posts() ) : ?>
 					<div class="post-grid">
-						<?php while ( $news->have_posts() ) : $news->the_post(); get_template_part( 'template-parts/post-card', null, array( 'heading' => 'p' ) ); endwhile; wp_reset_postdata(); ?>
+						<?php while ( $news->have_posts() ) : $news->the_post(); get_template_part( 'template-parts/post-card', null, array( 'heading' => 'h3' ) ); endwhile; wp_reset_postdata(); ?>
 					</div>
 					<nav class="pagination" aria-label="<?php esc_attr_e( 'Pagination', 'dynamiqes' ); ?>"><?php echo paginate_links( array( 'total' => $news->max_num_pages, 'current' => $paged, 'prev_text' => '←', 'next_text' => '→' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></nav>
 				<?php else : ?>

@@ -105,7 +105,7 @@ $about_img = function ( $name ) {
 					<?php foreach ( $copy['values'] as $i => $v ) : $icon = $about_img( $v[0] ); ?>
 					<article class="feature-group"<?php dq_reveal( '', $i * 90 ); ?>>
 						<?php if ( $icon ) : ?><span class="about-icon about-icon--sm"><img src="<?php echo esc_url( $icon ); ?>" alt="" width="50" height="50" loading="lazy"></span><?php endif; ?>
-						<h4><?php echo esc_html( $v[0] ); ?></h4>
+						<h3><?php echo esc_html( $v[0] ); ?></h3>
 						<p><?php echo dq_inline_html( $v[1] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
 					</article>
 					<?php endforeach; ?>

@@ -360,6 +360,7 @@ function dq_contact_info() {
 	return array(
 		'address' => get_theme_mod( 'dq_address', 'No. 12 Tagdalit Street, Manresa, Quezon City 1115' ),
 		'address_short' => get_theme_mod( 'dq_address_short', '12 Tagdalit Street, Brgy. Manresa, Quezon City' ),
+		'map'     => get_theme_mod( 'dq_map_url', 'https://maps.app.goo.gl/4Kk8mZ8FnBrDxn629' ), // Google Maps / Business Profile listing the address links to
 		'phone1'  => get_theme_mod( 'dq_phone_1', '+63 917-630-4848' ),
 		'phone2'  => get_theme_mod( 'dq_phone_2', '+63(2) 8365 0228' ),
 		'email'   => get_theme_mod( 'dq_contact_email_public', 'sales@dynamiqes.com' ),

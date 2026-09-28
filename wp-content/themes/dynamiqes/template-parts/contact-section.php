@@ -47,7 +47,7 @@ $aside_heading = array_key_exists( 'aside_heading', $args ) ? $args['aside_headi
 							<p class="loc-city"><?php echo esc_html( $contact['city'] ); ?></p><?php /* not a heading: no live page has an H4 here */ ?>
 							<div class="loc-line">
 								<span class="ic"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a7 7 0 0 0-7 7c0 5 7 13 7 13s7-8 7-13a7 7 0 0 0-7-7zm0 9.5A2.5 2.5 0 1 1 12 6.5a2.5 2.5 0 0 1 0 5z"/></svg></span>
-								<p><?php echo esc_html( $contact['address'] ); ?></p>
+								<p><?php if ( ! empty( $contact['map'] ) ) : ?><a href="<?php echo esc_url( $contact['map'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $contact['address'] ); ?></a><?php else : ?><?php echo esc_html( $contact['address'] ); ?><?php endif; ?></p>
 							</div>
 							<div class="loc-line">
 								<span class="ic"><?php echo dq_icon_phone(); // phpcs:ignore WordPress.Security.EscapeOutput ?></span>

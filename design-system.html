@@ -2191,7 +2191,7 @@ comp({ id:'article', group:'sub', title:'Article typography, key-points callout 
 comp({ id:'faq', group:'sub', title:'FAQ accordion & feature checklist', used:['Product pages','Landing pages','About','Careers'],
   notes:[
     '<b>.faq-list</b> — native <code>&lt;details&gt;</code> rows separated by hairlines; the summary is 17–19px/700 with a 32px circled “+” that becomes “−” when open. Answers are <code>--fs-lede</code>/1.75 in <code>--soft</code>, padded 52px on the right so they clear the toggle.',
-    '<b>.feature-group</b> — 16px-radius white card with an orange blurred disc in the corner, an H3 and a ✓ checklist in orange. Used for product feature groups, About core values (<code>.about-page .about-values .feature-group h4</code>) and Career values (<code>.career-values .feature-group p</code>).',
+    '<b>.feature-group</b> — 16px-radius white card with an orange blurred disc in the corner, an H3 and a ✓ checklist in orange. Used for product feature groups, About core values (<code>.about-page .about-values .feature-group h3</code>) and Career values (<code>.career-values .feature-group p</code>).',
     'The product pages’ <code>.portal-features</code> variant strips the card chrome and renders groups as hairline-separated rows.'
   ],
   resp:['Feature grid: 3 → 2 (≤980px) → 1 (≤620px).', 'FAQ head un-sticks under 980px.'],
@@ -2219,7 +2219,7 @@ comp({ id:'faq', group:'sub', title:'FAQ accordion & feature checklist', used:['
 .feature-group li{ display:flex; gap:10px; }
 .feature-group li::before{ content:"✓"; color:var(--brand); font-weight:900; }
 /* About core values / Career values variants */
-.about-page .about-values .feature-group h4{ position:relative; font-size:var(--h3); line-height:1.1; letter-spacing:-.03em; margin:0 0 16px; }
+.about-page .about-values .feature-group h3{ position:relative; font-size:var(--h3); line-height:1.1; letter-spacing:-.03em; margin:0 0 16px; }
 .about-page .about-values .feature-group p{ position:relative; color:var(--soft); line-height:var(--lh-body); }
 .about-page .about-values .feature-group::before{ display:none; }
 .career-values .feature-group p{ font-size:var(--fs-sm); color:var(--soft); line-height:var(--lh-body); margin-top:10px; }

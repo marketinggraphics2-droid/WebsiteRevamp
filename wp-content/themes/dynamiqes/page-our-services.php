@@ -181,9 +181,6 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 					<h1 id="svc-title" class="text-center"<?php dq_reveal( 'fade', 60 ); ?>><?php echo esc_html( $headline ); ?></h1>
 					<?php foreach ( $intro_paras as $k => $p ) : ?><p<?php dq_reveal( '', 140 + $k * 60 ); ?>><?php echo esc_html( $p ); ?></p><?php endforeach; ?>
 				</div>
-				<?php /* On the live page this H3 sits in a hidden enquiry modal (trigger button commented out), so it is
-				   in the HTML but never displayed. Same here: present for the outline, not rendered. */ ?>
-				<div class="svc-consult-modal" hidden><h3 class="svc-consult"><?php esc_html_e( 'Consult with our SAP Business One Specialist today!', 'dynamiqes' ); ?></h3></div>
 			</div>
 		</section>
 

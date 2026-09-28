@@ -75,7 +75,7 @@ $videos = is_front_page() ? dq_video_wall_items( 4 ) : array();
 			<div<?php dq_reveal( '', 240 ); ?>>
 				<h4><?php esc_html_e( 'Contact', 'dynamiqes' ); ?></h4>
 				<ul>
-					<li><?php echo esc_html( $c['address'] ); ?></li>
+					<li><?php if ( ! empty( $c['map'] ) ) : ?><a href="<?php echo esc_url( $c['map'] ); ?>" target="_blank" rel="noopener"><?php echo esc_html( $c['address'] ); ?></a><?php else : ?><?php echo esc_html( $c['address'] ); ?><?php endif; ?></li>
 					<?php if ( $c['phone1'] ) : ?><li><a href="<?php echo esc_attr( dq_tel( $c['phone1'] ) ); ?>"><?php echo esc_html( $c['phone1'] ); ?></a></li><?php endif; ?>
 					<?php if ( $c['phone2'] ) : ?><li><a href="<?php echo esc_attr( dq_tel( $c['phone2'] ) ); ?>"><?php echo esc_html( $c['phone2'] ); ?></a></li><?php endif; ?>
 					<li><a href="mailto:<?php echo esc_attr( $c['email'] ); ?>"><?php echo esc_html( $c['email'] ); ?></a></li>

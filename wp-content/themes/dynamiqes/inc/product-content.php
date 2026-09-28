@@ -386,7 +386,7 @@ function dq_product_live_content() {
 				),
 				array(
 					'type'    => 'generic',
-					'title'   => 'Technical Specifications',
+					'title'   => 'Feature List',
 					'columns' => 2,
 					'items'   => array(
 						array( 'title' => 'Barcode Scanning', 'icon' => 'assets/products/icons/sect-four-data.png', 'text' => "IQ Barcode supports scanning through hardware barcode scanners and camera-based scanning on supported mobile devices.\n\nHardware scanners can include any USB or Bluetooth HID barcode scanner operating in keyboard-wedge mode.\n\nCamera scanning supports QR Code, Code 128, and EAN-13 through the mobile_scanner library.", 'items' => array() ),
@@ -552,7 +552,7 @@ function dq_product_live_content() {
 				),
 				array(
 					'type'  => 'generic',
-					'title' => 'Features',
+					'title' => 'Named Compatible Platforms',
 					'image' => 'none',
 					'items' => array(
 						array( 'title' => 'E-Commerce Platforms with Built-In Signed Auth', 'image' => 'assets/products/site-media/link-ecommerce.jpg', 'media' => 'right', 'text' => "IQ Link includes built-in signed authentication support for selected e-commerce platforms.", 'items' => array() ),
@@ -639,7 +639,7 @@ function dq_product_live_content() {
 					'title' => '',
 					'image' => 'none',
 					'items' => array(
-						array( 'title' => 'Generic REST API Compatibility', 'image' => 'assets/products/site-media/link-rest2.jpg', 'media' => 'right', 'text' => "Any platform that exposes a REST API can work out of the box through IQ Link’s Generic connection type.", 'items' => array() ),
+						array( 'title' => 'Implementation Timeline', 'image' => 'assets/products/site-media/link-rest2.jpg', 'media' => 'right', 'text' => "IQ Link implementation depends on the number of integrations, mapping complexity, source systems, validation requirements, and deployment setup.", 'items' => array() ),
 					),
 					'table' => array(
 						array( 'Phase', 'Duration', 'Activities' ),
@@ -703,7 +703,7 @@ function dq_product_live_content() {
 						array( 'title' => 'Property / Unit Inventory', 'image' => 'assets/products/site-media/rem-inventory.jpg', 'media' => 'left', 'text' => "IQ REM stores real estate units as SAP Business One Items under OITM, enriched with real estate-specific fields for property sales and inventory tracking.\n\nEach unit record includes Project, Building, Phase, Unit, Floor, Property, Unit Type, List Price, Price-per-SQM, Floor Area, Misc Fee, VAT, and Account Status.\n\nUnits can be tracked as Available, Sold, or Reopen, giving users real-time visibility over unit availability directly inside SAP Business One.", 'items' => array() ),
 						array( 'title' => 'Unit Owner / Buyer Information List', 'image' => 'assets/products/site-media/rem-owner-list.jpg', 'media' => 'right', 'text' => "The Unit Owner / Buyer Information List serves as the main operational dashboard for managing unit-owner records.\n\nUsers can search, filter, create, view, edit, cancel, and manage records through a centralized grid. Records can also be filtered by Project and Building using cascading selections.\n\nThe list supports ACTIVE, CANCELED, and TRANSFER status tracking, with changes cascading to the related unit’s item flags and the buyer’s business-partner flags.\n\nIt also provides launch points for the Payment Plan and Reports / Statement of Account (SOA).", 'items' => array() ),
 						array( 'title' => 'Unit Owner / Buyer Information Form', 'image' => 'assets/products/site-media/rem-owner-form.jpg', 'media' => 'left', 'text' => "The Unit Owner / Buyer Information Form is the detailed registration screen used to link a specific unit to its buyer or owner record.\n\nThe form captures Unit Code, Project, Phase, Building, Unit, Floor, Property, Unit Type, Primary Owner, Co-owner, and Contract Type.\n\nIt also records the full sales-team chain, including Broker, Override, Property Specialist, Sales Manager, Sales Director, and Sales Division Head.\n\nAdditional fields include Sales Source, Group Performance tagging, RF Date, and Date Sold.", 'items' => array() ),
-						array( 'title' => 'Implementation', 'image' => 'assets/products/site-media/rem-implementation.jpg', 'media' => 'right', 'text' => "The Payment Plan acts as the financial engine of the sale. It computes the full contract amount, generates the payment structure, and creates the corresponding SAP Business One documents based on the configured client setup.\n\nThe pricing computation follows this flow:\nList Price → Cascading Discounts → Net List Price → 12% VAT → Total Contract Price (TCP) → Misc Fee → Total Selling Price (TSP)\n\nThe module also handles Reservation Fee, Spot DP, Additional DP, Deferred Payment, Net Balance, amortization schedules, financing details, Incoming Payments, OR numbers, checks, and deposits per term.", 'items' => array() ),
+						array( 'title' => 'Payment Plan', 'image' => 'assets/products/site-media/rem-implementation.jpg', 'media' => 'right', 'text' => "The Payment Plan acts as the financial engine of the sale. It computes the full contract amount, generates the payment structure, and creates the corresponding SAP Business One documents based on the configured client setup.\n\nThe pricing computation follows this flow:\nList Price → Cascading Discounts → Net List Price → 12% VAT → Total Contract Price (TCP) → Misc Fee → Total Selling Price (TSP)\n\nThe module also handles Reservation Fee, Spot DP, Additional DP, Deferred Payment, Net Balance, amortization schedules, financing details, Incoming Payments, OR numbers, checks, and deposits per term.", 'items' => array() ),
 						array( 'title' => 'Uploader', 'image' => 'assets/products/site-media/rem-uploader.jpg', 'media' => 'left', 'text' => "The Uploader supports mass data migration and onboarding through Excel.\n\nIt imports owner data, unit-owner links, contract type, sales-team chain, source tagging, group tagging, RF Date, Date Sold, pricing details, payment plans, discounts, DP terms, schedules, and payment collections.\n\nOnce uploaded, the system creates the corresponding owner records, payment headers, discount records, AR Invoices, and payment lines.\n\nIt also flags the related SAP Items and Business Partners as active.", 'items' => array() ),
 					),
 				),
@@ -712,8 +712,8 @@ function dq_product_live_content() {
 					'title' => 'Technical Details',
 					'image' => 'none',
 					'items' => array(
-						array( 'title' => 'Unit Owner / Buyer Information List Details', 'image' => 'assets/products/site-media/rem-list-details.jpg', 'media' => 'left', 'text' => "The Payment Plan supports cascading discounts such as Promo Discount, Commission Discount, Payment Discount, and Price Discount.\n\nDown-payment components include Reservation Fee, Spot DP, Additional DP, Deferred Payment, and Net Balance. Each component can be computed as an amount and percentage.\n\nFor amortization, the module spreads the deferred amount over a defined number of months and calculates the DP Start Date, DP End Date, monthly payment amount, and misc fee distribution.\n\nFinancing details include Takeout / Loanable Amount, In-house Financing Years, Bank Financing Years, and Bank Financing Due Date.\n\nDepending on configuration, the Payment Plan can generate service-type AR Invoices for TCP and Misc Fee under the PrimeHomes configuration, or Sales Orders for RCD.\n\nAll payment-related data is persisted in custom tables, including the payment header, payment lines, and discounts. Records are tracked by status, such as ACTIVE, CANCELED, and TRANSFER.", 'items' => array() ),
-						array( 'title' => 'Unit Owner / Buyer Information List', 'image' => 'assets/products/site-media/rem-owner-list-2.jpg', 'media' => 'right', 'text' => "The Unit Owner / Buyer Information List serves as the main operational dashboard for managing unit-owner records.\n\nUsers can search, filter, create, view, edit, cancel, and manage records through a centralized grid. Records can also be filtered by Project and Building using cascading selections.\n\nThe list supports ACTIVE, CANCELED, and TRANSFER status tracking, with changes cascading to the related unit’s item flags and the buyer’s business-partner flags.\n\nIt also provides launch points for the Payment Plan and Reports / Statement of Account (SOA).", 'items' => array() ),
+						array( 'title' => 'Unit Owner / Buyer Information List Details', 'image' => 'assets/products/site-media/rem-list-details.jpg', 'media' => 'left', 'text' => "The dashboard supports New, View, Edit, Cancel, multi-select checkboxes, and drill-down access to related source units and business partners.\n\nThe cancellation workflow can generate credit notes for unrealized AR Invoices and cancel related Incoming Payments. This action is gated by the CANCEL permission to ensure that only authorized users can process cancellations.\n\nThe module is also permission- and client-aware, with labels switching to “Buyer Information” for the RCD client.", 'items' => array() ),
+						array( 'title' => 'Payment Plan Details', 'image' => 'assets/products/site-media/rem-owner-list-2.jpg', 'media' => 'right', 'text' => "The Payment Plan supports cascading discounts such as Promo Discount, Commission Discount, Payment Discount, and Price Discount.\n\nDown-payment components include Reservation Fee, Spot DP, Additional DP, Deferred Payment, and Net Balance. Each component can be computed as an amount and percentage.\n\nFor amortization, the module spreads the deferred amount over a defined number of months and calculates the DP Start Date, DP End Date, monthly payment amount, and misc fee distribution.\n\nFinancing details include Takeout / Loanable Amount, In-house Financing Years, Bank Financing Years, and Bank Financing Due Date.\n\nDepending on configuration, the Payment Plan can generate service-type AR Invoices for TCP and Misc Fee under the PrimeHomes configuration, or Sales Orders for RCD.\n\nAll payment-related data is persisted in custom tables, including the payment header, payment lines, and discounts. Records are tracked by status, such as ACTIVE, CANCELED, and TRANSFER.", 'items' => array() ),
 						array( 'title' => 'Uploader Details', 'image' => 'assets/products/site-media/rem-uploader-details.jpg', 'media' => 'left', 'text' => "The Uploader imports payment collections, including check number, check amount, check date, OR number, OR date, IP number, deposit number, and schedule lines.\n\nIt also creates the corresponding owner records, payment headers, discount records, AR Invoices, and payment lines after upload.", 'items' => array() ),
 					),
 				),
@@ -795,6 +795,7 @@ function dq_product_live_content() {
 				array(
 					'type'    => 'generic',
 					'title'   => 'AI Usage',
+					'closing_style' => 'plain', // pre-live check 2026-09-28: closing copy not bold
 					'image'   => 'assets/products/site-media/desk-ai.jpg',
 					'media'   => 'left',
 					'intro'   => array(
@@ -824,6 +825,7 @@ function dq_product_live_content() {
 				array(
 					'type'       => 'generic',
 					'title'      => 'Deployment Model',
+					'closing_style' => 'plain', // pre-live check 2026-09-28: closing copy not bold
 					'image'      => 'assets/products/site-media/desk-deploy.png',
 					'list_style' => 'plain',
 					'intro'      => array(
@@ -840,17 +842,18 @@ function dq_product_live_content() {
 				),
 				array(
 					'type'    => 'generic',
-					'title'   => 'License Structure',
+					'title'   => 'Helpdesk and Workflow Features',
 					'image'   => 'none',
 					'columns' => 1,
 					'items'   => array(
 						array( 'title' => 'Ticket Management', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "IQDesk provides a helpdesk workflow for managing customer, internal, or IT support tickets.\n\nTickets can be submitted, tracked, assigned, responded to, and resolved through the platform. Ticket data can also be used for analytics such as ticket volume, backlog aging, First Response Time, MTTR, SLA compliance, and reopen rate.", 'items' => array() ),
-						array( 'title' => 'Self-Service Portal', 'icon' => 'assets/products/icons/sect-eight-support.png', 'text' => "IQDesk has partial SLA management support.\n\nThe current system supports SLA measurement and reporting, but does not yet include full SLA enforcement, proactive breach alerts, or escalation workflows.\n\nWhat exists:\n- dueDate, which is manual and optional\n- respondedAt, which records the first-response timestamp and is frozen on the first staff reply\n- resolvedTime\n- SLA Compliance %, based on tickets resolved on or before the due date\n- First Response Time\n- MTTR\n\nWhat does not currently exist:\n- No SLA policy engine\n- No auto-calculated targets by priority or category\n- No proactive breach detection job\n- No breach-warning alerts\n- No escalation rules or workflows\n- No dedicated “escalate” action in the automation engine\n- The automation engine currently supports only:\n- SET_FIELD\n- BLOCK_SAVE\n- TRIGGER_WEBHOOK\nSLA breach email alerts appear in the roadmap under Phase 6, but are not yet implemented.\n\nIn summary, IQDesk supports SLA measurement and reporting, but SLA enforcement, breach alerts, and escalation are not yet available.", 'items' => array() ),
+						array( 'title' => 'SLA Management', 'icon' => 'assets/products/icons/sect-eight-support.png', 'text' => "IQDesk has partial SLA management support.\n\nThe current system supports SLA measurement and reporting, but does not yet include full SLA enforcement, proactive breach alerts, or escalation workflows.\n\nWhat exists:\n- dueDate, which is manual and optional\n- respondedAt, which records the first-response timestamp and is frozen on the first staff reply\n- resolvedTime\n- SLA Compliance %, based on tickets resolved on or before the due date\n- First Response Time\n- MTTR\n\nWhat does not currently exist:\n- No SLA policy engine\n- No auto-calculated targets by priority or category\n- No proactive breach detection job\n- No breach-warning alerts\n- No escalation rules or workflows\n- No dedicated “escalate” action in the automation engine\n- The automation engine currently supports only:\n- SET_FIELD\n- BLOCK_SAVE\n- TRIGGER_WEBHOOK\nSLA breach email alerts appear in the roadmap under Phase 6, but are not yet implemented.\n\nIn summary, IQDesk supports SLA measurement and reporting, but SLA enforcement, breach alerts, and escalation are not yet available.", 'items' => array() ),
 					),
 				),
 				array(
 					'type'    => 'generic',
 					'title'   => 'Reporting and Analytics',
+					'closing_style' => 'plain', // pre-live check 2026-09-28: closing copy not bold
 					'image'   => 'assets/products/site-media/desk-reporting.jpg',
 					'intro'   => array(
 						'IQDesk includes strong helpdesk reporting and analytics, with PDF export and period-over-period deltas.',
@@ -873,7 +876,7 @@ function dq_product_live_content() {
 				),
 				array(
 					'type'    => 'generic',
-					'title'   => 'License Structure',
+					'title'   => 'Knowledge Base and Self-Service Portal',
 					'image'   => 'none',
 					'columns' => 2,
 					'items'   => array(
@@ -1020,10 +1023,10 @@ function dq_product_live_content() {
 						array( 'title' => 'Employee Self-Service', 'icon' => 'assets/products/icons/sect-six-user.png', 'text' => "Give employees the freedom to submit leave requests, view payslips, update personal information, request documents, and receive company announcements at any time.", 'items' => array() ),
 						array( 'title' => 'Mobile HR Anywhere', 'icon' => 'assets/products/icons/sect-five-mobility.png', 'text' => "Access HR tools on the go with the IQ People mobile app. Employees can clock in, file requests, receive notifications, and access HR services from their smartphones.", 'items' => array() ),
 						array( 'title' => 'AI-Powered HR', 'icon' => 'assets/products/icons/sect-five-business.png', 'text' => "Work smarter with AI- powered features that assist with recruitment, HR inquiries, workforce planning, scheduling, and employee insights.", 'items' => array() ),
-						array( 'title' => 'Executive Dashboard and Analytics', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "dashboards, HR reports, payroll summaries, hiring trends, labor costs, and workforce analytics.", 'items' => array() ),
+						array( 'title' => 'Executive Dashboard and Analytics', 'icon' => 'assets/products/icons/sect-five-management.png', 'text' => "Monitor your workforce with real-time dashboards, HR reports, payroll summaries, hiring trends, labor costs, and workforce analytics.", 'items' => array() ),
 						array( 'title' => 'Enterprise Security', 'icon' => 'assets/products/icons/sect-four-data.png', 'text' => "Protect sensitive employee information with role-based access, encrypted data, audit logs, secure authentication, and multi-company support.", 'items' => array() ),
 						array( 'title' => 'Employee Management', 'icon' => 'assets/products/icons/sect-five-project.png', 'text' => "Keep all employee information in one secure place. Manage employee records, positions, departments, government IDs, documents, and employment history with ease.", 'items' => array() ),
-						array( 'title' => 'Executive Dashboard and Analytics', 'icon' => 'assets/products/icons/sect-four-simple.png', 'text' => "Track attendance accurately with web and mobile clock-ins, shift scheduling, leave management, overtime requests, and automated attendance monitoring.", 'items' => array() ),
+						array( 'title' => 'Time & Attendance', 'icon' => 'assets/products/icons/sect-four-simple.png', 'text' => "Track attendance accurately with web and mobile clock-ins, shift scheduling, leave management, overtime requests, and automated attendance monitoring.", 'items' => array() ),
 						array( 'title' => 'Accurate Payroll', 'icon' => 'assets/products/icons/sect-five-accounting.png', 'text' => "Process payroll with confidence using automated salary calculations, government deductions, taxes, loans, allowances, bonuses, and downloadable payslips.", 'items' => array() ),
 						array( 'title' => 'Philippine Compliance', 'icon' => 'assets/products/icons/sect-four-compliance.png', 'text' => "Keep all employee information in one secure place. Manage employee records, positions, departments, government IDs, documents, and employment history with ease.", 'items' => array() ),
 						array( 'title' => 'Recruitment & Talent  Management', 'icon' => 'assets/products/icons/sect-two-partners.png', 'text' => "Manage hiring, performance reviews, employee development, training, career planning, and succession planning from one centralized platform.", 'items' => array() ),

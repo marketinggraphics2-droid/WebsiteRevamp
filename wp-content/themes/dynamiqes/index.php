@@ -30,11 +30,13 @@ if ( is_search() ) {
 	<section>
 		<div class="wrap">
 			<?php if ( have_posts() ) : ?>
-				<?php if ( is_home() && ! is_paged() ) : the_post(); /* newest post gets the featured slot, as on the live /blogs/ */ ?>
-					<?php get_template_part( 'template-parts/post-feature' ); ?>
+				<?php if ( is_home() && ! is_paged() ) : /* newest post gets the featured slot, as on the live /blogs/; the grid
+				   below starts at the second post (offset in inc/setup.php) so every page holds 9 cards */ ?>
+					<?php $dq_featured = new WP_Query( array_merge( $GLOBALS['wp_query']->query_vars, array( 'posts_per_page' => 1, 'offset' => 0, 'paged' => 1, 'no_found_rows' => true ) ) ); ?>
+					<?php if ( $dq_featured->have_posts() ) : $dq_featured->the_post(); get_template_part( 'template-parts/post-feature' ); wp_reset_postdata(); endif; ?>
 				<?php endif; ?>
 				<div class="post-grid">
-					<?php while ( have_posts() ) : the_post(); get_template_part( 'template-parts/post-card', null, array( 'heading' => 'p' ) ); endwhile; ?>
+					<?php while ( have_posts() ) : the_post(); get_template_part( 'template-parts/post-card', null, array( 'heading' => 'h2' ) ); endwhile; ?>
 				</div>
 				<nav class="pagination" aria-label="<?php esc_attr_e( 'Pagination', 'dynamiqes' ); ?>"><?php echo paginate_links( array( 'prev_text' => '←', 'next_text' => '→' ) ); // phpcs:ignore WordPress.Security.EscapeOutput ?></nav>
 			<?php else : ?>

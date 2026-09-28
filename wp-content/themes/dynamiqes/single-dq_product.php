@@ -199,7 +199,7 @@ $render_items = function ( $items, $columns = 0 ) {
 					<?php if ( false !== strpos( $para, "\n" ) ) : /* a closing block with its own bullet list (IQ Link pricing "What’s Included") */ ?>
 					<div class="closing closing-rich"<?php dq_reveal(); ?>><?php echo dq_rich_text_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></div>
 					<?php else : ?>
-					<p class="closing"<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
+					<p class="closing<?php echo 'plain' === $s['closing_style'] ? ' is-plain' : ''; ?>"<?php dq_reveal(); ?>><?php echo dq_inline_html( $para ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p>
 					<?php endif; ?>
 				<?php endforeach; ?>
 			</div>
@@ -211,7 +211,7 @@ $render_items = function ( $items, $columns = 0 ) {
 		<div class="wrap">
 			<div class="cta-panel"<?php dq_reveal( 'scale' ); ?>>
 				<?php if ( ! empty( $s['kicker'] ) ) : ?>
-				<h3 class="cta-kicker"><?php echo esc_html( $s['kicker'] ); ?></h3>
+				<p class="cta-kicker"><?php echo esc_html( $s['kicker'] ); ?></p>
 				<?php if ( ! empty( $s['kicker_text'] ) ) : ?><p class="cta-kicker-text"><?php echo dq_inline_html( $s['kicker_text'] ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endif; ?>
 				<?php endif; ?>
 				<h2><?php echo esc_html( $s['title'] ); ?></h2>

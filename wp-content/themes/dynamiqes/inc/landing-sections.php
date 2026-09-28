@@ -493,7 +493,7 @@ function dq_lp_cta_section( $cta_html, $index = 0 ) {
 	<section class="cta-section lp-cta">
 		<div class="wrap">
 			<div class="cta-panel"<?php echo dq_reveal_attr( 'scale' ); // phpcs:ignore WordPress.Security.EscapeOutput ?>>
-				<?php if ( $kicker ) : ?><h3 class="cta-kicker"><?php echo esc_html( $kicker ); ?></h3><?php endif; ?>
+				<?php if ( $kicker ) : ?><p class="cta-kicker"><?php echo esc_html( $kicker ); ?></p><?php endif; ?>
 				<?php if ( $heading ) : ?><h2><?php echo esc_html( $heading ); ?></h2><?php endif; ?>
 				<?php foreach ( $copy as $dq_p ) : ?><p><?php echo dq_inline_html( $dq_p ); // phpcs:ignore WordPress.Security.EscapeOutput ?></p><?php endforeach; ?>
 				<div class="cta-form">

@@ -20,7 +20,7 @@ $cats  = array_values( array_filter( get_the_category(), function ( $c ) { retur
 	</a>
 	<div class="post-card-body">
 		<div class="news-meta">
-			<?php if ( $cats ) : ?><span class="news-tag"><?php echo esc_html( $cats[0]->name ); ?></span><?php endif; ?>
+			<?php if ( $cats ) : /* the chip links to the category page (pre-live check 2026-09-28) */ ?><a class="news-tag" href="<?php echo esc_url( get_category_link( $cats[0] ) ); ?>"><?php echo esc_html( $cats[0]->name ); ?></a><?php endif; ?>
 			<span class="news-date"><?php echo esc_html( get_the_date( 'F j, Y' ) ); ?></span>
 			<?php if ( function_exists( 'dq_post_byline' ) ) { dq_post_byline(); } ?>
 		</div>

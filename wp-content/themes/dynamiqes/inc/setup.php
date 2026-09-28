@@ -148,6 +148,24 @@ add_action( 'pre_get_posts', function ( $q ) {
 	}
 } );
 
+/** Blogs index: the newest post is the featured story (index.php), and every page shows 9 cards
+ *  after it, so no page runs to 10 and the rows stay even (pre-live check 2026-09-28). The main
+ *  query skips the featured post; found_posts drops it so the page count stays right. */
+add_action( 'pre_get_posts', function ( $q ) {
+	if ( is_admin() || ! $q->is_main_query() || ! $q->is_home() || $q->is_feed() ) {
+		return;
+	}
+	$paged = max( 1, (int) $q->get( 'paged' ) );
+	$q->set( 'posts_per_page', 9 );
+	$q->set( 'offset', 1 + ( $paged - 1 ) * 9 );
+}, 20 );
+add_filter( 'found_posts', function ( $found, $q ) {
+	if ( ! is_admin() && $q->is_main_query() && $q->is_home() && ! $q->is_feed() && $found > 0 ) {
+		return $found - 1;
+	}
+	return $found;
+}, 10, 2 );
+
 /** Search results: 9 per page so the 3-column grid always fills its rows and never
  *  leaves a row holding a single card (SEO Hacker review, item A6). */
 add_action( 'pre_get_posts', function ( $q ) {

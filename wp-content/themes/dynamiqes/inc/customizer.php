@@ -73,6 +73,7 @@ add_action( 'customize_register', function ( WP_Customize_Manager $wp ) {
 	$text( 'dq_phone_2', __( 'Phone 2', 'dynamiqes' ), '+63(2) 8365 0228', 'dq_contact' );
 	$text( 'dq_address', __( 'Address (full)', 'dynamiqes' ), 'No. 12 Tagdalit Street, Manresa, Quezon City 1115', 'dq_contact' );
 	$text( 'dq_address_short', __( 'Address (footer)', 'dynamiqes' ), '12 Tagdalit Street, Brgy. Manresa, Quezon City', 'dq_contact' );
+	$text( 'dq_map_url', __( 'Map link', 'dynamiqes' ), 'https://maps.app.goo.gl/4Kk8mZ8FnBrDxn629', 'dq_contact', 'url', __( 'Google Maps or Google Business Profile URL the address links to. Empty = plain text.', 'dynamiqes' ) );
 	$text( 'dq_hours', __( 'Office hours', 'dynamiqes' ), 'Monday-Friday 8:00 AM – 5:00 PM', 'dq_contact' );
 
 	/* Socials */

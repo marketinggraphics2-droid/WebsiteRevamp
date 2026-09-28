@@ -62,6 +62,50 @@ add_filter( 'document_title_parts', function ( $parts ) {
 } );
 
 /* ------------------------------------------------------------------ */
+/* Title / description hygiene (pre-live check, SEO Hacker 2026-09-28)  */
+/* ------------------------------------------------------------------ */
+/* The DB's site name is "DynamIQes" and Yoast's %%sitename%% and hand-written descriptions
+   carry it (also as "Dynamiqes"); the brand in a title tag or description is "DynamIQ". The
+   domain (dynamiqes.com), e-mail addresses and slugs are left alone. */
+function dq_seo_brand( $text ) {
+	$text = preg_replace( '/\bdynamiqes(?:\'|’|&#0?39;|&#8217;|&rsquo;)(?!s\b)/iu', 'DynamIQ\'s', (string) $text ); // "Dynamiqes' expertise" → "DynamIQ's expertise"
+	return preg_replace( '/(?<![\/@.\-])\bdynamiqes\b(?![.\-\/])/i', 'DynamIQ', $text );
+}
+/* Per-post title tags the review asked for where the post title alone is not it. Applies only
+   while the post has no title of its own (Yoast or the theme box), so an editor's title wins. */
+function dq_seo_title_overrides() {
+	return array(
+		'barcode-inventory-system' => 'How Barcoding Improves Inventory Tracking and Business Operations',
+	);
+}
+function dq_seo_title_hygiene( $title ) {
+	if ( is_singular() ) {
+		$post = get_queried_object();
+		$own  = get_post_meta( $post->ID, '_dq_seo_title', true ) || get_post_meta( $post->ID, '_yoast_wpseo_title', true );
+		if ( ! $own ) {
+			$map = dq_seo_title_overrides();
+			if ( isset( $map[ $post->post_name ] ) ) {
+				return $map[ $post->post_name ];
+			}
+			if ( 'dq_testimonial' === $post->post_type && false === stripos( (string) $title, 'Client Testimonials' ) ) {
+				/* translators: %s: client name */
+				return sprintf( __( 'Client Testimonials - %s - DynamIQ', 'dynamiqes' ), get_the_title( $post ) );
+			}
+		}
+	}
+	return dq_seo_brand( $title );
+}
+/* Yoast (staging / live) … */
+add_filter( 'wpseo_title', 'dq_seo_title_hygiene', 20 );
+add_filter( 'wpseo_opengraph_title', 'dq_seo_title_hygiene', 20 );
+add_filter( 'wpseo_twitter_title', 'dq_seo_title_hygiene', 20 );
+add_filter( 'wpseo_metadesc', 'dq_seo_brand', 20 );
+add_filter( 'wpseo_opengraph_desc', 'dq_seo_brand', 20 );
+add_filter( 'wpseo_twitter_description', 'dq_seo_brand', 20 );
+/* … and the theme's own tags when no plugin runs. */
+add_filter( 'document_title', 'dq_seo_title_hygiene', 20 );
+
+/* ------------------------------------------------------------------ */
 /* Description / image resolution                                      */
 /* ------------------------------------------------------------------ */
 function dq_seo_trim( $text, $len = 158 ) {
@@ -179,7 +223,7 @@ add_action( 'wp_head', function () {
 	if ( dq_seo_plugin_active() ) {
 		return;
 	}
-	$desc  = dq_meta_description();
+	$desc  = dq_seo_brand( dq_meta_description() );
 	$canon = dq_canonical_url();
 	$img   = dq_og_image();
 	$title = wp_get_document_title();
