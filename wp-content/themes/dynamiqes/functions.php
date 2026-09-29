@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DQ_VERSION', '3.0' );
+define( 'DQ_VERSION', '3.1' );
 define( 'DQ_DIR', get_template_directory() );
 define( 'DQ_URI', get_template_directory_uri() );
 
@@ -30,3 +30,4 @@ require DQ_DIR . '/inc/live-urls.php';
 require DQ_DIR . '/inc/page-content.php';
 require DQ_DIR . '/inc/testimonial-media.php';
 require DQ_DIR . '/inc/author-profile.php'; // Users → Profile fields + the author page (author.php)
+require DQ_DIR . '/inc/post-categories.php'; // files Uncategorized posts under a blog category by title, once per version

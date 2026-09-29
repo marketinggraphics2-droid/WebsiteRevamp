@@ -94,9 +94,9 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 					<div class="iq-copy">
 						<span class="iq-tagline"><?php echo esc_html( $sap['card_tagline'] ); ?></span>
 						<div class="iq-detail">
-							<span class="iq-title-row">
-								<span class="iq-title"><?php echo esc_html( $sap['card_title'] ); ?></span>
-							</span>
+							<div class="iq-title-row">
+								<h3 class="iq-title"><?php echo esc_html( $sap['card_title'] ); ?></h3><?php /* pre-live check 2026-09-29: the product name is the card's H3 */ ?>
+							</div>
 							<p class="iq-desc"><?php echo esc_html( $sap['card_desc'] ); ?></p>
 						</div>
 					</div>
@@ -120,9 +120,9 @@ $svg_arrow = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h13M12 6
 					<div class="iq-copy">
 						<span class="iq-tagline"><?php echo esc_html( $p['card_tagline'] ); ?></span>
 						<div class="iq-detail">
-							<span class="iq-title-row">
-								<span class="iq-title"><?php echo esc_html( $p['card_title'] ); ?></span>
-							</span>
+							<div class="iq-title-row">
+								<h3 class="iq-title"><?php echo esc_html( $p['card_title'] ); ?></h3>
+							</div>
 							<p class="iq-desc"><?php echo esc_html( $p['card_desc'] ); ?></p>
 						</div>
 					</div>

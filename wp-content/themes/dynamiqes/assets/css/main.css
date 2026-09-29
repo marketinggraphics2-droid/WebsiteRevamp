@@ -569,8 +569,8 @@ h3{ font-size:var(--fs-h3); line-height:var(--lh-heading); letter-spacing:-.015e
 .iq-card:not(.all) .iq-detail{ max-width:46%; }
 .iq-card.feature .iq-detail{ max-width:52ch; }
 .iq-title-row{ display:block; }
-.iq-title{ display:inline; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-body); line-height:var(--lh-heading);
-  letter-spacing:-.01em; color:var(--text); }
+.iq-title{ display:inline; margin:0; font-family:var(--font-sans); font-weight:700; font-size:var(--fs-body); line-height:var(--lh-heading);
+  letter-spacing:-.01em; color:var(--text); } /* an H3 since 3.1: the class keeps the card's own size */
 .iq-desc{ min-height:0; overflow:hidden; font-size:var(--fs-sm); line-height:1.45; color:var(--soft);
   display:-webkit-box; -webkit-box-orient:vertical; -webkit-line-clamp:5; }
 /* the flagship tile is always the photo state, so its detail copy stays white */
@@ -4137,3 +4137,13 @@ h4.post-share-label{margin:0}
 
 /* home strip entries for products without a wordmark */
 .banner-strip-track .strip-text{font-weight:900;font-size:clamp(.9rem,1.6vh,1.1rem);letter-spacing:-.01em;color:#fff;white-space:nowrap}
+
+/* The CTA kicker ("Ready To Get Started?") is a <p> since 3.0; the .lp-cta / .product-cta paragraph
+   rules (max-width, left margin, lede size) were winning over .cta-kicker and pushed it off centre
+   (pre-live check 2026-09-29). Same specificity tier as those rules, declared last. */
+.cta-section .cta-panel p.cta-kicker{max-width:none;margin:0 auto 10px;font-size:var(--fs-xs);line-height:var(--lh-heading);text-align:center}
+.cta-section .cta-panel p.cta-kicker-text{margin:0 auto 18px}
+@media (min-width:901px){
+  .product-cta .cta-panel p.cta-kicker,.lp-cta .cta-panel p.cta-kicker{margin-bottom:6px}
+  .product-cta .cta-panel p.cta-kicker-text,.lp-cta .cta-panel p.cta-kicker-text{margin-bottom:10px}
+}

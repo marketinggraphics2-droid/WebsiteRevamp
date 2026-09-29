@@ -232,3 +232,26 @@ Source: `DynamIQ - Website Redesign.xlsx`, sheet **0928 Pre Live Checks**. 81 ro
       Reporting and Analytics not bold (`'closing_style' => 'plain'`). Rows 204–209.
 
 Product sections live in code (not post meta), so M1–M5 apply as soon as the theme is deployed; no re-import needed.
+
+---
+
+# SEO Hacker pre-live check — "0929 Pre Live Checks" (2026-09-29)
+
+Source: `DynamIQ - Website Redesign (2).xlsx`, sheet **0929 Pre Live Checks**. 22 rows, all **Rejected**,
+follow-ups to the 0928 round. All fixed in **Theme 3.1**; IQ remarks in column F.
+
+## N. Follow-ups
+
+- [x] **N1** "Ready To Get Started?" kicker not centred on the landing / product CTA form. Rows 2–8.
+      The `<p>` (since 3.0) was picking up the `.lp-cta / .product-cta .cta-panel p` paragraph rules.
+      → `.cta-section .cta-panel p.cta-kicker` at the end of `assets/css/main.css`
+- [x] **N2** Homepage "Our Products" card names are H3s. Rows 9–20. → `front-page.php` (`h3.iq-title`), `.iq-title{margin:0}`
+- [x] **N3** /bir-cas-philippines/ description still "DynamIQes." — the brand regex spared any following dot
+      (meant for dynamiqes.com). Now only a real TLD is spared. Row 21. → `dq_seo_brand()`
+- [x] **N4** /barcode-inventory-system/ title tag — the post has a Yoast title equal to its post title, which the
+      override respected. It now also applies in that case. Row 22. → `dq_seo_title_hygiene()`
+- [x] **N5** Category chips missing on /blogs/ page 2+ — 186 of 192 posts are Uncategorized in the live DB.
+      New `inc/post-categories.php`: once per version, on the first admin load, files each Uncategorized post
+      under one of the eight existing blog categories by title keywords (catch-all Business Growth & Industry
+      Insights), sets `_dq_auto_category`, shows a summary notice. Editor-filed posts are never touched. Row 23.
+      **IQ team: review the automatic filing under Posts.**

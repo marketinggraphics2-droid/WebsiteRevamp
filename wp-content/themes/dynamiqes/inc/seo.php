@@ -69,10 +69,12 @@ add_filter( 'document_title_parts', function ( $parts ) {
    domain (dynamiqes.com), e-mail addresses and slugs are left alone. */
 function dq_seo_brand( $text ) {
 	$text = preg_replace( '/\bdynamiqes(?:\'|’|&#0?39;|&#8217;|&rsquo;)(?!s\b)/iu', 'DynamIQ\'s', (string) $text ); // "Dynamiqes' expertise" → "DynamIQ's expertise"
-	return preg_replace( '/(?<![\/@.\-])\bdynamiqes\b(?![.\-\/])/i', 'DynamIQ', $text );
+	// a following ".com" (or any TLD) or "-slug" marks a domain or URL, a plain full stop does not (0929 row 21)
+	return preg_replace( '/(?<![\/@.\-])\bdynamiqes\b(?!\.[a-z]{2,}\b|-[a-z0-9])/i', 'DynamIQ', $text );
 }
-/* Per-post title tags the review asked for where the post title alone is not it. Applies only
-   while the post has no title of its own (Yoast or the theme box), so an editor's title wins. */
+/* Per-post title tags the review asked for where the post title alone is not it. Applies while the
+   post has no title of its own (Yoast or the theme box) or that title is just the post title (the
+   barcode post carries a Yoast title equal to its post title, 0929 row 22); a different editor's title wins. */
 function dq_seo_title_overrides() {
 	return array(
 		'barcode-inventory-system' => 'How Barcoding Improves Inventory Tracking and Business Operations',
@@ -82,11 +84,11 @@ function dq_seo_title_hygiene( $title ) {
 	if ( is_singular() ) {
 		$post = get_queried_object();
 		$own  = get_post_meta( $post->ID, '_dq_seo_title', true ) || get_post_meta( $post->ID, '_yoast_wpseo_title', true );
+		$map  = dq_seo_title_overrides();
+		if ( isset( $map[ $post->post_name ] ) && ( ! $own || trim( wp_strip_all_tags( (string) $title ) ) === trim( get_the_title( $post ) ) ) ) {
+			return $map[ $post->post_name ];
+		}
 		if ( ! $own ) {
-			$map = dq_seo_title_overrides();
-			if ( isset( $map[ $post->post_name ] ) ) {
-				return $map[ $post->post_name ];
-			}
 			if ( 'dq_testimonial' === $post->post_type && false === stripos( (string) $title, 'Client Testimonials' ) ) {
 				/* translators: %s: client name */
 				return sprintf( __( 'Client Testimonials - %s - DynamIQ', 'dynamiqes' ), get_the_title( $post ) );
