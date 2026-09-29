@@ -48,7 +48,7 @@ add_filter( 'document_title_parts', function ( $parts ) {
 		return $parts;
 	}
 	if ( is_front_page() ) {
-		$t = get_theme_mod( 'dq_seo_home_title', 'DynamIQ — SAP Premier Partner Philippines' );
+		$t = get_theme_mod( 'dq_seo_home_title', 'SAP System Services Philippines | SAP Premier Partner | DynamIQ' );
 		return array( 'title' => $t );
 	}
 	if ( is_singular() ) {
@@ -114,6 +114,29 @@ add_filter( 'wpseo_twitter_title', 'dq_seo_title_hygiene', 20 );
 add_filter( 'wpseo_metadesc', 'dq_seo_brand', 20 );
 add_filter( 'wpseo_opengraph_desc', 'dq_seo_brand', 20 );
 add_filter( 'wpseo_twitter_description', 'dq_seo_brand', 20 );
+/* Home page: a page the theme creates, so Yoast has no title or description for it and printed
+   "<site name> - Home" with no description (SEO Hacker 2026-09-29). The Customizer values (Appearance →
+   Customize → DynamIQ → SEO) fill both unless the page is given its own in Yoast. */
+function dq_seo_home_yoast( $value, $what ) {
+	if ( ! is_front_page() ) {
+		return $value;
+	}
+	$id  = (int) get_option( 'page_on_front' );
+	$own = $id ? get_post_meta( $id, 'title' === $what ? '_yoast_wpseo_title' : '_yoast_wpseo_metadesc', true ) : '';
+	if ( $own ) {
+		return $value;
+	}
+	if ( 'title' === $what ) {
+		return get_theme_mod( 'dq_seo_home_title', 'SAP System Services Philippines | SAP Premier Partner | DynamIQ' );
+	}
+	return get_theme_mod( 'dq_seo_home_description', 'Get expert SAP system services in the Philippines. Our team helps with implementation and optimization for improved efficiency and growth.' );
+}
+foreach ( array( 'wpseo_title', 'wpseo_opengraph_title', 'wpseo_twitter_title' ) as $dq_hook ) {
+	add_filter( $dq_hook, function ( $v ) { return dq_seo_home_yoast( $v, 'title' ); }, 15 );
+}
+foreach ( array( 'wpseo_metadesc', 'wpseo_opengraph_desc', 'wpseo_twitter_description' ) as $dq_hook ) {
+	add_filter( $dq_hook, function ( $v ) { return dq_seo_home_yoast( $v, 'description' ); }, 15 );
+}
 /* Stored titles/descriptions are kept clean too: whatever writes _dq_seo_title / _dq_seo_description
    (the landing-page importer copying live Yoast titles, the seeders, WP Admin) stores the brand as
    "DynamIQ", and values written by earlier versions are corrected once per theme version (3.1.2). */
@@ -178,7 +201,7 @@ function dq_seo_trim( $text, $len = 158 ) {
 
 function dq_meta_description() {
 	if ( is_front_page() ) {
-		return get_theme_mod( 'dq_seo_home_description', 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and in-house ERP add-ons for Philippine small and mid-market businesses.' );
+		return get_theme_mod( 'dq_seo_home_description', 'Get expert SAP system services in the Philippines. Our team helps with implementation and optimization for improved efficiency and growth.' );
 	}
 	if ( is_post_type_archive( 'dq_product' ) ) {
 		$live = dq_shadowed_seo( 'description' );
@@ -386,7 +409,7 @@ function dq_schema_organization() {
 		'alternateName' => 'DynamIQ',
 		'url'      => home_url( '/' ),
 		'logo'     => array( '@type' => 'ImageObject', 'url' => DQ_URI . '/assets/logos/DynamIQ_Enterprise_Solution_Inc__with_Tagline_Logo_blk.svg' ),
-		'description' => get_theme_mod( 'dq_seo_home_description', 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and in-house ERP add-ons for Philippine small and mid-market businesses.' ),
+		'description' => get_theme_mod( 'dq_seo_home_description', 'Get expert SAP system services in the Philippines. Our team helps with implementation and optimization for improved efficiency and growth.' ),
 		'email'    => $c['email'],
 		'telephone'=> $c['phone1'],
 		'address'  => array( '@type' => 'PostalAddress', 'streetAddress' => '12 Tagdalit Street, Brgy. Manresa', 'addressLocality' => 'Quezon City', 'postalCode' => '1115', 'addressRegion' => 'Metro Manila', 'addressCountry' => 'PH' ),

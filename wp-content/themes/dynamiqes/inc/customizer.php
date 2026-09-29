@@ -93,8 +93,8 @@ add_action( 'customize_register', function ( WP_Customize_Manager $wp ) {
 
 	/* SEO */
 	$wp->add_section( 'dq_seo', array( 'title' => __( 'SEO defaults', 'dynamiqes' ), 'panel' => $panel ) );
-	$text( 'dq_seo_home_title', __( 'Home page title tag', 'dynamiqes' ), 'DynamIQ — SAP Premier Partner Philippines', 'dq_seo' );
-	$text( 'dq_seo_home_description', __( 'Home meta description', 'dynamiqes' ), 'DynamIQ is a Premier SAP implementation partner delivering SAP Business One and in-house ERP add-ons for Philippine small and mid-market businesses.', 'dq_seo', 'textarea' );
+	$text( 'dq_seo_home_title', __( 'Home page title tag', 'dynamiqes' ), 'SAP System Services Philippines | SAP Premier Partner | DynamIQ', 'dq_seo' );
+	$text( 'dq_seo_home_description', __( 'Home meta description', 'dynamiqes' ), 'Get expert SAP system services in the Philippines. Our team helps with implementation and optimization for improved efficiency and growth.', 'dq_seo', 'textarea' );
 	$image( 'dq_og_default_image', __( 'Default social share image (1200×630)', 'dynamiqes' ), 'dq_seo' );
 	$text( 'dq_twitter_handle', __( 'Twitter/X handle', 'dynamiqes' ), '@dynamiqesInc', 'dq_seo' );
 	$text( 'dq_org_founding', __( 'Organization founding year (schema)', 'dynamiqes' ), '', 'dq_seo' );

@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'DQ_VERSION', '3.1.3' );
+define( 'DQ_VERSION', '3.1.4' );
 define( 'DQ_DIR', get_template_directory() );
 define( 'DQ_URI', get_template_directory_uri() );
 

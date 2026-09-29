@@ -269,3 +269,9 @@ follow-ups to the 0928 round. All fixed in **Theme 3.1**; IQ remarks in column F
       thank-you-ad, thank-you-accounting); SEO Hacker wants " - DynamIQ". `dq_seo_title_brand()` shortens the company
       name to the brand in title tags (and page/article names in the schema graph); descriptions and the Organization
       schema keep the legal name. → `inc/seo.php`
+- [x] **N9** (3.1.4) Home page title tag and meta description "missing": the front page is a theme-made page with
+      no Yoast title/description, so Yoast printed "<site name> - Home" and no description. Yoast now takes the
+      Customizer values (defaults set to SEO Hacker's copy: "SAP System Services Philippines | SAP Premier Partner |
+      DynamIQ" / "Get expert SAP system services in the Philippines. Our team helps with implementation and
+      optimization for improved efficiency and growth.") unless the page is given its own in Yoast. → `inc/seo.php`,
+      `inc/customizer.php`
