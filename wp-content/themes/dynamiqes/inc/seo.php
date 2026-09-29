@@ -72,7 +72,15 @@ add_filter( 'document_title_parts', function ( $parts ) {
 function dq_seo_brand( $text ) {
 	$text = preg_replace( '/\bdynamiqes(?:\'|’|&#0?39;|&#8217;|&rsquo;)(?!s\b)/iu', 'DynamIQ\'s', (string) $text ); // "Dynamiqes' expertise" → "DynamIQ's expertise"
 	// a following ".com" (or any TLD) or "-slug" marks a domain or URL, a plain full stop does not (0929 row 21)
-	return preg_replace( '/(?<![\/@.\-])\bdynamiqes\b(?!\.[a-z]{2,}\b|-[a-z0-9])/i', 'DynamIQ', $text );
+	$text = preg_replace( '/(?<![\/@.\-])\bdynamiqes\b(?!\.[a-z]{2,}\b|-[a-z0-9])/i', 'DynamIQ', $text );
+	// casing typos of the brand itself ("DynamiQ", "Dynamiq"); the all-caps wordmark DYNAMIQ is left alone
+	return preg_replace( '/(?<![\/@.\-])\b[Dd]ynami[qQ]\b(?!\.[a-z]{2,}\b|-[a-z0-9])/', 'DynamIQ', $text );
+}
+/* In a title tag the company is just the brand: "… - DynamIQ", never "… - DynamIQ Enterprise Solution"
+   (Yoast's %%sitename%% on pages without a title of their own; SEO Hacker 2026-09-29). Descriptions and
+   the Organization schema keep the full legal name. */
+function dq_seo_title_brand( $title ) {
+	return preg_replace( '/\bDynamIQ Enterprise Solutions?(?:,? Inc\.?)?/', 'DynamIQ', dq_seo_brand( $title ) );
 }
 /* Per-post title tags the review asked for where the post title alone is not it. Applies while the
    post has no title of its own (Yoast or the theme box) or that title is just the post title (the
@@ -97,7 +105,7 @@ function dq_seo_title_hygiene( $title ) {
 			}
 		}
 	}
-	return dq_seo_brand( $title );
+	return dq_seo_title_brand( $title );
 }
 /* Yoast (staging / live) … */
 add_filter( 'wpseo_title', 'dq_seo_title_hygiene', 20 );
@@ -125,7 +133,7 @@ add_action( 'init', function () {
 	}
 	update_option( 'dq_seo_brand_ver', DQ_VERSION );
 	global $wpdb;
-	$rows = $wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ('_dq_seo_title','_dq_seo_description') AND meta_value LIKE '%dynamiqes%'" );
+	$rows = $wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ('_dq_seo_title','_dq_seo_description') AND meta_value LIKE '%dynamiq%'" ); // every spelling; dq_seo_brand() leaves correct values unchanged
 	foreach ( (array) $rows as $r ) {
 		update_post_meta( (int) $r->post_id, $r->meta_key, dq_seo_brand( $r->meta_value ) );
 	}
@@ -137,10 +145,15 @@ add_filter( 'wpseo_schema_graph', function ( $graph ) {
 		if ( ! is_array( $node ) ) {
 			return;
 		}
+		/* an Organization / Person node keeps its full name; page and article names are title tags */
+		$types = isset( $node['@type'] ) ? (array) $node['@type'] : array();
+		$is_org = (bool) array_intersect( $types, array( 'Organization', 'Person', 'LocalBusiness', 'Corporation' ) );
 		foreach ( $node as $k => &$v ) {
 			if ( is_array( $v ) ) {
 				$walk( $v );
-			} elseif ( is_string( $v ) && in_array( $k, array( 'name', 'headline', 'description', 'alternateName', 'caption' ), true ) ) {
+			} elseif ( is_string( $v ) && in_array( $k, array( 'name', 'headline', 'alternateName' ), true ) ) {
+				$v = $is_org ? dq_seo_brand( $v ) : dq_seo_title_brand( $v );
+			} elseif ( is_string( $v ) && in_array( $k, array( 'description', 'caption' ), true ) ) {
 				$v = dq_seo_brand( $v );
 			}
 		}

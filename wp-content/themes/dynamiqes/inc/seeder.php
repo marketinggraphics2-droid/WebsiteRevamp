@@ -168,7 +168,7 @@ function dq_ensure_about_page() {
 		return 0;
 	}
 	if ( ! get_post_meta( $id, '_dq_seo_title', true ) ) {
-		update_post_meta( $id, '_dq_seo_title', 'About DynamiQ — Filipino SAP Partner Since 2019' );
+		update_post_meta( $id, '_dq_seo_title', 'About DynamIQ — Filipino SAP Partner Since 2019' );
 	}
 	if ( ! get_post_meta( $id, '_dq_seo_description', true ) ) {
 		update_post_meta( $id, '_dq_seo_description', 'Learn about DynamIQ Enterprise Solution – a Filipino IT consultancy and SAP Gold Partner committed to driving business efficiency and growth.' );

@@ -264,3 +264,8 @@ follow-ups to the 0928 round. All fixed in **Theme 3.1**; IQ remarks in column F
       "DynamIQes": core skips the `document_title` filter when `pre_get_document_title` returns a title, so the
       hygiene now runs inside that filter. Stored `_dq_seo_title` / `_dq_seo_description` are normalised on write
       (`update_post_metadata`) and once per version for existing rows. → `inc/seo.php`
+- [x] **N8** (3.1.3) Pages without a Yoast title of their own fell back to Yoast's template and ended in
+      " - DynamIQ Enterprise Solution" (accounting-system, it-solutions-company, contact-us, career, application-form,
+      thank-you-ad, thank-you-accounting); SEO Hacker wants " - DynamIQ". `dq_seo_title_brand()` shortens the company
+      name to the brand in title tags (and page/article names in the schema graph); descriptions and the Organization
+      schema keep the legal name. → `inc/seo.php`
