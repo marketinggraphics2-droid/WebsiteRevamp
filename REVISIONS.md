@@ -255,3 +255,8 @@ follow-ups to the 0928 round. All fixed in **Theme 3.1**; IQ remarks in column F
       under one of the eight existing blog categories by title keywords (catch-all Business Growth & Industry
       Insights), sets `_dq_auto_category`, shows a summary notice. Editor-filed posts are never touched. Row 23.
       **IQ team: review the automatic filing under Posts.**
+- [x] **N6** (3.1.1) The brand is **DynamIQ**, never "DynamIQes". The site name on staging is already
+      "DynamIQ Enterprise Solution"; the wrong spelling came from Yoast titles typed per page and from titles the
+      theme seeded (products, careers, Contact Us, Book a Free Demo). Seeded titles corrected at source, stored
+      `_dq_seo_title` / `_dq_seo_description` corrected in place on the version refresh, and Yoast's schema graph
+      (WebPage name etc.) now goes through `dq_seo_brand()` too. → `inc/seo.php`, `inc/live-urls.php`, seeders

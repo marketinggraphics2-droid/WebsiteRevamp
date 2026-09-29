@@ -292,6 +292,14 @@ function dq_refresh_product_content() {
 		if ( ! get_post_meta( $post->ID, '_dq_seo_title', true ) && ! empty( $live[ $key ]['seo_title'] ) ) {
 			update_post_meta( $post->ID, '_dq_seo_title', $live[ $key ]['seo_title'] );
 		}
+		/* The brand is "DynamIQ": titles/descriptions seeded by earlier versions as "… - DynamIQes" are
+		   corrected in place (3.1.1); the output filters in inc/seo.php cover anything typed later. */
+		foreach ( array( '_dq_seo_title', '_dq_seo_description' ) as $meta ) {
+			$v = (string) get_post_meta( $post->ID, $meta, true );
+			if ( '' !== $v && function_exists( 'dq_seo_brand' ) && dq_seo_brand( $v ) !== $v ) {
+				update_post_meta( $post->ID, $meta, dq_seo_brand( $v ) );
+			}
+		}
 		if ( ! get_post_meta( $post->ID, '_dq_seo_description', true ) && ! empty( $live[ $key ]['seo_description'] ) ) {
 			update_post_meta( $post->ID, '_dq_seo_description', $live[ $key ]['seo_description'] );
 		}

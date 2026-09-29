@@ -139,7 +139,7 @@ function dq_career_page_copy() {
 			array( 'Dedicated', 'The company is passionate in helping businesses improved their operational efficiency and productivity by continuously educating, training and, developing our experienced team members, to ensure that we adapt to the dynamic business landscape.', 'dedicated.png' ),
 			array( 'Data Security', 'We are committed to ensuring the confidentiality, integrity, and availability of our customers\' information by adhering to strict data security protocols.', 'data.png' ),
 		),
-		'seo_title'   => 'DynamIQes - Career',
+		'seo_title'   => 'DynamIQ - Career',
 		'seo_desc'    => 'Discover career opportunities with DynamIQ Enterprise Solution. Join our innovative team in Metro Manila or Cebu and shape the future of business tech.',
 	) );
 }

@@ -142,7 +142,7 @@ function dq_ensure_contact_page() {
 		return 0;
 	}
 	if ( ! get_post_meta( $id, '_dq_seo_title', true ) ) {
-		update_post_meta( $id, '_dq_seo_title', 'Contact Us - DynamIQes' );
+		update_post_meta( $id, '_dq_seo_title', 'Contact Us - DynamIQ' );
 	}
 	if ( ! get_post_meta( $id, '_dq_seo_description', true ) ) {
 		update_post_meta( $id, '_dq_seo_description', 'Get in touch with DynamIQ Enterprise Solution. Reach our team for free business analysis, SAP B1 consulting, or IT support — we\'re here to help.' );
@@ -299,7 +299,7 @@ function dq_seed_content() {
 	$report = array();
 
 	/* Site identity + permalinks. Only a fresh install is renamed: a copy of the live site keeps its
-	   Site Title, which every Yoast title template ends in ("… - DynamIQes"). */
+	   Site Title, which every Yoast title template ends in ("… - DynamIQ"; the brand is DynamIQ, never DynamIQes). */
 	if ( in_array( get_option( 'blogname' ), array( '', 'WordPress', 'My WordPress' ), true ) ) {
 		update_option( 'blogname', 'DynamIQ Enterprise Solution' );
 		update_option( 'blogdescription', 'SAP Premier Partner Philippines' );
@@ -443,10 +443,10 @@ function dq_seed_content() {
 	}
 	if ( $demo_id && ! is_wp_error( $demo_id ) ) {
 		if ( ! get_post_meta( $demo_id, '_dq_seo_title', true ) ) {
-			update_post_meta( $demo_id, '_dq_seo_title', 'Book a Free Demo | DynamIQes' );
+			update_post_meta( $demo_id, '_dq_seo_title', 'Book a Free Demo | DynamIQ' );
 		}
 		if ( ! get_post_meta( $demo_id, '_dq_seo_description', true ) ) {
-			update_post_meta( $demo_id, '_dq_seo_description', 'Discover how Dynamiqes can revolutionize your processes. Our innovative solutions will take your business to the next level. Sign up for a free demo today!' );
+			update_post_meta( $demo_id, '_dq_seo_description', 'Discover how DynamIQ can revolutionize your processes. Our innovative solutions will take your business to the next level. Sign up for a free demo today!' );
 		}
 	}
 	/* Contact Us and About Us: the old site's nav targets (/contact-us/, /about-us/). */

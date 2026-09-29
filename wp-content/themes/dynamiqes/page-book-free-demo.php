@@ -2,7 +2,7 @@
 /**
  * Book a FREE DEMO (/book-free-demo/) — the old site's CTA target: an H1 and the enquiry form.
  * Picked up by slug (page-{slug}.php); the seeder creates the page and its title tag /
- * meta description ("Book a Free Demo | DynamIQes"). Any content added to the page in WP Admin
+ * meta description ("Book a Free Demo | DynamIQ"). Any content added to the page in WP Admin
  * appears between the heading and the form.
  *
  * @package dynamiqes

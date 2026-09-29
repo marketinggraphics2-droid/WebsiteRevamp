@@ -724,7 +724,7 @@ function dq_product_live_content() {
 			/* Revamp Dynamiq design (Figma, Sept 2026) — copy transcribed from the prototype frames. */
 			'title'           => 'Unlock Intelligent Automation with IQ Ai by DynamIQ',
 			'description'     => "IQ Ai is a smart, AI-powered chat assistant built specifically for companies that use SAP Business One. Developed by DynamIQ Enterprise Solution Inc., IQ Ai helps users interact with their SAP Business One system in a faster, easier, and more intuitive way.\n\nInstead of clicking through complicated menus or writing database code to find information, IQ Ai lets you simply talk to your data. You can ask questions, request charts, upload documents, or create new records directly inside your SAP Business One system.\n\nWith IQ Ai, SAP Business One users can save time, reduce manual work, and access business information more efficiently through a secure and controlled AI-powered interface.",
-			'seo_title'       => 'AI Module for SAP Business One ERP - DynamIQes',
+			'seo_title'       => 'AI Module for SAP Business One ERP - DynamIQ',
 			'seo_description' => 'Upgrade your SAP Business One ERP productivity with an AI Module. Automate insights, streamline operations, and drive smarter decisions with integrated AI.',
 			'overview_title'  => 'Smarter Insights, Smoother Operations: An Overview of IQ Ai',
 			'overview'        => array(
@@ -766,7 +766,7 @@ function dq_product_live_content() {
 			   out. Both flagged to the SEO team. */
 			'title'           => 'IQDesk: Smarter IT Service, All in One Place.',
 			'description'     => 'IQDesk is DynamIQ’s all-in-one IT Service Management (ITSM) and helpdesk solution built to make IT support simpler, faster, and easier to manage.',
-			'seo_title'       => 'IT Service Management Module for SAP B1 - DynamIQes',
+			'seo_title'       => 'IT Service Management Module for SAP B1 - DynamIQ',
 			'seo_description' => 'Simplify IT support with IQ Desk for SAP Business One. Manage tickets, track assets with PAR, automate workflows, and improve response efficiency.',
 			'overview_title'  => 'Product Overview',
 			'overview'        => array(
@@ -893,7 +893,7 @@ function dq_product_live_content() {
 			   flagged to the SEO team. */
 			'title'           => 'Advance Your B2B and B2C E-commerce with IQEcom for SAP Business One',
 			'description'     => 'IQEcom is DynamIQ’s enterprise-grade B2B and B2C e-commerce platform designed for businesses that go beyond simple online selling. It is built for real-world operations where pricing is negotiated, purchases require approval, and inventory needs to be tracked across multiple locations.',
-			'seo_title'       => 'E-Commerce Platform Module for SAP B1 - DynamIQes',
+			'seo_title'       => 'E-Commerce Platform Module for SAP B1 - DynamIQ',
 			'seo_description' => 'Run e-commerce seamlessly with IQ Ecom for SAP Business One. Sync orders, inventory, and pricing while eliminating double encoding and manual errors.',
 			'overview_title'  => 'Product Overview',
 			'overview'        => array(

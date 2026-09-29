@@ -104,6 +104,24 @@ add_filter( 'wpseo_twitter_title', 'dq_seo_title_hygiene', 20 );
 add_filter( 'wpseo_metadesc', 'dq_seo_brand', 20 );
 add_filter( 'wpseo_opengraph_desc', 'dq_seo_brand', 20 );
 add_filter( 'wpseo_twitter_description', 'dq_seo_brand', 20 );
+/* Yoast's schema graph (WebPage name, Article headline, descriptions) is built from the raw title
+   templates, not the filtered title, so it kept "DynamIQes" (2026-09-29): normalise the graph too. */
+add_filter( 'wpseo_schema_graph', function ( $graph ) {
+	$walk = function ( &$node ) use ( &$walk ) {
+		if ( ! is_array( $node ) ) {
+			return;
+		}
+		foreach ( $node as $k => &$v ) {
+			if ( is_array( $v ) ) {
+				$walk( $v );
+			} elseif ( is_string( $v ) && in_array( $k, array( 'name', 'headline', 'description', 'alternateName', 'caption' ), true ) ) {
+				$v = dq_seo_brand( $v );
+			}
+		}
+	};
+	$walk( $graph );
+	return $graph;
+}, 20 );
 /* … and the theme's own tags when no plugin runs. */
 add_filter( 'document_title', 'dq_seo_title_hygiene', 20 );
 
