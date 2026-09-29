@@ -260,3 +260,7 @@ follow-ups to the 0928 round. All fixed in **Theme 3.1**; IQ remarks in column F
       theme seeded (products, careers, Contact Us, Book a Free Demo). Seeded titles corrected at source, stored
       `_dq_seo_title` / `_dq_seo_description` corrected in place on the version refresh, and Yoast's schema graph
       (WebPage name etc.) now goes through `dq_seo_brand()` too. → `inc/seo.php`, `inc/live-urls.php`, seeders
+- [x] **N7** (3.1.2) Without Yoast (local, or any site without an SEO plugin) the title tag still said
+      "DynamIQes": core skips the `document_title` filter when `pre_get_document_title` returns a title, so the
+      hygiene now runs inside that filter. Stored `_dq_seo_title` / `_dq_seo_description` are normalised on write
+      (`update_post_metadata`) and once per version for existing rows. → `inc/seo.php`

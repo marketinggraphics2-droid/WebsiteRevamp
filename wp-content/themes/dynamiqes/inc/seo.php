@@ -24,13 +24,15 @@ add_filter( 'document_title_separator', function () { return '—'; } );
 /* A per-page title tag is output verbatim. Going through document_title_parts would run it
    through wptexturize() (" - " becomes an en dash), and pages imported from dynamiqes.com must
    keep the old <title> character for character. */
+/* A title returned here is final: core skips document_title_parts AND the document_title filter
+   when pre_get_document_title is non-empty, so the brand/override hygiene runs in here (3.1.2). */
 add_filter( 'pre_get_document_title', function ( $title ) {
 	if ( dq_seo_plugin_active() ) {
 		return $title;
 	}
 	if ( is_post_type_archive( 'dq_product' ) ) { // the live /products/ page this archive replaced (inc/live-urls.php)
 		$live = dq_shadowed_seo( 'title' );
-		return $live ? $live : $title;
+		return $live ? dq_seo_brand( $live ) : $title;
 	}
 	if ( ! is_singular() ) {
 		return $title;
@@ -39,7 +41,7 @@ add_filter( 'pre_get_document_title', function ( $title ) {
 	if ( ! $custom && is_singular( 'dq_product' ) ) {
 		$custom = dq_shadowed_seo( 'title' ); // the live page this product URL replaced
 	}
-	return $custom ? $custom : $title;
+	return $custom ? dq_seo_title_hygiene( $custom ) : $title;
 } );
 add_filter( 'document_title_parts', function ( $parts ) {
 	if ( dq_seo_plugin_active() ) {
@@ -104,6 +106,30 @@ add_filter( 'wpseo_twitter_title', 'dq_seo_title_hygiene', 20 );
 add_filter( 'wpseo_metadesc', 'dq_seo_brand', 20 );
 add_filter( 'wpseo_opengraph_desc', 'dq_seo_brand', 20 );
 add_filter( 'wpseo_twitter_description', 'dq_seo_brand', 20 );
+/* Stored titles/descriptions are kept clean too: whatever writes _dq_seo_title / _dq_seo_description
+   (the landing-page importer copying live Yoast titles, the seeders, WP Admin) stores the brand as
+   "DynamIQ", and values written by earlier versions are corrected once per theme version (3.1.2). */
+add_filter( 'update_post_metadata', function ( $check, $object_id, $meta_key, $meta_value ) {
+	if ( in_array( $meta_key, array( '_dq_seo_title', '_dq_seo_description' ), true ) && is_string( $meta_value ) ) {
+		$clean = dq_seo_brand( $meta_value );
+		if ( $clean !== $meta_value ) {
+			update_post_meta( $object_id, $meta_key, $clean ); // re-enters with a clean value, so this branch is skipped
+			return true;
+		}
+	}
+	return $check;
+}, 10, 4 );
+add_action( 'init', function () {
+	if ( ! is_admin() || ! current_user_can( 'manage_options' ) || get_option( 'dq_seo_brand_ver' ) === DQ_VERSION ) {
+		return;
+	}
+	update_option( 'dq_seo_brand_ver', DQ_VERSION );
+	global $wpdb;
+	$rows = $wpdb->get_results( "SELECT post_id, meta_key, meta_value FROM {$wpdb->postmeta} WHERE meta_key IN ('_dq_seo_title','_dq_seo_description') AND meta_value LIKE '%dynamiqes%'" );
+	foreach ( (array) $rows as $r ) {
+		update_post_meta( (int) $r->post_id, $r->meta_key, dq_seo_brand( $r->meta_value ) );
+	}
+}, 28 );
 /* Yoast's schema graph (WebPage name, Article headline, descriptions) is built from the raw title
    templates, not the filtered title, so it kept "DynamIQes" (2026-09-29): normalise the graph too. */
 add_filter( 'wpseo_schema_graph', function ( $graph ) {
